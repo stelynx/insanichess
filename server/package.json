@@ -1,0 +1,38 @@
+{
+  "name": "insanichess",
+  "version": "1.0.0",
+  "description": "Insanichess server",
+  "main": "main.ts",
+  "scripts": {
+    "serve": "nodemon main.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stelynx/insanichess.git"
+  },
+  "keywords": [
+    "chess",
+    "insane",
+    "variant",
+    "20",
+    "stelynx",
+    "insanichess"
+  ],
+  "author": "Stelynx",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/stelynx/insanichess/issues"
+  },
+  "homepage": "https://github.com/stelynx/insanichess#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.11.12",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.3"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

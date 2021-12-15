@@ -1,1 +1,1 @@
-# insanichess
+# Insanichess

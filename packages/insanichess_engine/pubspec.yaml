@@ -1,8 +1,8 @@
-name: insanichess
-description: Insanichess game logic
+name: insanichess_engine
+description: Insanichess evaluation engine
 version: 0.0.1
 homepage: https://github.com/stelynx/insanichess
-repository: https://github.com/stelynx/insanichess/tree/master/packages/insanichess
+repository: https://github.com/stelynx/insanichess/tree/master/packages/insanichess_engine
 
 environment:
   sdk: ">=2.14.0 <3.0.0"

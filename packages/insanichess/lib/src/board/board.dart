@@ -1,19 +1,20 @@
 import 'package:flutter/foundation.dart';
-import 'package:insanichess/src/board/move.dart';
-import 'package:insanichess/src/board/square.dart';
-import 'package:insanichess/src/pieces/black_bishop.dart';
-import 'package:insanichess/src/pieces/black_king.dart';
-import 'package:insanichess/src/pieces/black_knight.dart';
-import 'package:insanichess/src/pieces/black_pawn.dart';
-import 'package:insanichess/src/pieces/black_queen.dart';
-import 'package:insanichess/src/pieces/black_rook.dart';
-import 'package:insanichess/src/pieces/piece.dart';
-import 'package:insanichess/src/pieces/white_bishop.dart';
-import 'package:insanichess/src/pieces/white_king.dart';
-import 'package:insanichess/src/pieces/white_knight.dart';
-import 'package:insanichess/src/pieces/white_pawn.dart';
-import 'package:insanichess/src/pieces/white_queen.dart';
-import 'package:insanichess/src/pieces/white_rook.dart';
+
+import '../pieces/black_bishop.dart';
+import '../pieces/black_king.dart';
+import '../pieces/black_knight.dart';
+import '../pieces/black_pawn.dart';
+import '../pieces/black_queen.dart';
+import '../pieces/black_rook.dart';
+import '../pieces/piece.dart';
+import '../pieces/white_bishop.dart';
+import '../pieces/white_king.dart';
+import '../pieces/white_knight.dart';
+import '../pieces/white_pawn.dart';
+import '../pieces/white_queen.dart';
+import '../pieces/white_rook.dart';
+import 'move.dart';
+import 'square.dart';
 
 typedef Position = List<List<Piece?>>;
 typedef _Row = List<Piece?>;
@@ -21,11 +22,13 @@ typedef _Row = List<Piece?>;
 class Board {
   final Position _position;
 
+  static const int size = 20;
+
   Board() : _position = initialPosition;
 
   Board.fromPosition({required Position position})
-      : assert(position.length == 20 &&
-            !position.any((_Row row) => row.length != 20)),
+      : assert(position.length == size &&
+            !position.any((_Row row) => row.length != size)),
         _position = position;
 
   Piece? at(int row, int col) => _position[row][col];
@@ -56,11 +59,11 @@ class Board {
 
   String getFenRepresentation() {
     String s = '';
-    for (int row = 0; row < 20; row++) {
-      for (int col = 0; col < 20; col++) {
+    for (int row = 0; row < size; row++) {
+      for (int col = 0; col < size; col++) {
         s += at(row, col)?.fenSymbol ?? '*';
       }
-      if (row != 19) {
+      if (row != size - 1) {
         s += '/';
       }
     }
@@ -70,8 +73,8 @@ class Board {
   @visibleForTesting
   String toStringAsWhite() {
     String s = '';
-    for (int row = 19; row >= 0; row--) {
-      for (int col = 0; col < 20; col++) {
+    for (int row = size - 1; row >= 0; row--) {
+      for (int col = 0; col < size; col++) {
         s += at(row, col)?.fenSymbol ?? '*';
       }
       s += '\n';
@@ -82,8 +85,8 @@ class Board {
   @visibleForTesting
   String toStringAsBlack() {
     String s = '';
-    for (int row = 0; row < 20; row++) {
-      for (int col = 19; col >= 0; col--) {
+    for (int row = 0; row < size; row++) {
+      for (int col = size - 1; col >= 0; col--) {
         s += at(row, col)?.fenSymbol ?? '*';
       }
       s += '\n';
@@ -187,29 +190,29 @@ final Position initialPosition = List<_Row>.from(
       const WhitePawn(),
     ], growable: false),
     // Row 5
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 6
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 7
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 8
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 9
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 10
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 11
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 12
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 13
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 14
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 15
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 16
-    List.filled(20, null, growable: false),
+    List.filled(Board.size, null, growable: false),
     // Row 17
     List<Piece?>.from([
       const BlackPawn(),

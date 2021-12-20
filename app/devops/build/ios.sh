@@ -1,0 +1,1 @@
+flutter clean && flutter build ipa && open build/ios/archive/Runner.xcarchive

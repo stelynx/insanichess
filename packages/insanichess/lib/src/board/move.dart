@@ -1,5 +1,5 @@
-import 'package:insanichess/src/board/square.dart';
-import 'package:insanichess/src/pieces/piece.dart';
+import '../pieces/piece.dart';
+import 'square.dart';
 
 class Move {
   final Square from;
@@ -7,4 +7,6 @@ class Move {
   final Piece? pieceOnLandingSquare;
 
   const Move(this.from, this.to, this.pieceOnLandingSquare);
+
+  String toICString() => '${from.toICString()}-${to.toICString()}';
 }

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.stelynx.insanichess">
    <application
-        android:label="insanichess"
+        android:label="Insanichess"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

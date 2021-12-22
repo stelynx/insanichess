@@ -52,14 +52,23 @@ class InsanichessGame extends insanichess.Game {
         super.fromPosition(position: position, gameHistory: gameHistory);
 
   /// Creates a `String` representation of a [game]. This representation contains
-  /// in each line a pair of moves of white and black player, separated by `\t`
-  /// character.
+  /// in each line a pair of moves of white and black player, separated by `' '`
+  /// character and game metadata at the start.
   String toICString() {
     String icString = '';
+
+    icString += '$id\n';
+    icString += '${whitePlayer.id} ${blackPlayer.id}\n';
+    icString +=
+        '${timeControl.initialTime.inSeconds} ${timeControl.incrementPerMove.inSeconds}';
+    icString +=
+        '${remainingTimeWhite.inMilliseconds} ${remainingTimeBlack.inMilliseconds}\n';
+    icString += board.getFenRepresentation() + '\n';
+
     int moveIndex = 0;
     for (; moveIndex + 1 < movesPlayed.length; moveIndex += 2) {
       icString +=
-          '${movesPlayed[moveIndex].toICString()}\t${movesPlayed[moveIndex + 1].toICString()}\n';
+          '${movesPlayed[moveIndex].toICString()} ${movesPlayed[moveIndex + 1].toICString()}\n';
     }
 
     int futureMoveIndex = movesFromFuture.length - 1;
@@ -75,10 +84,10 @@ class InsanichessGame extends insanichess.Game {
 
     for (; futureMoveIndex - 1 >= 0; futureMoveIndex -= 2) {
       icString +=
-          '${movesPlayed[futureMoveIndex].toICString()}\t${movesPlayed[futureMoveIndex - 1].toICString()}\n';
+          '${movesPlayed[futureMoveIndex].toICString()} ${movesPlayed[futureMoveIndex - 1].toICString()}\n';
     }
     if (futureMoveIndex == 0) {
-      icString += '${movesPlayed[futureMoveIndex].toICString()}\t';
+      icString += '${movesPlayed[futureMoveIndex].toICString()} ';
     }
 
     return icString;

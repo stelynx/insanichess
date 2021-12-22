@@ -9,3 +9,4 @@ library insanichess_sdk;
 export 'src/game.dart';
 export 'src/player.dart';
 export 'src/time_control.dart';
+export 'src/util/position.dart';

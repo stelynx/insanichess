@@ -70,9 +70,9 @@ packages:
   insanichess:
     dependency: "direct main"
     description:
-      name: insanichess
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../insanichess"
+      relative: true
+    source: path
     version: "0.0.4"
   lints:
     dependency: transitive

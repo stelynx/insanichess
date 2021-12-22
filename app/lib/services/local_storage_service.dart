@@ -40,10 +40,10 @@ class LocalStorageService {
     final List<String> timeControlString = lines[2].split(' ');
     final List<String> remainingTimeString = lines[3].split(' ');
 
-    final List<insanichess.Move> moves = <insanichess.Move>[];
+    final List<insanichess.PlayedMove> moves = <insanichess.PlayedMove>[];
     // for (int i = 5; i < lines.length; i++) {
     //   final List<String> splittedLine = lines[i].split(' ');
-    //   final insanichess.Move whiteMove = insanichess.Move(insanichess.Square(), insanichess.Square());
+    //   final insanichess.PlayedMove whiteMove = insanichess.PlayedMove(insanichess.Square(), insanichess.Square());
     // }
 
     return InsanichessGame.fromPosition(

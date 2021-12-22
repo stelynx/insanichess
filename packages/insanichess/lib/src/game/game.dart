@@ -26,13 +26,12 @@ class Game {
   /// The `GameHistory` of this game, containing played moves.
   final GameHistory _gameHistory;
 
-  /// Performs a move on the board.
+  /// Performs a move [m] on the board.
   ///
-  /// The move is [from] and [to] `Square`.
   /// Returns the played [PlayedMove] if successful, otherwise `null`.
-  PlayedMove? move(Square from, Square to) {
-    final PlayedMove move = PlayedMove(from, to, _board.atSquare(to));
-    if (_board.safeMove(from, to)) {
+  PlayedMove? move(Move m) {
+    final PlayedMove? move = _board.safeMove(m);
+    if (move != null) {
       _gameHistory.add(move);
       return move;
     }
@@ -53,7 +52,7 @@ class Game {
   /// Returns the next move from future moves if successful, otherwise `null`.
   PlayedMove? forward() {
     final PlayedMove nextMove = _gameHistory.forward();
-    if (_board.safeMove(nextMove.from, nextMove.to)) return nextMove;
+    if (_board.safeMove(nextMove) != null) return nextMove;
 
     _gameHistory.backward();
   }
@@ -82,4 +81,8 @@ class Game {
 
   /// Returns the current [_board].
   Board get board => _board;
+
+  /// Returns the color of the [playerOnTurn].
+  PieceColor get playerOnTurn =>
+      _gameHistory.length % 2 == 0 ? PieceColor.white : PieceColor.white;
 }

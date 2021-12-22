@@ -41,7 +41,7 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
   // Handlers
 
   FutureOr<void> _onMove(_Move event, Emitter<GameState> emit) async {
-    state.game.move(event.from, event.to);
+    state.game.move(insanichess.Move(event.from, event.to, event.promotionTo));
     emit(state.copyWith());
   }
 

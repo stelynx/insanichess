@@ -9,11 +9,16 @@ class Move {
   /// Square [to] where the piece was placed.
   final Square to;
 
+  /// If the piece moved is `Pawn` and it has reached last rank, then this field
+  /// holds information to what `Piece` it was promoted.
+  final Piece? promotionTo;
+
   /// Constructs new `Move` object for move [from] square [to] square.
-  const Move(this.from, this.to);
+  const Move(this.from, this.to, [this.promotionTo]);
 
   /// Returns `String` representaion of the move.
-  String toICString() => '${from.toICString()}-${to.toICString()}';
+  String toICString() =>
+      '${from.toICString()}-${to.toICString()}${promotionTo == null ? '' : promotionTo!.fenSymbol}';
 }
 
 class PlayedMove extends Move {
@@ -23,6 +28,10 @@ class PlayedMove extends Move {
 
   /// Constructs new `PlayedMove` object for move [from] square [to] square with
   /// info about [pieceOnLandingSquare].
-  const PlayedMove(Square from, Square to, this.pieceOnLandingSquare)
-      : super(from, to);
+  const PlayedMove(
+    Square from,
+    Square to,
+    this.pieceOnLandingSquare,
+    Piece? promotionTo,
+  ) : super(from, to, promotionTo);
 }

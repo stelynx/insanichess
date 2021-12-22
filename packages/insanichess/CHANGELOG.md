@@ -1,3 +1,7 @@
+## 0.0.3
+
+- Fix bug with undo move and forward / backward.
+
 ## 0.0.2
 
 - Add documentation and more functions.

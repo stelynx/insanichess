@@ -43,7 +43,9 @@ class Game {
   /// Returns the last move if undo is successful, otherwise `null`.
   Move? undo() {
     final Move lastMove = _gameHistory.undo();
-    return _board.safeUndoMove(lastMove) ? lastMove : null;
+    if (_board.safeUndoMove(lastMove)) return lastMove;
+
+    _gameHistory.futureMoves.add(lastMove);
   }
 
   /// Moves one move forward in the [_gameHistory].
@@ -51,7 +53,9 @@ class Game {
   /// Returns the next move from future moves if successful, otherwise `null`.
   Move? forward() {
     final Move nextMove = _gameHistory.forward();
-    return _board.safeMove(nextMove.from, nextMove.to) ? nextMove : null;
+    if (_board.safeMove(nextMove.from, nextMove.to)) return nextMove;
+
+    _gameHistory.backward();
   }
 
   /// Moves one move backward in the [_gameHistory].
@@ -64,7 +68,9 @@ class Game {
   /// [_gameHistory] without deleting any of the moves.
   Move? backward() {
     final Move lastMove = _gameHistory.backward();
-    return _board.safeUndoMove(lastMove) ? lastMove : null;
+    if (_board.safeUndoMove(lastMove)) return lastMove;
+
+    _gameHistory.forward();
   }
 
   /// Returns moves played until current position.

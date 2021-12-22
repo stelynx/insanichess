@@ -76,7 +76,7 @@ class Board {
   ///
   /// This method is a more robust version of [undoMove].
   bool safeUndoMove(Move move) {
-    if (atSquare(move.to) != null) return false;
+    if (atSquare(move.from) != null || atSquare(move.to) == null) return false;
     undoMove(move);
     return true;
   }

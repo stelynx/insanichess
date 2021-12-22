@@ -67,6 +67,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  insanichess:
+    dependency: "direct main"
+    description:
+      name: insanichess
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   lints:
     dependency: transitive
     description:

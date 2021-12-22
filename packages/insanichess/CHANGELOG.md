@@ -1,3 +1,7 @@
+## 0.0.4
+
+- Add `Piece.fromFenSymbol(String)` method.
+
 ## 0.0.3
 
 - Fix bug with undo move and forward / backward.

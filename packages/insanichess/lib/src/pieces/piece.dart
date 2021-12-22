@@ -1,3 +1,4 @@
+import '../../insanichess.dart';
 import 'piece_color.dart';
 import 'piece_type.dart';
 
@@ -23,5 +24,26 @@ abstract class Piece {
   /// Returns FEN symbol for this piece.
   String get fenSymbol {
     return isWhite ? type.fenSymbol.toUpperCase() : type.fenSymbol;
+  }
+
+  static Piece fromFenSymbol(String fenSymbol) {
+    final bool isWhite = fenSymbol == fenSymbol.toUpperCase();
+
+    switch (fenSymbol.toLowerCase()) {
+      case 'p':
+        return isWhite ? const WhitePawn() : const BlackPawn();
+      case 'r':
+        return isWhite ? const WhiteRook() : const BlackRook();
+      case 'n':
+        return isWhite ? const WhiteKnight() : const BlackKnight();
+      case 'b':
+        return isWhite ? const WhiteBishop() : const BlackBishop();
+      case 'q':
+        return isWhite ? const WhiteQueen() : const BlackQueen();
+      case 'k':
+        return isWhite ? const WhiteKing() : const BlackKing();
+      default:
+        throw ArgumentError('Unknown FEN symbol "$fenSymbol"');
+    }
   }
 }

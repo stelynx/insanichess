@@ -16,47 +16,72 @@ import '../pieces/white_rook.dart';
 import 'move.dart';
 import 'square.dart';
 
+/// Definition of type representing a position on board.
 typedef Position = List<List<Piece?>>;
+
+/// Definition of type representing a row on the board. Used internally.
 typedef _Row = List<Piece?>;
 
+/// Representation of playing board.
+///
+/// Contains informaion about current [_position] and is able to perform
+/// necessary operations on [_position], like [move] and [undoMove].
 class Board {
+  /// Current position.
   final Position _position;
 
+  /// Size of the board. Defined for convenience.
   static const int size = 20;
 
+  /// Constructs new `Board` object with [initialPosition].
   Board() : _position = initialPosition;
 
+  /// Constructs new `Board` object with given [position].
   Board.fromPosition({required Position position})
       : assert(position.length == size &&
             !position.any((_Row row) => row.length != size)),
         _position = position;
 
+  /// Returns piece at position ([row], [col]) or `null` if square is empty.
   Piece? at(int row, int col) => _position[row][col];
+
+  /// Returns piece on [square] or `null` if square is empty.
   Piece? atSquare(Square square) => at(square.row, square.col);
 
+  /// Performs a move between [from] and [to] squares.
   void move(Square from, Square to) {
     _position[to.row][to.col] = _position[from.row][from.col];
     _position[from.row][from.col] = null;
   }
 
+  /// Performs a move between [from] and [to] squares, if the square [from]
+  /// actually contains piece.
+  ///
+  /// This method is a more robust version of [move].
   bool safeMove(Square from, Square to) {
     if (atSquare(from) == null) return false;
     move(from, to);
     return true;
   }
 
+  /// Performs a [move] but in reverse order.
   void undoMove(Move move) {
     _position[move.from.row][move.from.col] =
         _position[move.to.row][move.to.col];
     _position[move.to.row][move.to.col] = move.pieceOnLandingSquare;
   }
 
+  /// Performs a [move] but in reverse order, if the square [move.to] is not
+  /// empty.
+  ///
+  /// This method is a more robust version of [undoMove].
   bool safeUndoMove(Move move) {
-    if (atSquare(move.from) != null) return false;
+    if (atSquare(move.to) != null) return false;
     undoMove(move);
     return true;
   }
 
+  /// Returns FEN representation of current [_position] on the board.
   String getFenRepresentation() {
     String s = '';
     for (int row = 0; row < size; row++) {
@@ -70,6 +95,8 @@ class Board {
     return s;
   }
 
+  /// Returns a [size] by [size] looking `String` of current [_position] as
+  /// viewed by white player.
   @visibleForTesting
   String toStringAsWhite() {
     String s = '';
@@ -82,6 +109,8 @@ class Board {
     return s;
   }
 
+  /// Returns a [size] by [size] looking `String` of current [_position] as
+  /// viewed by black player.
   @visibleForTesting
   String toStringAsBlack() {
     String s = '';
@@ -95,6 +124,7 @@ class Board {
   }
 }
 
+/// Initial position.
 final Position initialPosition = List<_Row>.from(
   <_Row>[
     // Row 1

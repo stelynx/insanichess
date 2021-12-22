@@ -1,6 +1,6 @@
 name: insanichess
-description: Insanichess game logic
-version: 0.0.1
+description: Game logic and rules for Insanichess game
+version: 0.0.2
 homepage: https://github.com/stelynx/insanichess
 repository: https://github.com/stelynx/insanichess/tree/master/packages/insanichess
 

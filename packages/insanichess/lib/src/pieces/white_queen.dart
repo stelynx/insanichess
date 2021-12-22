@@ -1,6 +1,7 @@
-import 'package:insanichess/src/pieces/piece_type.dart';
-import 'package:insanichess/src/pieces/white_piece.dart';
+import 'piece_type.dart';
+import 'white_piece.dart';
 
+/// Represent a white queen.
 class WhiteQueen extends WhitePiece {
   const WhiteQueen();
 

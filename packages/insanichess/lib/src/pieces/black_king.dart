@@ -1,6 +1,7 @@
-import 'package:insanichess/src/pieces/black_piece.dart';
-import 'package:insanichess/src/pieces/piece_type.dart';
+import 'black_piece.dart';
+import 'piece_type.dart';
 
+/// Represent a black king.
 class BlackKing extends BlackPiece {
   const BlackKing();
 

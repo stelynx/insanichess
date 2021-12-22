@@ -8,6 +8,9 @@ import 'time_control.dart';
 /// Apart from basic game rules, this class adds information that is usable both
 /// to client and server in order to be able to play a game of Insanichess.
 class InsanichessGame extends insanichess.Game {
+  /// The id of the game.
+  final String id;
+
   /// Information for player with white pieces.
   final InsanichessPlayer whitePlayer;
 
@@ -25,6 +28,7 @@ class InsanichessGame extends insanichess.Game {
 
   /// Constructs a fresh game with initial position.
   InsanichessGame({
+    required this.id,
     required this.whitePlayer,
     required this.blackPlayer,
     required this.timeControl,
@@ -35,6 +39,7 @@ class InsanichessGame extends insanichess.Game {
   /// Constructs a game from given [position] and [gameHistory] with option to
   /// change [remainingTimeWhite] and [remainingTimeBlack].
   InsanichessGame.fromPosition({
+    required this.id,
     required this.whitePlayer,
     required this.blackPlayer,
     required this.timeControl,
@@ -78,4 +83,15 @@ class InsanichessGame extends insanichess.Game {
 
     return icString;
   }
+
+  /// Two `InsanichessGame`s are equal if they have the same [id].
+  @override
+  bool operator ==(Object? other) {
+    if (other is! InsanichessGame) return false;
+    return id == other.id;
+  }
+
+  /// [hashCode] for `InsanichessGame` is simply [id.hashCode].
+  @override
+  int get hashCode => id.hashCode;
 }

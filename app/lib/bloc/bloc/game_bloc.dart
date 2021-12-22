@@ -2,13 +2,22 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:insanichess/insanichess.dart' as insanichess;
+import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:meta/meta.dart';
 
 part 'game_event.dart';
 part 'game_state.dart';
 
 class GameBloc extends Bloc<_GameEvent, GameState> {
-  GameBloc() : super(GameState.initial(game: insanichess.Game())) {
+  GameBloc()
+      : super(GameState.initial(
+          game: InsanichessGame(
+            id: 'id',
+            whitePlayer: const InsanichessPlayer.testWhite(),
+            blackPlayer: const InsanichessPlayer.testBlack(),
+            timeControl: const InsanichessTimeControl.blitz(),
+          ),
+        )) {
     on<_Move>(_onMove);
     on<_Undo>(_onUndo);
     on<_Forward>(_onForward);
@@ -55,6 +64,14 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
     _StartNewGame event,
     Emitter<GameState> emit,
   ) async {
-    emit(GameState.initial(game: insanichess.Game()));
+    // TODO new game does not work
+    emit(GameState.initial(
+      game: InsanichessGame(
+        id: '${state.game.id}1',
+        whitePlayer: const InsanichessPlayer.testWhite(),
+        blackPlayer: const InsanichessPlayer.testBlack(),
+        timeControl: const InsanichessTimeControl.blitz(),
+      ),
+    ));
   }
 }

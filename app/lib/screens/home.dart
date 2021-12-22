@@ -71,6 +71,7 @@ class _HomeScreen extends StatelessWidget {
                               ),
                               CupertinoDialogAction(
                                 child: const Text('Yes'),
+                                isDestructiveAction: true,
                                 onPressed: () {
                                   bloc.newGame();
                                   Navigator.of(context).pop();

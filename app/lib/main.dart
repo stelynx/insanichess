@@ -2,16 +2,19 @@ import 'package:flutter/cupertino.dart';
 
 import 'router/router.dart';
 import 'router/routes.dart';
+import 'services/local_storage_service.dart';
 import 'util/logger.dart';
 
 void main() {
   Logger();
 
-  runApp(const MyApp());
+  LocalStorageService();
+
+  runApp(const InsanichessApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class InsanichessApp extends StatelessWidget {
+  const InsanichessApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

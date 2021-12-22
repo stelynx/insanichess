@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:insanichess/insanichess.dart' as insanichess;
 
 import '../style/colors.dart';
+import '../util/extensions/piece.dart';
 
 class ICBoard extends StatefulWidget {
   final insanichess.Board board;
@@ -68,7 +70,9 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
 
   void _onSquareTap(int row, int col) {
     if (selectedSquare == null) {
-      setState(() => selectedSquare = insanichess.Square(row, col));
+      if (widget.board.at(row, col) != null) {
+        setState(() => selectedSquare = insanichess.Square(row, col));
+      }
       return;
     }
 
@@ -101,18 +105,21 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
                   ? ICColor.chessboardBlack
                   : ICColor.chessboardWhite,
         ),
-        child: Center(
-          child: Text(
-            widget.board.at(row, col)?.fenSymbol ?? '',
-            style: TextStyle(fontSize: maxSquareSize - 4),
-          ),
-        ),
+        child: widget.board.at(row, col) == null
+            ? const SizedBox.expand()
+            : SvgPicture.asset(
+                widget.board.at(row, col)!.getImagePath(),
+                width: maxSquareSize,
+                height: maxSquareSize,
+              ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    print(widget.board.toStringAsWhite());
+    print('');
     final List<Row> rows = <Row>[];
 
     if (widget.asWhite) {
@@ -140,7 +147,7 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
     }
 
     return GestureDetector(
-      onDoubleTap: _animateResetInitialize,
+      // onDoubleTap: _animateResetInitialize,
       child: InteractiveViewer(
         minScale: 1.0,
         transformationController: _transformationController,

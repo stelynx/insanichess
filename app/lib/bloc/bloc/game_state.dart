@@ -2,7 +2,7 @@ part of 'game_bloc.dart';
 
 @immutable
 class GameState {
-  final insanichess.Game game;
+  final InsanichessGame game;
 
   const GameState({
     required this.game,
@@ -13,7 +13,7 @@ class GameState {
   });
 
   GameState copyWith({
-    insanichess.Game? game,
+    InsanichessGame? game,
   }) {
     return GameState(game: game ?? this.game);
   }

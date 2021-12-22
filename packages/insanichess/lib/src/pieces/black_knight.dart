@@ -1,8 +1,9 @@
-import 'black_piece.dart';
-import 'piece_type.dart';
+import 'definitions/black_piece.dart';
+import 'definitions/piece_type.dart';
+import 'mixins/knight.dart';
 
 /// Represent a black knight.
-class BlackKnight extends BlackPiece {
+class BlackKnight extends BlackPiece with Knight {
   const BlackKnight();
 
   @override

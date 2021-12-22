@@ -1,12 +1,10 @@
-import 'package:flutter/foundation.dart';
-
 import '../pieces/black_bishop.dart';
 import '../pieces/black_king.dart';
 import '../pieces/black_knight.dart';
 import '../pieces/black_pawn.dart';
 import '../pieces/black_queen.dart';
 import '../pieces/black_rook.dart';
-import '../pieces/piece.dart';
+import '../pieces/definitions/piece.dart';
 import '../pieces/white_bishop.dart';
 import '../pieces/white_king.dart';
 import '../pieces/white_knight.dart';
@@ -65,7 +63,7 @@ class Board {
   }
 
   /// Performs a [move] but in reverse order.
-  void undoMove(Move move) {
+  void undoMove(PlayedMove move) {
     _position[move.from.row][move.from.col] =
         _position[move.to.row][move.to.col];
     _position[move.to.row][move.to.col] = move.pieceOnLandingSquare;
@@ -75,7 +73,7 @@ class Board {
   /// empty.
   ///
   /// This method is a more robust version of [undoMove].
-  bool safeUndoMove(Move move) {
+  bool safeUndoMove(PlayedMove move) {
     if (atSquare(move.from) != null || atSquare(move.to) == null) return false;
     undoMove(move);
     return true;
@@ -97,7 +95,8 @@ class Board {
 
   /// Returns a [size] by [size] looking `String` of current [_position] as
   /// viewed by white player.
-  @visibleForTesting
+  ///
+  /// This function is for testing purposes only.
   String toStringAsWhite() {
     String s = '';
     for (int row = size - 1; row >= 0; row--) {
@@ -111,7 +110,8 @@ class Board {
 
   /// Returns a [size] by [size] looking `String` of current [_position] as
   /// viewed by black player.
-  @visibleForTesting
+  ///
+  /// This function is for testing purposes only.
   String toStringAsBlack() {
     String s = '';
     for (int row = 0; row < size; row++) {

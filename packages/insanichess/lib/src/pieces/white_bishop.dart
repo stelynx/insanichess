@@ -1,8 +1,9 @@
-import 'piece_type.dart';
-import 'white_piece.dart';
+import 'definitions/piece_type.dart';
+import 'definitions/white_piece.dart';
+import 'mixins/bishop.dart';
 
 /// Represent a white bishop.
-class WhiteBishop extends WhitePiece {
+class WhiteBishop extends WhitePiece with Bishop {
   const WhiteBishop();
 
   @override

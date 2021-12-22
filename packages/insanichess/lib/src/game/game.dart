@@ -29,9 +29,9 @@ class Game {
   /// Performs a move on the board.
   ///
   /// The move is [from] and [to] `Square`.
-  /// Returns the played [Move] if successful, otherwise `null`.
-  Move? move(Square from, Square to) {
-    final Move move = Move(from, to, _board.atSquare(to));
+  /// Returns the played [PlayedMove] if successful, otherwise `null`.
+  PlayedMove? move(Square from, Square to) {
+    final PlayedMove move = PlayedMove(from, to, _board.atSquare(to));
     if (_board.safeMove(from, to)) {
       _gameHistory.add(move);
       return move;
@@ -41,8 +41,8 @@ class Game {
   /// Undoes the last move.
   ///
   /// Returns the last move if undo is successful, otherwise `null`.
-  Move? undo() {
-    final Move lastMove = _gameHistory.undo();
+  PlayedMove? undo() {
+    final PlayedMove lastMove = _gameHistory.undo();
     if (_board.safeUndoMove(lastMove)) return lastMove;
 
     _gameHistory.futureMoves.add(lastMove);
@@ -51,8 +51,8 @@ class Game {
   /// Moves one move forward in the [_gameHistory].
   ///
   /// Returns the next move from future moves if successful, otherwise `null`.
-  Move? forward() {
-    final Move nextMove = _gameHistory.forward();
+  PlayedMove? forward() {
+    final PlayedMove nextMove = _gameHistory.forward();
     if (_board.safeMove(nextMove.from, nextMove.to)) return nextMove;
 
     _gameHistory.backward();
@@ -66,19 +66,19 @@ class Game {
   ///
   /// Method [backward] can be used in combination with [forward] to explore
   /// [_gameHistory] without deleting any of the moves.
-  Move? backward() {
-    final Move lastMove = _gameHistory.backward();
+  PlayedMove? backward() {
+    final PlayedMove lastMove = _gameHistory.backward();
     if (_board.safeUndoMove(lastMove)) return lastMove;
 
     _gameHistory.forward();
   }
 
   /// Returns moves played until current position.
-  List<Move> get movesPlayed => _gameHistory.moves;
+  List<PlayedMove> get movesPlayed => _gameHistory.moves;
 
   /// Returns moves that are in the future. That means they were played but
   /// player went [backward] to explore move history.
-  List<Move> get movesFromFuture => _gameHistory.futureMoves;
+  List<PlayedMove> get movesFromFuture => _gameHistory.futureMoves;
 
   /// Returns the current [_board].
   Board get board => _board;

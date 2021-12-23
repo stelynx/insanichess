@@ -17,8 +17,7 @@ abstract class Piece {
 
   /// Returns the list of possible moves with this piece from [square],
   /// including moves that are illegal in current position.
-  List<Move> getPossibleMovesFromSquareInPosition(
-      Square square, Position position);
+  List<Move> getPossibleMovesFromSquareOnBoard(Square square, Board board);
 
   /// Returns `true` if this piece is white.
   bool get isWhite => color == PieceColor.white;

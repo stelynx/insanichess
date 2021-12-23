@@ -1,5 +1,6 @@
 import '../../insanichess.dart';
 import '../board/board.dart';
+import 'game_status.dart';
 
 /// Representation of the game.
 ///
@@ -11,20 +12,32 @@ class Game {
   /// [_gameHistory].
   Game()
       : _board = Board(),
-        _gameHistory = GameHistory();
+        _gameHistory = GameHistory(),
+        _gameStatus = GameStatus.notStarted;
 
-  /// Creates new `Game` object from given [position] and [gameHistory].
+  /// Creates new `Game` object from given [position], [gameHistory], and
+  /// [status].
   ///
   /// Parameter [gameHistory] is optional and it defaults to empty history.
-  Game.fromPosition({required Position position, GameHistory? gameHistory})
-      : _board = Board.fromPosition(position: position),
-        _gameHistory = gameHistory ?? GameHistory();
+  /// Parameter [status] is optional and it defaults to `GameStatus.notStarted`.
+  Game.fromPosition({
+    required Position position,
+    GameHistory? gameHistory,
+    GameStatus? status,
+  })  : _board = Board.fromPosition(position: position),
+        _gameHistory = gameHistory ?? GameHistory(),
+        _gameStatus = status ?? GameStatus.notStarted;
 
   /// The `Board` of this game.
   final Board _board;
 
   /// The `GameHistory` of this game, containing played moves.
   final GameHistory _gameHistory;
+
+  /// The status of the game.
+  ///
+  /// Status can only be updated from within this class.
+  final GameStatus _gameStatus;
 
   /// Performs a move [m] on the board.
   ///
@@ -71,6 +84,40 @@ class Game {
 
     _gameHistory.forward();
   }
+
+  /// Calculate all legal moves in current position for player on turn.
+  ///
+  /// All possible moves are legal.
+  List<Move> getLegalMoves() {
+    final List<Move> possibleMoves = <Move>[];
+
+    if (playerOnTurn == PieceColor.white) {
+      for (int row = 0; row < Board.size; row++) {
+        for (int col = 0; col < Board.size; col++) {
+          if (board.at(row, col)?.isWhite ?? false) {
+            possibleMoves.addAll(board
+                .at(row, col)!
+                .getPossibleMovesFromSquareOnBoard(Square(row, col), board));
+          }
+        }
+      }
+    } else {
+      for (int row = 0; row < Board.size; row++) {
+        for (int col = 0; col < Board.size; col++) {
+          if (board.at(row, col)?.isBlack ?? false) {
+            possibleMoves.addAll(board
+                .at(row, col)!
+                .getPossibleMovesFromSquareOnBoard(Square(row, col), board));
+          }
+        }
+      }
+    }
+
+    return possibleMoves;
+  }
+
+  /// Returns the current status of the game.
+  GameStatus get status => _gameStatus;
 
   /// Returns moves played until current position.
   List<PlayedMove> get movesPlayed => _gameHistory.moves;

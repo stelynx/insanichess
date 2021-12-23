@@ -5,16 +5,16 @@ import '../../board/square.dart';
 
 mixin Pawn on Piece {
   @override
-  List<Move> getPossibleMovesFromSquareInPosition(
+  List<Move> getPossibleMovesFromSquareOnBoard(
     Square square,
-    Position position,
+    Board board,
   ) {
     final int rowDiff = isWhite ? -1 : 1;
 
     final List<Move> possibleMoves;
     if (square.row == Board.size - 2) {
       possibleMoves = <Move>[
-        if (position[square.row + rowDiff][square.col] == null) ...[
+        if (board.at(square.row + rowDiff, square.col) == null) ...[
           Move(
             square,
             Square(square.row + rowDiff, square.col),
@@ -38,10 +38,10 @@ mixin Pawn on Piece {
         ],
         if (square.col + 1 < Board.size &&
             ((isWhite &&
-                    !(position[square.row + rowDiff][square.col + 1]?.isWhite ??
+                    !(board.at(square.row + rowDiff, square.col + 1)?.isWhite ??
                         false)) ||
                 (isBlack &&
-                    !(position[square.row + rowDiff][square.col + 1]?.isBlack ??
+                    !(board.at(square.row + rowDiff, square.col + 1)?.isBlack ??
                         false)))) ...[
           Move(
             square,
@@ -66,10 +66,10 @@ mixin Pawn on Piece {
         ],
         if (square.col - 1 < Board.size &&
             ((isWhite &&
-                    !(position[square.row + rowDiff][square.col - 1]?.isWhite ??
+                    !(board.at(square.row + rowDiff, square.col - 1)?.isWhite ??
                         false)) ||
                 (isBlack &&
-                    !(position[square.row + rowDiff][square.col - 1]?.isBlack ??
+                    !(board.at(square.row + rowDiff, square.col - 1)?.isBlack ??
                         false)))) ...[
           Move(
             square,
@@ -95,22 +95,22 @@ mixin Pawn on Piece {
       ];
     } else {
       possibleMoves = <Move>[
-        if (position[square.row + rowDiff][square.col] == null)
+        if (board.at(square.row + rowDiff, square.col) == null)
           Move(square, Square(square.row + rowDiff, square.col)),
         if (square.col + 1 < Board.size &&
             ((isWhite &&
-                    !(position[square.row + rowDiff][square.col + 1]?.isWhite ??
+                    !(board.at(square.row + rowDiff, square.col + 1)?.isWhite ??
                         false)) ||
                 (isBlack &&
-                    !(position[square.row + rowDiff][square.col + 1]?.isBlack ??
+                    !(board.at(square.row + rowDiff, square.col + 1)?.isBlack ??
                         false))))
           Move(square, Square(square.row + rowDiff, square.col + 1)),
         if (square.col - 1 < Board.size &&
             ((isWhite &&
-                    !(position[square.row + rowDiff][square.col - 1]?.isWhite ??
+                    !(board.at(square.row + rowDiff, square.col - 1)?.isWhite ??
                         false)) ||
                 (isBlack &&
-                    !(position[square.row + rowDiff][square.col - 1]?.isBlack ??
+                    !(board.at(square.row + rowDiff, square.col - 1)?.isBlack ??
                         false))))
           Move(square, Square(square.row + rowDiff, square.col - 1)),
       ];

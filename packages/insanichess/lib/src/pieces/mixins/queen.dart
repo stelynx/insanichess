@@ -5,10 +5,16 @@ import '../../board/square.dart';
 
 mixin Queen on Piece {
   @override
-  List<Move> getPossibleMovesFromSquareInPosition(
+  List<Move> getPossibleMovesFromSquareOnBoard(
     Square square,
-    Position position,
+    Board board,
   ) {
-    return [];
+    return isWhite
+        ? (const WhiteBishop().getPossibleMovesFromSquareOnBoard(square, board)
+          ..addAll(const WhiteRook()
+              .getPossibleMovesFromSquareOnBoard(square, board)))
+        : const BlackBishop().getPossibleMovesFromSquareOnBoard(square, board)
+      ..addAll(
+          const BlackRook().getPossibleMovesFromSquareOnBoard(square, board));
   }
 }

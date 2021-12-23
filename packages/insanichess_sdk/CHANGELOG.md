@@ -1,3 +1,7 @@
+## 0.1.0
+
+- Bump required `insanichess` version to `0.1.0`.
+
 ## 0.0.3
 
 - Add `Position positionFromFen(String)` utility function.

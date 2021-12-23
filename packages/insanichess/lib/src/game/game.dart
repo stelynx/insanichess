@@ -37,17 +37,28 @@ class Game {
   /// The status of the game.
   ///
   /// Status can only be updated from within this class.
-  final GameStatus _gameStatus;
+  GameStatus _gameStatus;
 
-  /// Performs a move [m] on the board.
+  /// Performs a move [m] on the board and updates [_gameStatus].
   ///
-  /// Returns the played [PlayedMove] if successful, otherwise `null`.
+  /// Returns the `PlayedMove` if game is in progress, otherwise `null`. It also
+  /// sets the current `GameStatus` to `GameStatus.playing` and if the `King`
+  /// was captured, it sets it to either `GameStatus.whiteWon` or
+  /// `GameStatus.blackWon`, depending on what color is the captured `King`.
   PlayedMove? move(Move m) {
+    if (!inProgress) return null;
+
     final PlayedMove? move = _board.safeMove(m);
-    if (move != null) {
-      _gameHistory.add(move);
-      return move;
+    if (move == null) return null;
+
+    _gameStatus = GameStatus.playing;
+    if (move.pieceOnLandingSquare is King) {
+      _gameStatus = move.pieceOnLandingSquare is BlackKing
+          ? GameStatus.whiteWon
+          : GameStatus.blackWon;
     }
+    _gameHistory.add(move);
+    return move;
   }
 
   /// Undoes the last move.
@@ -116,8 +127,20 @@ class Game {
     return possibleMoves;
   }
 
+  /// Sets the current status to draw.
+  void draw() => _gameStatus = GameStatus.draw;
+
   /// Returns the current status of the game.
   GameStatus get status => _gameStatus;
+
+  /// Returns `true` if the game is currently in progress.
+  bool get inProgress => _gameStatus == GameStatus.playing;
+
+  /// Returns whether the game is over or not.
+  bool get isGameOver =>
+      _gameStatus == GameStatus.draw ||
+      _gameStatus == GameStatus.blackWon ||
+      _gameStatus == GameStatus.whiteWon;
 
   /// Returns moves played until current position.
   List<PlayedMove> get movesPlayed => _gameHistory.moves;

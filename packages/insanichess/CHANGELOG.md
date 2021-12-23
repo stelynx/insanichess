@@ -1,3 +1,8 @@
+## 0.1.0
+
+- Add computation of legal moves.
+- Add `GameStatus` and calculation of game status.
+
 ## 0.0.4
 
 - Add `Piece.fromFenSymbol(String)` method.

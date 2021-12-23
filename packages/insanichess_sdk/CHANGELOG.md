@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Bump required `insanichess` version to `0.1.2`.
+
 ## 0.1.1
 
 - Bump required `insanichess` version to `0.1.1`.

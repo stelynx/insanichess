@@ -34,7 +34,7 @@ mixin Knight on Piece {
                 Move(square, Square(square.row + 1, square.col + 2)),
             ],
             // S
-            if (square.row - 2 < Board.size) ...[
+            if (square.row - 2 >= 0) ...[
               // E
               if (square.col - 1 >= 0 &&
                   !(board.at(square.row - 2, square.col - 1)?.isWhite ?? false))
@@ -45,7 +45,7 @@ mixin Knight on Piece {
                 Move(square, Square(square.row - 2, square.col + 1)),
             ],
             // W
-            if (square.col - 2 < Board.size) ...[
+            if (square.col - 2 >= 0) ...[
               // S
               if (square.row - 1 >= 0 &&
                   !(board.at(square.row - 1, square.col - 2)?.isWhite ?? false))
@@ -91,7 +91,7 @@ mixin Knight on Piece {
                 Move(square, Square(square.row - 2, square.col + 1)),
             ],
             // W
-            if (square.col - 2 < Board.size) ...[
+            if (square.col - 2 >= 0) ...[
               // S
               if (square.row - 1 >= 0 &&
                   !(board.at(square.row - 1, square.col - 2)?.isBlack ?? false))

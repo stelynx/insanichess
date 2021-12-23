@@ -9,7 +9,7 @@ mixin Pawn on Piece {
     Square square,
     Board board,
   ) {
-    final int rowDiff = isWhite ? -1 : 1;
+    final int rowDiff = isWhite ? 1 : -1;
 
     final List<Move> possibleMoves;
     if (square.row == Board.size - 2) {
@@ -105,7 +105,7 @@ mixin Pawn on Piece {
                     !(board.at(square.row + rowDiff, square.col + 1)?.isBlack ??
                         false))))
           Move(square, Square(square.row + rowDiff, square.col + 1)),
-        if (square.col - 1 < Board.size &&
+        if (square.col - 1 >= 0 &&
             ((isWhite &&
                     !(board.at(square.row + rowDiff, square.col - 1)?.isWhite ??
                         false)) ||

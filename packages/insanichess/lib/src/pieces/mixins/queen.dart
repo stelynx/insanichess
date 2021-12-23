@@ -9,12 +9,20 @@ mixin Queen on Piece {
     Square square,
     Board board,
   ) {
-    return isWhite
-        ? (const WhiteBishop().getPossibleMovesFromSquareOnBoard(square, board)
-          ..addAll(const WhiteRook()
-              .getPossibleMovesFromSquareOnBoard(square, board)))
-        : const BlackBishop().getPossibleMovesFromSquareOnBoard(square, board)
-      ..addAll(
-          const BlackRook().getPossibleMovesFromSquareOnBoard(square, board));
+    if (isWhite) {
+      final List<Move> bishopMoves =
+          const WhiteBishop().getPossibleMovesFromSquareOnBoard(square, board);
+      final List<Move> rookMoves =
+          const WhiteRook().getPossibleMovesFromSquareOnBoard(square, board);
+      bishopMoves.addAll(rookMoves);
+      return bishopMoves;
+    }
+
+    final List<Move> bishopMoves =
+        const BlackBishop().getPossibleMovesFromSquareOnBoard(square, board);
+    final List<Move> rookMoves =
+        const BlackRook().getPossibleMovesFromSquareOnBoard(square, board);
+    bishopMoves.addAll(rookMoves);
+    return bishopMoves;
   }
 }

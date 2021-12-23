@@ -19,6 +19,18 @@ class Move {
   /// Returns `String` representaion of the move.
   String toICString() =>
       '${from.toICString()}-${to.toICString()}${promotionTo == null ? '' : promotionTo!.fenSymbol}';
+
+  @override
+  bool operator ==(Object? other) {
+    if (other is! Move) return false;
+    return from == other.from &&
+        to == other.to &&
+        promotionTo == other.promotionTo;
+  }
+
+  @override
+  int get hashCode =>
+      31 * (31 * from.hashCode + to.hashCode) + promotionTo.hashCode;
 }
 
 class PlayedMove extends Move {

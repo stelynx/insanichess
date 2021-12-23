@@ -28,6 +28,7 @@ mixin Rook on Piece {
       }
 
       // E
+      offset = 1;
       while (square.col + offset < Board.size &&
           board.at(square.row, square.col + offset) == null) {
         possibleMoves
@@ -48,13 +49,14 @@ mixin Rook on Piece {
             .add(Move(square, Square(square.row - offset, square.col)));
         offset++;
       }
-      if (square.row - offset < Board.size &&
+      if (square.row - offset >= 0 &&
           (board.at(square.row - offset, square.col)?.isBlack ?? false)) {
         possibleMoves
             .add(Move(square, Square(square.row - offset, square.col)));
       }
 
       // W
+      offset = 1;
       while (square.col - offset >= 0 &&
           board.at(square.row, square.col - offset) == null) {
         possibleMoves
@@ -83,6 +85,7 @@ mixin Rook on Piece {
       }
 
       // E
+      offset = 1;
       while (square.col + offset < Board.size &&
           board.at(square.row, square.col + offset) == null) {
         possibleMoves
@@ -103,13 +106,14 @@ mixin Rook on Piece {
             .add(Move(square, Square(square.row - offset, square.col)));
         offset++;
       }
-      if (square.row - offset < Board.size &&
+      if (square.row - offset >= 0 &&
           (board.at(square.row - offset, square.col)?.isWhite ?? false)) {
         possibleMoves
             .add(Move(square, Square(square.row - offset, square.col)));
       }
 
       // W
+      offset = 1;
       while (square.col - offset >= 0 &&
           board.at(square.row, square.col - offset) == null) {
         possibleMoves

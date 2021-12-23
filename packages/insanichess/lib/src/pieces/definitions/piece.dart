@@ -51,4 +51,13 @@ abstract class Piece {
         throw ArgumentError('Unknown FEN symbol "$fenSymbol"');
     }
   }
+
+  @override
+  bool operator ==(Object? other) {
+    if (other is! Piece) return false;
+    return type == other.type && color == other.color;
+  }
+
+  @override
+  int get hashCode => 31 * type.hashCode + color.hashCode;
 }

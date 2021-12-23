@@ -13,7 +13,9 @@ class Game {
   Game()
       : _board = Board(),
         _gameHistory = GameHistory(),
-        _gameStatus = GameStatus.notStarted;
+        _gameStatus = GameStatus.notStarted {
+    _calculateLegalMoves();
+  }
 
   /// Creates new `Game` object from given [position], [gameHistory], and
   /// [status].
@@ -26,7 +28,9 @@ class Game {
     GameStatus? status,
   })  : _board = Board.fromPosition(position: position),
         _gameHistory = gameHistory ?? GameHistory(),
-        _gameStatus = status ?? GameStatus.notStarted;
+        _gameStatus = status ?? GameStatus.notStarted {
+    _calculateLegalMoves();
+  }
 
   /// The `Board` of this game.
   final Board _board;
@@ -39,14 +43,19 @@ class Game {
   /// Status can only be updated from within this class.
   GameStatus _gameStatus;
 
+  /// Contains the list of legal moves in current position.
+  late List<Move> _legalMoves;
+
   /// Performs a move [m] on the board and updates [_gameStatus].
   ///
-  /// Returns the `PlayedMove` if game is in progress, otherwise `null`. It also
+  /// Returns the `PlayedMove` if game is not over, otherwise `null`. It also
   /// sets the current `GameStatus` to `GameStatus.playing` and if the `King`
   /// was captured, it sets it to either `GameStatus.whiteWon` or
   /// `GameStatus.blackWon`, depending on what color is the captured `King`.
   PlayedMove? move(Move m) {
-    if (!inProgress) return null;
+    if (isGameOver ||
+        board.at(m.from.row, m.from.col)?.color != playerOnTurn ||
+        !_legalMoves.contains(m)) return null;
 
     final PlayedMove? move = _board.safeMove(m);
     if (move == null) return null;
@@ -58,6 +67,7 @@ class Game {
           : GameStatus.blackWon;
     }
     _gameHistory.add(move);
+    _calculateLegalMoves();
     return move;
   }
 
@@ -96,10 +106,41 @@ class Game {
     _gameHistory.forward();
   }
 
+  /// Sets the current status to draw.
+  void draw() => _gameStatus = GameStatus.draw;
+
+  /// Returns the current status of the game.
+  GameStatus get status => _gameStatus;
+
+  /// Returns `true` if the game is currently in progress.
+  bool get inProgress => _gameStatus == GameStatus.playing;
+
+  /// Returns whether the game is over or not.
+  bool get isGameOver =>
+      _gameStatus == GameStatus.draw ||
+      _gameStatus == GameStatus.blackWon ||
+      _gameStatus == GameStatus.whiteWon;
+
+  List<Move> get legalMoves => _legalMoves;
+
+  /// Returns moves played until current position.
+  List<PlayedMove> get movesPlayed => _gameHistory.moves;
+
+  /// Returns moves that are in the future. That means they were played but
+  /// player went [backward] to explore move history.
+  List<PlayedMove> get movesFromFuture => _gameHistory.futureMoves;
+
+  /// Returns the current [_board].
+  Board get board => _board;
+
+  /// Returns the color of the [playerOnTurn].
+  PieceColor get playerOnTurn =>
+      _gameHistory.length % 2 == 0 ? PieceColor.white : PieceColor.black;
+
   /// Calculate all legal moves in current position for player on turn.
   ///
   /// All possible moves are legal.
-  List<Move> getLegalMoves() {
+  void _calculateLegalMoves() {
     final List<Move> possibleMoves = <Move>[];
 
     if (playerOnTurn == PieceColor.white) {
@@ -124,35 +165,6 @@ class Game {
       }
     }
 
-    return possibleMoves;
+    _legalMoves = possibleMoves;
   }
-
-  /// Sets the current status to draw.
-  void draw() => _gameStatus = GameStatus.draw;
-
-  /// Returns the current status of the game.
-  GameStatus get status => _gameStatus;
-
-  /// Returns `true` if the game is currently in progress.
-  bool get inProgress => _gameStatus == GameStatus.playing;
-
-  /// Returns whether the game is over or not.
-  bool get isGameOver =>
-      _gameStatus == GameStatus.draw ||
-      _gameStatus == GameStatus.blackWon ||
-      _gameStatus == GameStatus.whiteWon;
-
-  /// Returns moves played until current position.
-  List<PlayedMove> get movesPlayed => _gameHistory.moves;
-
-  /// Returns moves that are in the future. That means they were played but
-  /// player went [backward] to explore move history.
-  List<PlayedMove> get movesFromFuture => _gameHistory.futureMoves;
-
-  /// Returns the current [_board].
-  Board get board => _board;
-
-  /// Returns the color of the [playerOnTurn].
-  PieceColor get playerOnTurn =>
-      _gameHistory.length % 2 == 0 ? PieceColor.white : PieceColor.white;
 }

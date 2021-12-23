@@ -1,3 +1,7 @@
+## 0.1.1
+
+- Fix a bug with wrong legal moves calculation.
+
 ## 0.1.0
 
 - Add computation of legal moves.

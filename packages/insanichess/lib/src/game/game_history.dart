@@ -29,7 +29,7 @@ class GameHistory {
 
   /// Goes one step back through the history and returns the previous move.
   PlayedMove backward() {
-    final PlayedMove move = moves.removeLast();
+    final PlayedMove move = undo();
     futureMoves.add(move);
     return move;
   }

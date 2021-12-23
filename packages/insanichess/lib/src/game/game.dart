@@ -75,16 +75,26 @@ class Game {
   ///
   /// Returns the last move if undo is successful, otherwise `null`.
   PlayedMove? undo() {
-    final PlayedMove lastMove = _gameHistory.undo();
-    if (_board.safeUndoMove(lastMove)) return lastMove;
+    if (!canUndo) return null;
 
-    _gameHistory.futureMoves.add(lastMove);
+    while (canGoForward) {
+      if (_board.safeMove(_gameHistory.forward()) == null) return null;
+    }
+    final PlayedMove lastMove = _gameHistory.undo();
+    if (_board.safeUndoMove(lastMove)) {
+      _calculateLegalMoves();
+      return lastMove;
+    }
+
+    _gameHistory.add(lastMove);
   }
 
   /// Moves one move forward in the [_gameHistory].
   ///
   /// Returns the next move from future moves if successful, otherwise `null`.
   PlayedMove? forward() {
+    if (!canGoForward) return null;
+
     final PlayedMove nextMove = _gameHistory.forward();
     if (_board.safeMove(nextMove) != null) return nextMove;
 
@@ -100,6 +110,8 @@ class Game {
   /// Method [backward] can be used in combination with [forward] to explore
   /// [_gameHistory] without deleting any of the moves.
   PlayedMove? backward() {
+    if (!canGoBackward) return null;
+
     final PlayedMove lastMove = _gameHistory.backward();
     if (_board.safeUndoMove(lastMove)) return lastMove;
 
@@ -120,6 +132,15 @@ class Game {
       _gameStatus == GameStatus.draw ||
       _gameStatus == GameStatus.blackWon ||
       _gameStatus == GameStatus.whiteWon;
+
+  /// Is there is a move that can be undone?
+  bool get canUndo => _gameHistory.length > 0;
+
+  /// Is there a future move?
+  bool get canGoForward => _gameHistory.futureMoves.isNotEmpty;
+
+  /// Is there a move in the past?
+  bool get canGoBackward => _gameHistory.moves.isNotEmpty;
 
   List<Move> get legalMoves => _legalMoves;
 

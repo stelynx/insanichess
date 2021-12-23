@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Fix a bug with undo not working after going backward and not forward.
+
 ## 0.1.1
 
 - Fix a bug with wrong legal moves calculation.

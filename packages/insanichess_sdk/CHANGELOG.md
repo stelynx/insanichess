@@ -1,3 +1,8 @@
+## 0.1.3
+
+- Add `InsanichessSettings` and `InsanichessOtbSettings` models.
+- Bump required `insanichess` version to `0.1.3`.
+
 ## 0.1.2
 
 - Bump required `insanichess` version to `0.1.2`.

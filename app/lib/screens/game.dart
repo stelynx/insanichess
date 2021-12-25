@@ -1,24 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/bloc/game_bloc.dart';
+import '../bloc/game/game_bloc.dart';
+import '../bloc/global/global_bloc.dart';
 import '../widgets/ic_board.dart';
-import '../widgets/ic_game_control_button.dart';
+import '../widgets/ic_button.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class GameScreen extends StatelessWidget {
+  const GameScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<GameBloc>(
-      create: (BuildContext context) => GameBloc(),
-      child: const _HomeScreen(),
+      create: (BuildContext context) => GameBloc(
+        settings: GlobalBloc.instance.state.settings!,
+      ),
+      child: const _GameScreen(),
     );
   }
 }
 
-class _HomeScreen extends StatelessWidget {
-  const _HomeScreen({Key? key}) : super(key: key);
+class _GameScreen extends StatelessWidget {
+  const _GameScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +36,20 @@ class _HomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 ICBoard(
-                  board: state.game.board,
+                  game: state.game,
                   onMove: bloc.move,
+                  isWhiteBottom: state.isWhiteBottom,
+                  mirrorTopPieces: state.mirrorTopPieces,
+                  resetZoomStream: bloc.resetZoomStream,
+                  onZoomChanged: bloc.zoomChanged,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
+                    ICGameControlButton(
+                      icon: CupertinoIcons.zoom_out,
+                      onPressed: state.enableZoomButton ? bloc.resetZoom : null,
+                    ),
                     ICGameControlButton(
                       icon: CupertinoIcons.back,
                       onPressed: bloc.canGoBackward() ? bloc.backward : null,

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 
-import '../screens/home.dart';
+import '../screens/game.dart';
+import '../screens/settings.dart';
+import '../screens/sign_in.dart';
 import '../screens/splash.dart';
 import '../util/logger.dart';
 import 'routes.dart';
@@ -18,7 +20,11 @@ abstract class ICRouter {
       case ICRoute.initial:
         return CupertinoPageRoute(builder: (context) => const SplashScreen());
       case ICRoute.home:
-        return CupertinoPageRoute(builder: (context) => const HomeScreen());
+        return CupertinoPageRoute(builder: (context) => const SignInScreen());
+      case ICRoute.game:
+        return CupertinoPageRoute(builder: (context) => const GameScreen());
+      case ICRoute.settings:
+        return CupertinoPageRoute(builder: (context) => const SettingsScreen());
     }
   }
 }

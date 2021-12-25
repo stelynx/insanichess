@@ -90,6 +90,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "8.0.0"
+  flutter_inner_drawer:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "kenjishiromajp-update-for-2.12-null-safety-casting"
+      resolved-ref: "63f36418b058dc5a175887bf3fb9ec0fd950693b"
+      url: "https://github.com/kenjishiromajp/flutter_inner_drawer"
+    source: git
+    version: "1.0.0+1"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -115,14 +124,14 @@ packages:
       path: "../packages/insanichess"
       relative: true
     source: path
-    version: "0.0.4"
+    version: "0.1.3"
   insanichess_sdk:
     dependency: "direct main"
     description:
       path: "../packages/insanichess_sdk"
       relative: true
     source: path
-    version: "0.0.3"
+    version: "0.1.3"
   lints:
     dependency: transitive
     description:

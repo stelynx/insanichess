@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:insanichess/insanichess.dart' as insanichess;
@@ -6,17 +8,23 @@ import '../style/colors.dart';
 import '../util/extensions/piece.dart';
 
 class ICBoard extends StatefulWidget {
-  final insanichess.Board board;
+  final insanichess.Game game;
   final void Function(insanichess.Square, insanichess.Square) onMove;
-  final bool asWhite;
+  final bool isWhiteBottom;
+  final bool mirrorTopPieces;
   final int scaleResetAnimationDuration;
+  final Stream<void>? resetZoomStream;
+  final ValueChanged<double>? onZoomChanged;
 
   const ICBoard({
     Key? key,
-    required this.board,
+    required this.game,
     required this.onMove,
-    this.asWhite = true,
+    required this.isWhiteBottom,
+    required this.mirrorTopPieces,
     this.scaleResetAnimationDuration = 0,
+    this.resetZoomStream,
+    this.onZoomChanged,
   }) : super(key: key);
 
   @override
@@ -29,21 +37,32 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
   late AnimationController _controllerReset;
   Animation<Matrix4>? _animationReset;
 
-  insanichess.Square? selectedSquare;
+  StreamSubscription<void>? _resetZoomSubscription;
+
+  insanichess.Square? _selectedSquare;
+  double _zoomValue = 1.0;
 
   @override
   void initState() {
     super.initState();
+
     _controllerReset = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: widget.scaleResetAnimationDuration),
     );
+
+    if (widget.resetZoomStream != null) {
+      _resetZoomSubscription = widget.resetZoomStream!.listen((_) {
+        _animateResetInitialize();
+      });
+    }
   }
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     _transformationController.dispose();
     _controllerReset.dispose();
+    await _resetZoomSubscription?.cancel();
     super.dispose();
   }
 
@@ -68,18 +87,6 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
     }
   }
 
-  void _onSquareTap(int row, int col) {
-    if (selectedSquare == null) {
-      if (widget.board.at(row, col) != null) {
-        setState(() => selectedSquare = insanichess.Square(row, col));
-      }
-      return;
-    }
-
-    widget.onMove(selectedSquare!, insanichess.Square(row, col));
-    setState(() => selectedSquare = null);
-  }
-
   Widget _generateSquare(int row, int col, {required BuildContext context}) {
     final Size screenSize = MediaQuery.of(context).size;
     final double maxSquareSize = (screenSize.width < screenSize.height
@@ -87,8 +94,30 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
             : screenSize.height) /
         insanichess.Board.size;
 
+    final bool shouldMirror = !widget.mirrorTopPieces
+        ? false
+        : (widget.isWhiteBottom
+            ? (widget.game.board.at(row, col)?.isBlack ?? false)
+            : (widget.game.board.at(row, col)?.isWhite ?? false));
+
     return GestureDetector(
-      onTap: () => _onSquareTap(row, col),
+      onTap: widget.game.isGameOver || widget.game.canGoForward
+          ? null
+          : () {
+              if (_selectedSquare == null) {
+                if (widget.game.playerOnTurn == insanichess.PieceColor.white &&
+                        (widget.game.board.at(row, col)?.isWhite ?? false) ||
+                    widget.game.playerOnTurn == insanichess.PieceColor.black &&
+                        (widget.game.board.at(row, col)?.isBlack ?? false)) {
+                  setState(
+                      () => _selectedSquare = insanichess.Square(row, col));
+                }
+                return;
+              }
+
+              widget.onMove(_selectedSquare!, insanichess.Square(row, col));
+              setState(() => _selectedSquare = null);
+            },
       child: Container(
         height: maxSquareSize, // might change
         width: maxSquareSize, // might change
@@ -97,18 +126,20 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
           maxWidth: maxSquareSize,
         ),
         decoration: BoxDecoration(
-          color: selectedSquare != null &&
-                  selectedSquare!.row == row &&
-                  selectedSquare!.col == col
+          color: _selectedSquare != null &&
+                  _selectedSquare!.row == row &&
+                  _selectedSquare!.col == col
               ? ICColor.chessboardSelectedSquare
               : (row + col) % 2 == 0
                   ? ICColor.chessboardBlack
                   : ICColor.chessboardWhite,
         ),
-        child: widget.board.at(row, col) == null
+        child: widget.game.board.at(row, col) == null
             ? const SizedBox.expand()
             : SvgPicture.asset(
-                widget.board.at(row, col)!.getImagePath(),
+                widget.game.board
+                    .at(row, col)!
+                    .getImagePath(mirrored: shouldMirror),
                 width: maxSquareSize,
                 height: maxSquareSize,
               ),
@@ -118,11 +149,9 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.board.toStringAsWhite());
-    print('');
     final List<Row> rows = <Row>[];
 
-    if (widget.asWhite) {
+    if (widget.isWhiteBottom) {
       for (int row = insanichess.Board.size - 1; row >= 0; row--) {
         final List<Widget> children = <Widget>[];
         for (int col = 0; col < insanichess.Board.size; col++) {
@@ -146,25 +175,32 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
       }
     }
 
-    return GestureDetector(
-      // onDoubleTap: _animateResetInitialize,
-      child: InteractiveViewer(
-        minScale: 1.0,
-        transformationController: _transformationController,
-        onInteractionStart: (ScaleStartDetails details) {
-          if (_controllerReset.status == AnimationStatus.forward) {
-            _controllerReset.stop();
-            _animationReset?.removeListener(_onAnimateReset);
-            _animationReset = null;
-            _controllerReset.reset();
-          }
-        },
-        onInteractionEnd: (details) {},
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: rows,
-        ),
+    return InteractiveViewer(
+      minScale: 1.0,
+      transformationController: _transformationController,
+      onInteractionStart: (ScaleStartDetails details) {
+        if (_controllerReset.status == AnimationStatus.forward) {
+          _controllerReset.stop();
+          _animationReset?.removeListener(_onAnimateReset);
+          _animationReset = null;
+          _controllerReset.reset();
+        }
+      },
+      onInteractionUpdate: (ScaleUpdateDetails details) {
+        final double newZoomValue =
+            _transformationController.value.getMaxScaleOnAxis();
+        if ((_zoomValue != 1.0 && newZoomValue == 1.0) ||
+            (_zoomValue == 1.0 && newZoomValue != 1.0)) {
+          widget.onZoomChanged
+              ?.call(_transformationController.value.getMaxScaleOnAxis());
+          // Don't set state here.
+          _zoomValue = newZoomValue;
+        }
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: rows,
       ),
     );
   }

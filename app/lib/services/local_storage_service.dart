@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:insanichess/insanichess.dart' as insanichess;
 import 'package:insanichess_sdk/insanichess_sdk.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:path_provider/path_provider.dart';
 
 class LocalStorageService {
@@ -21,6 +22,7 @@ class LocalStorageService {
 
   Future<String> get _gamesPath async =>
       '${(await getApplicationDocumentsDirectory()).path}/games';
+  static const String _settingsFile = 'settings.json';
 
   Future<void> saveGame(InsanichessGame game) async {
     final File f = File(
@@ -61,5 +63,23 @@ class LocalStorageService {
           Duration(milliseconds: int.parse(remainingTimeString[1])),
       gameHistory: insanichess.GameHistory.withMoves(moves: moves),
     );
+  }
+
+  Future<void> saveSettings(InsanichessSettings settings) async {
+    final LocalStorage storage = LocalStorage(_settingsFile);
+    await storage.ready;
+
+    await storage.setItem('settings', settings.toJson());
+  }
+
+  Future<InsanichessSettings?> readSettings() async {
+    final LocalStorage storage = LocalStorage(_settingsFile);
+    await storage.ready;
+
+    final settingsOrNull = storage.getItem('settings');
+
+    return settingsOrNull == null
+        ? null
+        : InsanichessSettings.fromJson(settingsOrNull);
   }
 }

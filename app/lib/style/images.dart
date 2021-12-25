@@ -1,4 +1,7 @@
 abstract class ICImage {
+  static const String logoLight = 'assets/images/logo_light.svg';
+  static const String logoDark = 'assets/images/logo_dark.svg';
+
   static const String pieceBlackBishop = 'assets/images/chess_pieces/bb.svg';
   static const String pieceBlackBishopR = 'assets/images/chess_pieces/bbr.svg';
   static const String pieceWhiteBishop = 'assets/images/chess_pieces/bw.svg';

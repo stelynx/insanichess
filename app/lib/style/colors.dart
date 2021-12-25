@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 
 /// Provides color palette for Insanichess app.
@@ -11,4 +12,20 @@ abstract class ICColor {
   /// Color for selected chessboard square.
   static const Color chessboardSelectedSquare =
       Color.fromRGBO(204, 255, 0, 1.0);
+
+  /// Primary color. Used for filled buttons.
+  static const CupertinoDynamicColor primary =
+      CupertinoDynamicColor.withBrightness(
+    color: Color(0xff000000),
+    darkColor: Color(0xffffffff),
+  );
+
+  static const CupertinoDynamicColor primaryContrastingColor =
+      CupertinoDynamicColor.withBrightness(
+    color: Color(0xffffffff),
+    darkColor: Color(0xff000000),
+  );
+
+  /// Color used for filled buttons that confirm actions.
+  static const Color confirm = CupertinoColors.activeGreen;
 }

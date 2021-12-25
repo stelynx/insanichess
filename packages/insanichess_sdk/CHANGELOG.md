@@ -1,3 +1,20 @@
+## 0.1.3
+
+- Add `InsanichessSettings` and `InsanichessOtbSettings` models.
+- Bump required `insanichess` version to `0.1.3`.
+
+## 0.1.2
+
+- Bump required `insanichess` version to `0.1.2`.
+
+## 0.1.1
+
+- Bump required `insanichess` version to `0.1.1`.
+
+## 0.1.0
+
+- Bump required `insanichess` version to `0.1.0`.
+
 ## 0.0.3
 
 - Add `Position positionFromFen(String)` utility function.

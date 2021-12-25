@@ -1,12 +1,10 @@
-import 'package:flutter/foundation.dart';
-
 import '../pieces/black_bishop.dart';
 import '../pieces/black_king.dart';
 import '../pieces/black_knight.dart';
 import '../pieces/black_pawn.dart';
 import '../pieces/black_queen.dart';
 import '../pieces/black_rook.dart';
-import '../pieces/piece.dart';
+import '../pieces/definitions/piece.dart';
 import '../pieces/white_bishop.dart';
 import '../pieces/white_king.dart';
 import '../pieces/white_knight.dart';
@@ -42,32 +40,45 @@ class Board {
             !position.any((_Row row) => row.length != size)),
         _position = position;
 
+  static Position get initialPosition => <List<Piece?>>[
+        for (final List<Piece?> sublist in _initialPosition) [...sublist]
+      ];
+
   /// Returns piece at position ([row], [col]) or `null` if square is empty.
   Piece? at(int row, int col) => _position[row][col];
 
   /// Returns piece on [square] or `null` if square is empty.
   Piece? atSquare(Square square) => at(square.row, square.col);
 
-  /// Performs a move between [from] and [to] squares.
-  void move(Square from, Square to) {
-    _position[to.row][to.col] = _position[from.row][from.col];
-    _position[from.row][from.col] = null;
+  /// Performs a move [m].
+  PlayedMove move(Move m) {
+    final PlayedMove playedMove = PlayedMove(
+      m.from,
+      m.to,
+      _position[m.to.row][m.to.col],
+      m.promotionTo,
+    );
+    _position[m.to.row][m.to.col] =
+        m.promotionTo ?? _position[m.from.row][m.from.col];
+    _position[m.from.row][m.from.col] = null;
+    return playedMove;
   }
 
-  /// Performs a move between [from] and [to] squares, if the square [from]
-  /// actually contains piece.
+  /// Performs a move [m], if the square [m.from] actually contains piece.
   ///
   /// This method is a more robust version of [move].
-  bool safeMove(Square from, Square to) {
-    if (atSquare(from) == null) return false;
-    move(from, to);
-    return true;
+  PlayedMove? safeMove(Move m) {
+    if (atSquare(m.from) == null) return null;
+    return move(m);
   }
 
   /// Performs a [move] but in reverse order.
-  void undoMove(Move move) {
-    _position[move.from.row][move.from.col] =
-        _position[move.to.row][move.to.col];
+  void undoMove(PlayedMove move) {
+    _position[move.from.row][move.from.col] = move.promotionTo == null
+        ? _position[move.to.row][move.to.col]
+        : _position[move.to.row][move.to.col]!.isWhite
+            ? const WhitePawn()
+            : const BlackPawn();
     _position[move.to.row][move.to.col] = move.pieceOnLandingSquare;
   }
 
@@ -75,7 +86,7 @@ class Board {
   /// empty.
   ///
   /// This method is a more robust version of [undoMove].
-  bool safeUndoMove(Move move) {
+  bool safeUndoMove(PlayedMove move) {
     if (atSquare(move.from) != null || atSquare(move.to) == null) return false;
     undoMove(move);
     return true;
@@ -97,7 +108,8 @@ class Board {
 
   /// Returns a [size] by [size] looking `String` of current [_position] as
   /// viewed by white player.
-  @visibleForTesting
+  ///
+  /// This function is for testing purposes only.
   String toStringAsWhite() {
     String s = '';
     for (int row = size - 1; row >= 0; row--) {
@@ -111,7 +123,8 @@ class Board {
 
   /// Returns a [size] by [size] looking `String` of current [_position] as
   /// viewed by black player.
-  @visibleForTesting
+  ///
+  /// This function is for testing purposes only.
   String toStringAsBlack() {
     String s = '';
     for (int row = 0; row < size; row++) {
@@ -125,7 +138,10 @@ class Board {
 }
 
 /// Initial position.
-final Position initialPosition = List<_Row>.from(
+///
+/// **Never use this variable.** Instead, use `Board.initialPosition` that
+/// copies the list.
+final Position _initialPosition = List<_Row>.from(
   <_Row>[
     // Row 1
     List<Piece?>.from([

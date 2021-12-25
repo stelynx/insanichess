@@ -1,8 +1,9 @@
-import 'piece_type.dart';
-import 'white_piece.dart';
+import 'definitions/piece_type.dart';
+import 'definitions/white_piece.dart';
+import 'mixins/pawn.dart';
 
 /// Represent a white pawn.
-class WhitePawn extends WhitePiece {
+class WhitePawn extends WhitePiece with Pawn {
   const WhitePawn();
 
   @override

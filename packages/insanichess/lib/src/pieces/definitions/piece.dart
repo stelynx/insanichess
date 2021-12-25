@@ -1,4 +1,4 @@
-import '../../insanichess.dart';
+import '../../../insanichess.dart';
 import 'piece_color.dart';
 import 'piece_type.dart';
 
@@ -15,6 +15,10 @@ abstract class Piece {
   /// [color] of the piece.
   PieceColor get color;
 
+  /// Returns the list of possible moves with this piece from [square],
+  /// including moves that are illegal in current position.
+  List<Move> getPossibleMovesFromSquareOnBoard(Square square, Board board);
+
   /// Returns `true` if this piece is white.
   bool get isWhite => color == PieceColor.white;
 
@@ -26,6 +30,7 @@ abstract class Piece {
     return isWhite ? type.fenSymbol.toUpperCase() : type.fenSymbol;
   }
 
+  /// Creates an appropriate piece for [fenSymbol].
   static Piece fromFenSymbol(String fenSymbol) {
     final bool isWhite = fenSymbol == fenSymbol.toUpperCase();
 
@@ -46,4 +51,13 @@ abstract class Piece {
         throw ArgumentError('Unknown FEN symbol "$fenSymbol"');
     }
   }
+
+  @override
+  bool operator ==(Object? other) {
+    if (other is! Piece) return false;
+    return type == other.type && color == other.color;
+  }
+
+  @override
+  int get hashCode => 31 * type.hashCode + color.hashCode;
 }

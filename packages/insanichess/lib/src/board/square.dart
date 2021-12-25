@@ -13,4 +13,13 @@ class Square {
 
   /// Returns `String` representaion of current square.
   String toICString() => '${'abcdefghijklmnopqrst'[row]}$col';
+
+  @override
+  bool operator ==(Object? other) {
+    if (other is! Square) return false;
+    return row == other.row && col == other.col;
+  }
+
+  @override
+  int get hashCode => 31 * row.hashCode + col.hashCode;
 }

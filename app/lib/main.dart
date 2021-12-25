@@ -1,12 +1,17 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
+import 'bloc/global/global_bloc.dart';
 import 'router/router.dart';
 import 'router/routes.dart';
 import 'services/local_storage_service.dart';
+import 'style/theme.dart';
 import 'util/logger.dart';
 
 void main() {
   Logger();
+
+  GlobalBloc();
 
   LocalStorageService();
 
@@ -18,10 +23,15 @@ class InsanichessApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+
     return const CupertinoApp(
       title: 'Insanichess',
-      initialRoute: ICRoute.home,
+      initialRoute: ICRoute.initial,
       onGenerateRoute: ICRouter.onGenerateRoute,
+      theme: icTheme,
     );
   }
 }

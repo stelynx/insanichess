@@ -1,5 +1,6 @@
 import '../../insanichess.dart';
 import '../board/board.dart';
+import 'game_status.dart';
 
 /// Representation of the game.
 ///
@@ -11,14 +12,25 @@ class Game {
   /// [_gameHistory].
   Game()
       : _board = Board(),
-        _gameHistory = GameHistory();
+        _gameHistory = GameHistory(),
+        _gameStatus = GameStatus.notStarted {
+    _calculateLegalMoves();
+  }
 
-  /// Creates new `Game` object from given [position] and [gameHistory].
+  /// Creates new `Game` object from given [position], [gameHistory], and
+  /// [status].
   ///
   /// Parameter [gameHistory] is optional and it defaults to empty history.
-  Game.fromPosition({required Position position, GameHistory? gameHistory})
-      : _board = Board.fromPosition(position: position),
-        _gameHistory = gameHistory ?? GameHistory();
+  /// Parameter [status] is optional and it defaults to `GameStatus.notStarted`.
+  Game.fromPosition({
+    required Position position,
+    GameHistory? gameHistory,
+    GameStatus? status,
+  })  : _board = Board.fromPosition(position: position),
+        _gameHistory = gameHistory ?? GameHistory(),
+        _gameStatus = status ?? GameStatus.notStarted {
+    _calculateLegalMoves();
+  }
 
   /// The `Board` of this game.
   final Board _board;
@@ -26,34 +38,65 @@ class Game {
   /// The `GameHistory` of this game, containing played moves.
   final GameHistory _gameHistory;
 
-  /// Performs a move on the board.
+  /// The status of the game.
   ///
-  /// The move is [from] and [to] `Square`.
-  /// Returns the played [Move] if successful, otherwise `null`.
-  Move? move(Square from, Square to) {
-    final Move move = Move(from, to, _board.atSquare(to));
-    if (_board.safeMove(from, to)) {
-      _gameHistory.add(move);
-      return move;
+  /// Status can only be updated from within this class.
+  GameStatus _gameStatus;
+
+  /// Contains the list of legal moves in current position.
+  late List<Move> _legalMoves;
+
+  /// Performs a move [m] on the board and updates [_gameStatus].
+  ///
+  /// Returns the `PlayedMove` if game is not over, otherwise `null`. It also
+  /// sets the current `GameStatus` to `GameStatus.playing` and if the `King`
+  /// was captured, it sets it to either `GameStatus.whiteWon` or
+  /// `GameStatus.blackWon`, depending on what color is the captured `King`.
+  PlayedMove? move(Move m) {
+    if (isGameOver ||
+        board.at(m.from.row, m.from.col)?.color != playerOnTurn ||
+        !_legalMoves.contains(m)) return null;
+
+    final PlayedMove? move = _board.safeMove(m);
+    if (move == null) return null;
+
+    _gameStatus = GameStatus.playing;
+    if (move.pieceOnLandingSquare is King) {
+      _gameStatus = move.pieceOnLandingSquare is BlackKing
+          ? GameStatus.whiteWon
+          : GameStatus.blackWon;
     }
+    _gameHistory.add(move);
+    _calculateLegalMoves();
+    return move;
   }
 
   /// Undoes the last move.
   ///
   /// Returns the last move if undo is successful, otherwise `null`.
-  Move? undo() {
-    final Move lastMove = _gameHistory.undo();
-    if (_board.safeUndoMove(lastMove)) return lastMove;
+  PlayedMove? undo() {
+    if (!canUndo) return null;
 
-    _gameHistory.futureMoves.add(lastMove);
+    while (canGoForward) {
+      if (_board.safeMove(_gameHistory.forward()) == null) return null;
+    }
+    final PlayedMove lastMove = _gameHistory.undo();
+    if (_board.safeUndoMove(lastMove)) {
+      _calculateLegalMoves();
+      return lastMove;
+    }
+
+    _gameHistory.add(lastMove);
   }
 
   /// Moves one move forward in the [_gameHistory].
   ///
   /// Returns the next move from future moves if successful, otherwise `null`.
-  Move? forward() {
-    final Move nextMove = _gameHistory.forward();
-    if (_board.safeMove(nextMove.from, nextMove.to)) return nextMove;
+  PlayedMove? forward() {
+    if (!canGoForward) return null;
+
+    final PlayedMove nextMove = _gameHistory.forward();
+    if (_board.safeMove(nextMove) != null) return nextMove;
 
     _gameHistory.backward();
   }
@@ -66,20 +109,83 @@ class Game {
   ///
   /// Method [backward] can be used in combination with [forward] to explore
   /// [_gameHistory] without deleting any of the moves.
-  Move? backward() {
-    final Move lastMove = _gameHistory.backward();
+  PlayedMove? backward() {
+    if (!canGoBackward) return null;
+
+    final PlayedMove lastMove = _gameHistory.backward();
     if (_board.safeUndoMove(lastMove)) return lastMove;
 
     _gameHistory.forward();
   }
 
+  /// Sets the current status to draw.
+  void draw() => _gameStatus = GameStatus.draw;
+
+  /// Returns the current status of the game.
+  GameStatus get status => _gameStatus;
+
+  /// Returns `true` if the game is currently in progress.
+  bool get inProgress => _gameStatus == GameStatus.playing;
+
+  /// Returns whether the game is over or not.
+  bool get isGameOver =>
+      _gameStatus == GameStatus.draw ||
+      _gameStatus == GameStatus.blackWon ||
+      _gameStatus == GameStatus.whiteWon;
+
+  /// Is there is a move that can be undone?
+  bool get canUndo => _gameHistory.length > 0;
+
+  /// Is there a future move?
+  bool get canGoForward => _gameHistory.futureMoves.isNotEmpty;
+
+  /// Is there a move in the past?
+  bool get canGoBackward => _gameHistory.moves.isNotEmpty;
+
+  List<Move> get legalMoves => _legalMoves;
+
   /// Returns moves played until current position.
-  List<Move> get movesPlayed => _gameHistory.moves;
+  List<PlayedMove> get movesPlayed => _gameHistory.moves;
 
   /// Returns moves that are in the future. That means they were played but
   /// player went [backward] to explore move history.
-  List<Move> get movesFromFuture => _gameHistory.futureMoves;
+  List<PlayedMove> get movesFromFuture => _gameHistory.futureMoves;
 
   /// Returns the current [_board].
   Board get board => _board;
+
+  /// Returns the color of the [playerOnTurn].
+  PieceColor get playerOnTurn =>
+      _gameHistory.length % 2 == 0 ? PieceColor.white : PieceColor.black;
+
+  /// Calculate all legal moves in current position for player on turn.
+  ///
+  /// All possible moves are legal.
+  void _calculateLegalMoves() {
+    final List<Move> possibleMoves = <Move>[];
+
+    if (playerOnTurn == PieceColor.white) {
+      for (int row = 0; row < Board.size; row++) {
+        for (int col = 0; col < Board.size; col++) {
+          if (board.at(row, col)?.isWhite ?? false) {
+            possibleMoves.addAll(board
+                .at(row, col)!
+                .getPossibleMovesFromSquareOnBoard(Square(row, col), board));
+          }
+        }
+      }
+    } else {
+      for (int row = 0; row < Board.size; row++) {
+        for (int col = 0; col < Board.size; col++) {
+          if (board.at(row, col)?.isBlack ?? false) {
+            possibleMoves.addAll(board
+                .at(row, col)!
+                .getPossibleMovesFromSquareOnBoard(Square(row, col), board));
+          }
+        }
+      }
+    }
+
+    _legalMoves = possibleMoves;
+  }
 }

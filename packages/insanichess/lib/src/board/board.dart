@@ -40,6 +40,10 @@ class Board {
             !position.any((_Row row) => row.length != size)),
         _position = position;
 
+  static Position get initialPosition => <List<Piece?>>[
+        for (final List<Piece?> sublist in _initialPosition) [...sublist]
+      ];
+
   /// Returns piece at position ([row], [col]) or `null` if square is empty.
   Piece? at(int row, int col) => _position[row][col];
 
@@ -134,7 +138,10 @@ class Board {
 }
 
 /// Initial position.
-final Position initialPosition = List<_Row>.from(
+///
+/// **Never use this variable.** Instead, use `Board.initialPosition` that
+/// copies the list.
+final Position _initialPosition = List<_Row>.from(
   <_Row>[
     // Row 1
     List<Piece?>.from([

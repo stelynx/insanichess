@@ -1,3 +1,7 @@
+## 0.1.3
+
+- Always copy initial position when using it to prevent bugs with changing the actual initial position.
+
 ## 0.1.2
 
 - Fix a bug with undo not working after going backward and not forward.

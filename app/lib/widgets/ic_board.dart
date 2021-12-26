@@ -12,6 +12,7 @@ class ICBoard extends StatefulWidget {
   final void Function(insanichess.Square, insanichess.Square) onMove;
   final bool isWhiteBottom;
   final bool mirrorTopPieces;
+  final bool showLegalMoves;
   final int scaleResetAnimationDuration;
   final Stream<void>? resetZoomStream;
   final ValueChanged<double>? onZoomChanged;
@@ -22,6 +23,7 @@ class ICBoard extends StatefulWidget {
     required this.onMove,
     required this.isWhiteBottom,
     required this.mirrorTopPieces,
+    required this.showLegalMoves,
     this.scaleResetAnimationDuration = 0,
     this.resetZoomStream,
     this.onZoomChanged,
@@ -100,6 +102,13 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
             ? (widget.game.board.at(row, col)?.isBlack ?? false)
             : (widget.game.board.at(row, col)?.isWhite ?? false));
 
+    final bool hasLegalMoveIndicator = !widget.showLegalMoves
+        ? false
+        : widget.game.legalMoves
+            .where((insanichess.Move move) => move.from == _selectedSquare)
+            .map<insanichess.Square>((insanichess.Move move) => move.to)
+            .contains(insanichess.Square(row, col));
+
     return GestureDetector(
       onTap: widget.game.isGameOver || widget.game.canGoForward
           ? null
@@ -135,7 +144,13 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
                   : ICColor.chessboardWhite,
         ),
         child: widget.game.board.at(row, col) == null
-            ? const SizedBox.expand()
+            ? (hasLegalMoveIndicator
+                ? Icon(
+                    CupertinoIcons.circle_fill,
+                    size: maxSquareSize / 3,
+                    color: const Color(0xdd888888),
+                  )
+                : null)
             : SvgPicture.asset(
                 widget.game.board
                     .at(row, col)!

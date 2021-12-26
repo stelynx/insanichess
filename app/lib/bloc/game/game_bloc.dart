@@ -9,7 +9,7 @@ part 'game_event.dart';
 part 'game_state.dart';
 
 class GameBloc extends Bloc<_GameEvent, GameState> {
-  GameBloc({required InsanichessSettings settings})
+  GameBloc({required bool isOtb, required InsanichessSettings settings})
       : _resetZoomStreamController = StreamController<void>.broadcast(),
         super(GameState.initial(
           game: InsanichessGame(
@@ -21,6 +21,11 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
           isWhiteBottom: true,
           rotateOnMove: settings.otb.rotateChessboard,
           mirrorTopPieces: settings.otb.mirrorTopPieces,
+          showZoomOutButtonOnLeft: settings.showZoomOutButtonOnLeft,
+          allowUndo: isOtb ? settings.otb.allowUndo : false,
+          autoZoomOutOnMove: isOtb
+              ? settings.otb.autoZoomOutOnMove
+              : AutoZoomOutOnMoveBehaviour.always,
         )) {
     on<_Move>(_onMove);
     on<_ZoomChanged>(_onZoomChanged);
@@ -58,15 +63,20 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
   // Handlers
 
   FutureOr<void> _onMove(_Move event, Emitter<GameState> emit) async {
-    state.game.move(insanichess.Move(
+    final insanichess.PlayedMove? playedMove = state.game.move(insanichess.Move(
       event.from,
       event.to,
       event.promotionTo,
     ));
-    emit(state.copyWith(
-      isWhiteBottom:
-          state.rotateOnMove ? !state.isWhiteBottom : state.isWhiteBottom,
-    ));
+    if (playedMove != null) {
+      emit(state.copyWith(
+        isWhiteBottom:
+            state.rotateOnMove ? !state.isWhiteBottom : state.isWhiteBottom,
+      ));
+      if (state.autoZoomOutOnMove == AutoZoomOutOnMoveBehaviour.always) {
+        _resetZoomStreamController.add(null);
+      }
+    }
   }
 
   FutureOr<void> _onZoomChanged(
@@ -115,6 +125,9 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
       isWhiteBottom: true,
       rotateOnMove: state.rotateOnMove,
       mirrorTopPieces: state.mirrorTopPieces,
+      showZoomOutButtonOnLeft: state.showZoomOutButtonOnLeft,
+      allowUndo: state.allowUndo,
+      autoZoomOutOnMove: state.autoZoomOutOnMove,
     ));
   }
 }

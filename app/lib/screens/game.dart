@@ -13,6 +13,7 @@ class GameScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<GameBloc>(
       create: (BuildContext context) => GameBloc(
+        isOtb: true,
         settings: GlobalBloc.instance.state.settings!,
       ),
       child: const _GameScreen(),
@@ -40,16 +41,21 @@ class _GameScreen extends StatelessWidget {
                   onMove: bloc.move,
                   isWhiteBottom: state.isWhiteBottom,
                   mirrorTopPieces: state.mirrorTopPieces,
+                  showLegalMoves: true,
                   resetZoomStream: bloc.resetZoomStream,
                   onZoomChanged: bloc.zoomChanged,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    ICGameControlButton(
-                      icon: CupertinoIcons.zoom_out,
-                      onPressed: state.enableZoomButton ? bloc.resetZoom : null,
-                    ),
+                    if (state.showZoomOutButtonOnLeft) ...[
+                      ICGameControlButton(
+                        icon: CupertinoIcons.zoom_out,
+                        onPressed:
+                            state.enableZoomButton ? bloc.resetZoom : null,
+                      ),
+                      const SizedBox(width: 10.0),
+                    ],
                     ICGameControlButton(
                       icon: CupertinoIcons.back,
                       onPressed: bloc.canGoBackward() ? bloc.backward : null,
@@ -60,11 +66,13 @@ class _GameScreen extends StatelessWidget {
                       onPressed: bloc.canGoForward() ? bloc.forward : null,
                     ),
                     const SizedBox(width: 10.0),
-                    ICGameControlButton(
-                      icon: CupertinoIcons.restart,
-                      onPressed: bloc.canUndo() ? bloc.undo : null,
-                    ),
-                    const SizedBox(width: 10.0),
+                    if (state.allowUndo) ...[
+                      ICGameControlButton(
+                        icon: CupertinoIcons.restart,
+                        onPressed: bloc.canUndo() ? bloc.undo : null,
+                      ),
+                      const SizedBox(width: 10.0),
+                    ],
                     ICGameControlButton(
                       icon: CupertinoIcons.add,
                       onPressed: () => showCupertinoDialog(
@@ -93,6 +101,12 @@ class _GameScreen extends StatelessWidget {
                         },
                       ),
                     ),
+                    if (!state.showZoomOutButtonOnLeft)
+                      ICGameControlButton(
+                        icon: CupertinoIcons.zoom_out,
+                        onPressed:
+                            state.enableZoomButton ? bloc.resetZoom : null,
+                      ),
                   ],
                 ),
               ],

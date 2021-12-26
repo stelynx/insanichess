@@ -124,14 +124,14 @@ packages:
       name: insanichess
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.3"
+    version: "0.1.4"
   insanichess_sdk:
     dependency: "direct main"
     description:
       path: "../packages/insanichess_sdk"
       relative: true
     source: path
-    version: "0.1.3"
+    version: "0.1.5"
   lints:
     dependency: transitive
     description:

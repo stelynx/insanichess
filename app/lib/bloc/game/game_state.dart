@@ -7,6 +7,9 @@ class GameState {
   final bool isWhiteBottom;
   final bool rotateOnMove;
   final bool mirrorTopPieces;
+  final bool showZoomOutButtonOnLeft;
+  final bool allowUndo;
+  final AutoZoomOutOnMoveBehaviour autoZoomOutOnMove;
 
   const GameState({
     required this.game,
@@ -14,6 +17,9 @@ class GameState {
     required this.isWhiteBottom,
     required this.rotateOnMove,
     required this.mirrorTopPieces,
+    required this.showZoomOutButtonOnLeft,
+    required this.allowUndo,
+    required this.autoZoomOutOnMove,
   });
 
   const GameState.initial({
@@ -21,6 +27,9 @@ class GameState {
     required this.isWhiteBottom,
     required this.rotateOnMove,
     required this.mirrorTopPieces,
+    required this.showZoomOutButtonOnLeft,
+    required this.allowUndo,
+    required this.autoZoomOutOnMove,
   }) : enableZoomButton = false;
 
   GameState copyWith({
@@ -29,6 +38,9 @@ class GameState {
     bool? isWhiteBottom,
     bool? rotateOnMove,
     bool? mirrorTopPieces,
+    bool? showZoomOutButtonOnLeft,
+    bool? allowUndo,
+    AutoZoomOutOnMoveBehaviour? autoZoomOutOnMove,
   }) {
     return GameState(
       game: game ?? this.game,
@@ -36,6 +48,10 @@ class GameState {
       isWhiteBottom: isWhiteBottom ?? this.isWhiteBottom,
       rotateOnMove: rotateOnMove ?? this.rotateOnMove,
       mirrorTopPieces: mirrorTopPieces ?? this.mirrorTopPieces,
+      showZoomOutButtonOnLeft:
+          showZoomOutButtonOnLeft ?? this.showZoomOutButtonOnLeft,
+      allowUndo: allowUndo ?? this.allowUndo,
+      autoZoomOutOnMove: autoZoomOutOnMove ?? this.autoZoomOutOnMove,
     );
   }
 }

@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  insanichess: ^0.1.3
+  insanichess: ^0.1.4
   # insanichess:
   #   path: ../insanichess
 

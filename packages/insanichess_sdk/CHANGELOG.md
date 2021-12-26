@@ -1,6 +1,7 @@
 ## 0.1.4
 
 - Add more options to `InsanichessSettings`.
+- Bump required `insanichess` version to `0.1.4`.
 
 ## 0.1.3
 

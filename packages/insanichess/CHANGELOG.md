@@ -1,3 +1,7 @@
+## 0.1.4
+
+- Switch row and column in `Square.toICString()`.
+
 ## 0.1.3
 
 - Always copy initial position when using it to prevent bugs with changing the actual initial position.

@@ -12,7 +12,7 @@ class Square {
   const Square(this.row, this.col);
 
   /// Returns `String` representaion of current square.
-  String toICString() => '${'abcdefghijklmnopqrst'[row]}$col';
+  String toICString() => '${'abcdefghijklmnopqrst'[col]}$row';
 
   @override
   bool operator ==(Object? other) {

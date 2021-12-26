@@ -1,3 +1,7 @@
+## 0.1.4
+
+- Add more options to `InsanichessSettings`.
+
 ## 0.1.3
 
 - Add `InsanichessSettings` and `InsanichessOtbSettings` models.

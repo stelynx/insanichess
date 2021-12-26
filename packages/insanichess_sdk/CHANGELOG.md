@@ -1,3 +1,7 @@
+## 0.1.5
+
+- Reorganize `InsanichessSettings`.
+
 ## 0.1.4
 
 - Add more options to `InsanichessSettings`.

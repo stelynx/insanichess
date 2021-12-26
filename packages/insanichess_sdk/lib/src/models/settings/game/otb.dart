@@ -1,3 +1,4 @@
+import '../../../../insanichess_sdk.dart';
 import 'game.dart';
 
 /// Model for OTB settings.
@@ -16,9 +17,11 @@ class InsanichessOtbSettings extends InsanichessGameSettings {
     required this.mirrorTopPieces,
     required bool allowUndo,
     required bool alwaysPromoteToQueen,
+    required AutoZoomOutOnMoveBehaviour autoZoomOutOnMove,
   }) : super(
           allowUndo: allowUndo,
           alwaysPromoteToQueen: alwaysPromoteToQueen,
+          autoZoomOutOnMove: autoZoomOutOnMove,
         );
 
   /// Creates new `InsanichessOtbSettings` object with default values.

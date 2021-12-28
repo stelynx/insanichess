@@ -33,8 +33,8 @@ class SettingsBloc extends Bloc<_SettingsEvent, SettingsState> {
   }
 
   @override
-  Future<void> close() {
-    _settingsStreamSubscription.cancel();
+  Future<void> close() async {
+    await _settingsStreamSubscription.cancel();
     return super.close();
   }
 

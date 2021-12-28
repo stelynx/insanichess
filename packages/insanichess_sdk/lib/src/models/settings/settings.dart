@@ -32,6 +32,21 @@ class InsanichessSettings {
             json[InsanichessSettingsJsonKey.showZoomOutButtonOnLeft],
         showLegalMoves = json[InsanichessSettingsJsonKey.showLegalMoves];
 
+  /// Returns a new `InsanichessSettings` object by overriding existing field
+  /// values with those given in arguments.
+  InsanichessSettings copyWith({
+    InsanichessOtbSettings? otb,
+    bool? showZoomOutButtonOnLeft,
+    bool? showLegalMoves,
+  }) {
+    return InsanichessSettings(
+      otb: otb ?? this.otb,
+      showZoomOutButtonOnLeft:
+          showZoomOutButtonOnLeft ?? this.showZoomOutButtonOnLeft,
+      showLegalMoves: showLegalMoves ?? this.showLegalMoves,
+    );
+  }
+
   /// Converts this object to json representation.
   Map<String, dynamic> toJson() {
     return <String, dynamic>{

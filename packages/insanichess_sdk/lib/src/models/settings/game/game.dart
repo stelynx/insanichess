@@ -35,6 +35,20 @@ class InsanichessGameSettings {
         autoZoomOutOnMove = autoZoomOutOnMoveBehaviourFromJson(
             json[InsanichessGameSettingsJsonKey.autoZoomOutOnMove]);
 
+  /// Returns a new `InsanichessGameSettings` object by overriding existing
+  /// field values with those given in arguments.
+  InsanichessGameSettings copyWith({
+    bool? allowUndo,
+    bool? alwaysPromoteToQueen,
+    AutoZoomOutOnMoveBehaviour? autoZoomOutOnMove,
+  }) {
+    return InsanichessGameSettings(
+      allowUndo: allowUndo ?? this.allowUndo,
+      alwaysPromoteToQueen: alwaysPromoteToQueen ?? this.alwaysPromoteToQueen,
+      autoZoomOutOnMove: autoZoomOutOnMove ?? this.autoZoomOutOnMove,
+    );
+  }
+
   /// Converts this object to json representation.
   @mustCallSuper
   Map<String, dynamic> toJson() {

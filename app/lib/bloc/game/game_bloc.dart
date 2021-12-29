@@ -43,6 +43,7 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
     on<_Undo>(_onUndo);
     on<_Forward>(_onForward);
     on<_Backward>(_onBackward);
+    on<_AgreeToDraw>(_onAgreeToDraw);
     on<_StartNewGame>(_onStartNewGame);
   }
 
@@ -63,6 +64,7 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
   void undo() => add(const _Undo());
   void forward() => add(const _Forward());
   void backward() => add(const _Backward());
+  void agreeToDraw() => add(const _AgreeToDraw());
   void newGame() => add(const _StartNewGame());
 
   bool canUndo() => state.game.canUndo;
@@ -118,6 +120,16 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
   FutureOr<void> _onBackward(_Backward event, Emitter<GameState> emit) async {
     state.game.backward();
     emit(state.copyWith());
+  }
+
+  FutureOr<void> _onAgreeToDraw(
+    _AgreeToDraw event,
+    Emitter<GameState> emit,
+  ) async {
+    state.game.draw();
+    emit(state.copyWith());
+    _resetZoomStreamController.add(null);
+    await _localStorageService.saveGame(state.game);
   }
 
   FutureOr<void> _onStartNewGame(

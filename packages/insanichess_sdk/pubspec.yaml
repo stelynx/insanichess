@@ -1,6 +1,6 @@
 name: insanichess_sdk
 description: Insanichess SDK meant to be used by client and server applications
-version: 0.1.6
+version: 0.1.7
 homepage: https://github.com/stelynx/insanichess
 repository: https://github.com/stelynx/insanichess/tree/master/packages/insanichess_engine
 
@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  insanichess: ^0.1.4
+  insanichess: ^0.1.5
   # insanichess:
   #   path: ../insanichess
 

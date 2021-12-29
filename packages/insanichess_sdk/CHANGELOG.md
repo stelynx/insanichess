@@ -1,3 +1,7 @@
+## 0.1.7
+
+- Bump required `insanichess` version to `0.1.5`.
+
 ## 0.1.6
 
 - Add `copyWith()` methods to settings classes.

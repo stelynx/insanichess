@@ -5,15 +5,23 @@ import 'package:insanichess/insanichess.dart' as insanichess;
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:meta/meta.dart';
 
+import '../../services/local_storage_service.dart';
+
 part 'game_event.dart';
 part 'game_state.dart';
 
 class GameBloc extends Bloc<_GameEvent, GameState> {
-  GameBloc({required bool isOtb, required InsanichessSettings settings})
-      : _resetZoomStreamController = StreamController<void>.broadcast(),
+  final LocalStorageService _localStorageService;
+
+  GameBloc({
+    required LocalStorageService localStorageService,
+    required bool isOtb,
+    required InsanichessSettings settings,
+  })  : _localStorageService = localStorageService,
+        _resetZoomStreamController = StreamController<void>.broadcast(),
         super(GameState.initial(
           game: InsanichessGame(
-            id: 'id',
+            id: '${DateTime.now().millisecondsSinceEpoch}',
             whitePlayer: const InsanichessPlayer.testWhite(),
             blackPlayer: const InsanichessPlayer.testBlack(),
             timeControl: const InsanichessTimeControl.blitz(),
@@ -66,14 +74,17 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
   FutureOr<void> _onMove(_Move event, Emitter<GameState> emit) async {
     final insanichess.PlayedMove? playedMove = state.game.move(event.move);
 
-    if (playedMove != null) {
-      emit(state.copyWith(
-        isWhiteBottom:
-            state.rotateOnMove ? !state.isWhiteBottom : state.isWhiteBottom,
-      ));
-      if (state.autoZoomOutOnMove == AutoZoomOutOnMoveBehaviour.always) {
-        _resetZoomStreamController.add(null);
-      }
+    if (playedMove == null) return;
+
+    emit(state.copyWith(
+      isWhiteBottom:
+          state.rotateOnMove ? !state.isWhiteBottom : state.isWhiteBottom,
+    ));
+    if (state.autoZoomOutOnMove == AutoZoomOutOnMoveBehaviour.always) {
+      _resetZoomStreamController.add(null);
+    }
+    if (state.game.isGameOver) {
+      await _localStorageService.saveGame(state.game);
     }
   }
 
@@ -115,7 +126,7 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
   ) async {
     emit(GameState.initial(
       game: InsanichessGame(
-        id: '${state.game.id}1',
+        id: '${DateTime.now().millisecondsSinceEpoch}',
         whitePlayer: const InsanichessPlayer.testWhite(),
         blackPlayer: const InsanichessPlayer.testBlack(),
         timeControl: const InsanichessTimeControl.blitz(),

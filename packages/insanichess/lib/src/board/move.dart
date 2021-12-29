@@ -16,6 +16,22 @@ class Move {
   /// Constructs new `Move` object for move [from] square [to] square.
   const Move(this.from, this.to, [this.promotionTo]);
 
+  /// Returns new `Move` object that corresponds to ICString representation [s].
+  factory Move.fromICString(String s) {
+    final String? promotionTo =
+        s[s.length - 1].toLowerCase() == s[s.length - 1].toUpperCase()
+            ? null
+            : s[s.length - 1];
+    final List<String> squares =
+        (promotionTo == null ? s : s.substring(0, s.length - 1)).split('-');
+
+    return Move(
+      Square.fromICString(squares.first),
+      Square.fromICString(squares.last),
+      promotionTo == null ? null : Piece.fromFenSymbol(promotionTo),
+    );
+  }
+
   /// Returns `String` representaion of the move.
   String toICString() =>
       '${from.toICString()}-${to.toICString()}${promotionTo == null ? '' : promotionTo!.fenSymbol}';

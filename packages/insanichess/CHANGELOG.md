@@ -1,3 +1,8 @@
+## 0.1.6
+
+- Add `Move.fromICString` and `Square.fromICString` factories.
+- Add `GameStatus` to library exports.
+
 ## 0.1.5
 
 - Fix not being able to promote with black pieces.

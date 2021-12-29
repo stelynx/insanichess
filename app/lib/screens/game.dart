@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/game/game_bloc.dart';
 import '../bloc/global/global_bloc.dart';
+import '../services/local_storage_service.dart';
 import '../widgets/ic_board.dart';
 import '../widgets/ic_button.dart';
 
@@ -13,6 +14,7 @@ class GameScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<GameBloc>(
       create: (BuildContext context) => GameBloc(
+        localStorageService: LocalStorageService.instance,
         isOtb: true,
         settings: GlobalBloc.instance.state.settings!,
       ),

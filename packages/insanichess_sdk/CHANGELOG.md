@@ -1,3 +1,9 @@
+## 0.1.8
+
+- Add `InsanichessGame.fromICString` factory.
+- Add `toJson` and `fromJson` extensions to `GameStatus`.
+- Bump required `insanichess` version to `0.1.6`.
+
 ## 0.1.7
 
 - Bump required `insanichess` version to `0.1.5`.

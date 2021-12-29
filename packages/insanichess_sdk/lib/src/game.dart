@@ -51,6 +51,46 @@ class InsanichessGame extends insanichess.Game {
         remainingTimeBlack = remainingTimeBlack ?? timeControl.initialTime,
         super.fromPosition(position: position, gameHistory: gameHistory);
 
+  /// Returns new `InsanichessGame` object from ICString representation [s].
+  factory InsanichessGame.fromICString(String s) {
+    final List<String> lines = s.split('\n');
+
+    final List<String> timeControlStringList = lines[2].split(' ');
+    final List<String> remainingTimeStringList = lines[3].split(' ');
+
+    final InsanichessGame game = InsanichessGame.fromPosition(
+      id: lines[0],
+      whitePlayer: const InsanichessPlayer.testWhite(),
+      blackPlayer: const InsanichessPlayer.testBlack(),
+      timeControl: InsanichessTimeControl(
+        initialTime: Duration(seconds: int.parse(timeControlStringList.first)),
+        incrementPerMove:
+            Duration(seconds: int.parse(timeControlStringList.last)),
+      ),
+      remainingTimeWhite:
+          Duration(milliseconds: int.parse(remainingTimeStringList.first)),
+      remainingTimeBlack:
+          Duration(milliseconds: int.parse(remainingTimeStringList.last)),
+      position: insanichess.Board.initialPosition,
+    );
+
+    for (int i = 5; i < lines.length; i++) {
+      final List<String> splittedLine = lines[i].trim().split(' ');
+      game.move(insanichess.Move.fromICString(splittedLine.first));
+      if (splittedLine.length > 1) {
+        game.move(insanichess.Move.fromICString(splittedLine.last));
+      }
+    }
+
+    // If the status was not automatically resolved, the status is therefore
+    // a draw.
+    if (game.inProgress) {
+      game.draw();
+    }
+
+    return game;
+  }
+
   /// Creates a `String` representation of a [game]. This representation contains
   /// in each line a pair of moves of white and black player, separated by `' '`
   /// character and game metadata at the start.
@@ -60,7 +100,7 @@ class InsanichessGame extends insanichess.Game {
     icString += '$id\n';
     icString += '${whitePlayer.id} ${blackPlayer.id}\n';
     icString +=
-        '${timeControl.initialTime.inSeconds} ${timeControl.incrementPerMove.inSeconds}';
+        '${timeControl.initialTime.inSeconds} ${timeControl.incrementPerMove.inSeconds}\n';
     icString +=
         '${remainingTimeWhite.inMilliseconds} ${remainingTimeBlack.inMilliseconds}\n';
     icString += board.getFenRepresentation() + '\n';

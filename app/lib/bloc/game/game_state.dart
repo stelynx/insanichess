@@ -8,6 +8,8 @@ class GameState {
   final bool rotateOnMove;
   final bool mirrorTopPieces;
   final bool showZoomOutButtonOnLeft;
+  final bool showLegalMoves;
+  final bool autoPromoteToQueen;
   final bool allowUndo;
   final AutoZoomOutOnMoveBehaviour autoZoomOutOnMove;
 
@@ -18,6 +20,8 @@ class GameState {
     required this.rotateOnMove,
     required this.mirrorTopPieces,
     required this.showZoomOutButtonOnLeft,
+    required this.showLegalMoves,
+    required this.autoPromoteToQueen,
     required this.allowUndo,
     required this.autoZoomOutOnMove,
   });
@@ -28,6 +32,8 @@ class GameState {
     required this.rotateOnMove,
     required this.mirrorTopPieces,
     required this.showZoomOutButtonOnLeft,
+    required this.showLegalMoves,
+    required this.autoPromoteToQueen,
     required this.allowUndo,
     required this.autoZoomOutOnMove,
   }) : enableZoomButton = false;
@@ -39,6 +45,8 @@ class GameState {
     bool? rotateOnMove,
     bool? mirrorTopPieces,
     bool? showZoomOutButtonOnLeft,
+    bool? showLegalMoves,
+    bool? autoPromoteToQueen,
     bool? allowUndo,
     AutoZoomOutOnMoveBehaviour? autoZoomOutOnMove,
   }) {
@@ -50,6 +58,8 @@ class GameState {
       mirrorTopPieces: mirrorTopPieces ?? this.mirrorTopPieces,
       showZoomOutButtonOnLeft:
           showZoomOutButtonOnLeft ?? this.showZoomOutButtonOnLeft,
+      showLegalMoves: showLegalMoves ?? this.showLegalMoves,
+      autoPromoteToQueen: autoPromoteToQueen ?? this.autoPromoteToQueen,
       allowUndo: allowUndo ?? this.allowUndo,
       autoZoomOutOnMove: autoZoomOutOnMove ?? this.autoZoomOutOnMove,
     );

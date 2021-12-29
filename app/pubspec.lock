@@ -121,9 +121,9 @@ packages:
   insanichess:
     dependency: transitive
     description:
-      name: insanichess
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../packages/insanichess"
+      relative: true
+    source: path
     version: "0.1.4"
   insanichess_sdk:
     dependency: "direct main"

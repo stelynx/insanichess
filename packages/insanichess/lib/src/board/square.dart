@@ -11,6 +11,11 @@ class Square {
   /// Constructs a new `Square` for [row] and [col].
   const Square(this.row, this.col);
 
+  /// Constructs new `Square` that corresponds to ICString representation [s].
+  Square.fromICString(String s)
+      : row = int.parse(s.substring(1)),
+        col = 'abcdefghijklmnopqrst'.indexOf(s[0]);
+
   /// Returns `String` representaion of current square.
   String toICString() => '${'abcdefghijklmnopqrst'[col]}$row';
 

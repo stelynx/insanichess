@@ -10,6 +10,7 @@ export 'src/board/move.dart';
 export 'src/board/square.dart';
 export 'src/game/game.dart';
 export 'src/game/game_history.dart';
+export 'src/game/game_status.dart';
 export 'src/pieces/black_bishop.dart';
 export 'src/pieces/black_king.dart';
 export 'src/pieces/black_knight.dart';

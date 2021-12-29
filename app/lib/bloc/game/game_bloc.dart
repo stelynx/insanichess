@@ -64,13 +64,8 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
   // Handlers
 
   FutureOr<void> _onMove(_Move event, Emitter<GameState> emit) async {
-    print('_onMove');
-    print(event.move.toICString());
-    print(state.game.playerOnTurn);
-    print(state.game.legalMoves.map((e) => e.toICString()));
-
     final insanichess.PlayedMove? playedMove = state.game.move(event.move);
-    print(playedMove);
+
     if (playedMove != null) {
       emit(state.copyWith(
         isWhiteBottom:

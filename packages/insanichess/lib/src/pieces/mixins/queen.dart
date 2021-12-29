@@ -1,7 +1,11 @@
-import '../../../insanichess.dart';
 import '../../board/board.dart';
 import '../../board/move.dart';
 import '../../board/square.dart';
+import '../black_bishop.dart';
+import '../black_rook.dart';
+import '../definitions/piece.dart';
+import '../white_bishop.dart';
+import '../white_rook.dart';
 
 mixin Queen on Piece {
   @override

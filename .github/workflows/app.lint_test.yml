@@ -1,0 +1,35 @@
+name: "[app] Lint & Test"
+
+on:
+  push:
+    paths:
+      - "app/**"
+      - "packages/**"
+
+jobs:
+  build:
+    name: Lint and Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: "stable"
+      - uses: stelynx/dart-full-coverage@v1.0.5
+        with:
+          package: insanichess_app
+          ignore: "*_event.dart, *_state.dart"
+          use_git_root: false
+          main_dir: app
+      - run: |
+          cd app
+          flutter pub get
+          flutter analyze
+          # flutter test --coverage .

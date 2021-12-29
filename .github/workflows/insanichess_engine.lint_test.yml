@@ -31,4 +31,4 @@ jobs:
           cd packages/insanichess_engine
           flutter pub get
           flutter analyze
-          flutter test --coverage .
+          # flutter test --coverage .

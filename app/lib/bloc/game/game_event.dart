@@ -33,6 +33,10 @@ class _Backward extends _GameEvent {
   const _Backward();
 }
 
+class _AgreeToDraw extends _GameEvent {
+  const _AgreeToDraw();
+}
+
 class _StartNewGame extends _GameEvent {
   const _StartNewGame();
 }

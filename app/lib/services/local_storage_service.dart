@@ -4,6 +4,8 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../util/logger.dart';
+
 class LocalStorageService {
   static LocalStorageService? _instance;
   static LocalStorageService get instance => _instance!;
@@ -35,6 +37,10 @@ class LocalStorageService {
     );
 
     await f.writeAsString(game.toICString(), flush: true);
+    Logger.instance.info(
+      'LocalStorageService.saveGame',
+      'game ${game.id} saved',
+    );
   }
 
   Future<InsanichessGame> readGame(String id) async {
@@ -50,6 +56,10 @@ class LocalStorageService {
     await storage.ready;
 
     await storage.setItem('settings', settings.toJson());
+    Logger.instance.info(
+      'LocalStorageService.saveSettings',
+      'settings saved',
+    );
   }
 
   Future<InsanichessSettings?> readSettings() async {

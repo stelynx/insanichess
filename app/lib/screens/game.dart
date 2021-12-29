@@ -77,6 +77,36 @@ class _GameScreen extends StatelessWidget {
                       const SizedBox(width: 10.0),
                     ],
                     ICGameControlButton(
+                      icon: CupertinoIcons.flag_fill,
+                      onPressed: !state.game.inProgress
+                          ? null
+                          : () => showCupertinoDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return CupertinoAlertDialog(
+                                    title: const Text('Agree to a draw?'),
+                                    content: const Text(
+                                      'Are you sure you want to finish the game with a draw? The action cannot be undone.',
+                                    ),
+                                    actions: <CupertinoDialogAction>[
+                                      CupertinoDialogAction(
+                                        child: const Text('No'),
+                                        onPressed: Navigator.of(context).pop,
+                                      ),
+                                      CupertinoDialogAction(
+                                        child: const Text('Yes'),
+                                        isDefaultAction: true,
+                                        onPressed: () {
+                                          bloc.agreeToDraw();
+                                          Navigator.of(context).pop();
+                                        },
+                                      )
+                                    ],
+                                  );
+                                },
+                              ),
+                    ),
+                    ICGameControlButton(
                       icon: CupertinoIcons.add,
                       onPressed: () => showCupertinoDialog(
                         context: context,

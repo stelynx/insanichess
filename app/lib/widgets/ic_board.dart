@@ -302,7 +302,6 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
               // be mirrored.
               mirrorPieces: !queenTop && widget.mirrorTopPieces,
               onPromotionSelected: (insanichess.Piece promoteTo) {
-                print('promotion selected');
                 widget.onMove(insanichess.Move(
                   _selectedSquare!,
                   _squareForPromotion!,

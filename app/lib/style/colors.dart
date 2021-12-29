@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 
 /// Provides color palette for Insanichess app.
 abstract class ICColor {

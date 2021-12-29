@@ -122,8 +122,7 @@ class InsanichessLiveEvaluator {
         debugName: _isolateName,
       );
       _isolatePort.listen((message) {});
-    } catch (e) {
-      print(e);
+    } catch (_) {
       _killIsolate();
     }
   }

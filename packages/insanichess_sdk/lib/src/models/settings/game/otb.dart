@@ -1,4 +1,4 @@
-import '../../../../insanichess_sdk.dart';
+import '../../../util/enum/auto_zoom_out_on_move_behaviour.dart';
 import 'game.dart';
 
 /// Model for OTB settings.

@@ -1,5 +1,10 @@
-import '../../insanichess.dart';
 import '../board/board.dart';
+import '../board/move.dart';
+import '../board/square.dart';
+import '../pieces/black_king.dart';
+import '../pieces/definitions/piece_color.dart';
+import '../pieces/mixins/king.dart';
+import 'game_history.dart';
 import 'game_status.dart';
 
 /// Representation of the game.

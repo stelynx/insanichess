@@ -1,4 +1,18 @@
-import '../../../insanichess.dart';
+import '../../board/board.dart';
+import '../../board/move.dart';
+import '../../board/square.dart';
+import '../black_bishop.dart';
+import '../black_king.dart';
+import '../black_knight.dart';
+import '../black_pawn.dart';
+import '../black_queen.dart';
+import '../black_rook.dart';
+import '../white_bishop.dart';
+import '../white_king.dart';
+import '../white_knight.dart';
+import '../white_pawn.dart';
+import '../white_queen.dart';
+import '../white_rook.dart';
 import 'piece_color.dart';
 import 'piece_type.dart';
 

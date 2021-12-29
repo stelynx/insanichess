@@ -1,7 +1,7 @@
-import '../../../insanichess.dart';
 import '../../board/board.dart';
 import '../../board/move.dart';
 import '../../board/square.dart';
+import '../definitions/piece.dart';
 
 mixin Knight on Piece {
   @override

@@ -1,7 +1,15 @@
-import '../../../insanichess.dart';
 import '../../board/board.dart';
 import '../../board/move.dart';
 import '../../board/square.dart';
+import '../black_bishop.dart';
+import '../black_knight.dart';
+import '../black_queen.dart';
+import '../black_rook.dart';
+import '../definitions/piece.dart';
+import '../white_bishop.dart';
+import '../white_knight.dart';
+import '../white_queen.dart';
+import '../white_rook.dart';
 
 mixin Pawn on Piece {
   @override

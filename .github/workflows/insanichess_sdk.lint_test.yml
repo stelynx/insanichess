@@ -26,6 +26,8 @@ jobs:
           package: insanichess_sdk
           use_git_root: false
           main_dir: packages/insanichess_sdk
-      - run: flutter pub get
-      - run: flutter analyze
-      - run: flutter test --coverage .
+      - run: |
+          cd packages/insanichess_sdk
+          flutter pub get
+          flutter analyze
+          flutter test --coverage .

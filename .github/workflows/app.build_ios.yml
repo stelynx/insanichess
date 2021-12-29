@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "app/**"
+      - "packages/**"
 
 jobs:
   build:
@@ -21,5 +22,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: "stable"
-      - run: flutter pub get
-      - run: flutter build ios --release --no-codesign
+      - run: |
+          cd app
+          flutter pub get
+          flutter build ios --release --no-codesign

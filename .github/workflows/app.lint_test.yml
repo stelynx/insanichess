@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "app/**"
+      - "packages/**"
 
 jobs:
   build:
@@ -27,6 +28,8 @@ jobs:
           ignore: "*_event.dart, *_state.dart"
           use_git_root: false
           main_dir: app
-      - run: flutter pub get
-      - run: flutter analyze
-      - run: flutter test --coverage .
+      - run: |
+          cd app
+          flutter pub get
+          flutter analyze
+          flutter test --coverage .

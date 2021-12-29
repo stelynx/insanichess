@@ -12,4 +12,5 @@ export 'src/models/settings/game/otb.dart';
 export 'src/models/settings/settings.dart';
 export 'src/player.dart';
 export 'src/time_control.dart';
+export 'src/util/enum/auto_zoom_out_on_move_behaviour.dart';
 export 'src/util/position.dart';

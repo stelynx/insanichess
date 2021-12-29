@@ -12,7 +12,8 @@ mixin Pawn on Piece {
     final int rowDiff = isWhite ? 1 : -1;
 
     final List<Move> possibleMoves;
-    if (square.row == Board.size - 2) {
+    if ((isWhite && square.row == Board.size - 2) ||
+        (isBlack && square.row == 1)) {
       possibleMoves = <Move>[
         if (board.at(square.row + rowDiff, square.col) == null) ...[
           Move(

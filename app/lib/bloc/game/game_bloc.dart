@@ -9,7 +9,7 @@ part 'game_event.dart';
 part 'game_state.dart';
 
 class GameBloc extends Bloc<_GameEvent, GameState> {
-  GameBloc({required InsanichessSettings settings})
+  GameBloc({required bool isOtb, required InsanichessSettings settings})
       : _resetZoomStreamController = StreamController<void>.broadcast(),
         super(GameState.initial(
           game: InsanichessGame(
@@ -19,8 +19,15 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
             timeControl: const InsanichessTimeControl.blitz(),
           ),
           isWhiteBottom: true,
-          rotateOnMove: settings.otb.rotateChessboard,
-          mirrorTopPieces: settings.otb.mirrorTopPieces,
+          rotateOnMove: isOtb ? settings.otb.rotateChessboard : false,
+          mirrorTopPieces: isOtb ? settings.otb.mirrorTopPieces : false,
+          showZoomOutButtonOnLeft: settings.showZoomOutButtonOnLeft,
+          showLegalMoves: settings.showLegalMoves,
+          autoPromoteToQueen: isOtb ? settings.otb.alwaysPromoteToQueen : false,
+          allowUndo: isOtb ? settings.otb.allowUndo : false,
+          autoZoomOutOnMove: isOtb
+              ? settings.otb.autoZoomOutOnMove
+              : AutoZoomOutOnMoveBehaviour.always,
         )) {
     on<_Move>(_onMove);
     on<_ZoomChanged>(_onZoomChanged);
@@ -42,8 +49,7 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
 
   // Public API
 
-  void move(insanichess.Square from, insanichess.Square to) =>
-      add(_Move(from, to));
+  void move(insanichess.Move move) => add(_Move(move));
   void zoomChanged(double value) => add(_ZoomChanged(value));
   void resetZoom() => add(const _ResetZoom());
   void undo() => add(const _Undo());
@@ -58,15 +64,22 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
   // Handlers
 
   FutureOr<void> _onMove(_Move event, Emitter<GameState> emit) async {
-    state.game.move(insanichess.Move(
-      event.from,
-      event.to,
-      event.promotionTo,
-    ));
-    emit(state.copyWith(
-      isWhiteBottom:
-          state.rotateOnMove ? !state.isWhiteBottom : state.isWhiteBottom,
-    ));
+    print('_onMove');
+    print(event.move.toICString());
+    print(state.game.playerOnTurn);
+    print(state.game.legalMoves.map((e) => e.toICString()));
+
+    final insanichess.PlayedMove? playedMove = state.game.move(event.move);
+    print(playedMove);
+    if (playedMove != null) {
+      emit(state.copyWith(
+        isWhiteBottom:
+            state.rotateOnMove ? !state.isWhiteBottom : state.isWhiteBottom,
+      ));
+      if (state.autoZoomOutOnMove == AutoZoomOutOnMoveBehaviour.always) {
+        _resetZoomStreamController.add(null);
+      }
+    }
   }
 
   FutureOr<void> _onZoomChanged(
@@ -115,6 +128,11 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
       isWhiteBottom: true,
       rotateOnMove: state.rotateOnMove,
       mirrorTopPieces: state.mirrorTopPieces,
+      showZoomOutButtonOnLeft: state.showZoomOutButtonOnLeft,
+      showLegalMoves: state.showLegalMoves,
+      autoPromoteToQueen: state.autoPromoteToQueen,
+      allowUndo: state.allowUndo,
+      autoZoomOutOnMove: state.autoZoomOutOnMove,
     ));
   }
 }

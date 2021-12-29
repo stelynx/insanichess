@@ -1,3 +1,7 @@
+## 0.1.5
+
+- Fix not being able to promote with black pieces.
+
 ## 0.1.4
 
 - Switch row and column in `Square.toICString()`.

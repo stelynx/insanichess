@@ -25,6 +25,17 @@ class LocalStorageService {
       '${(await getApplicationDocumentsDirectory()).path}/games';
   static const String _settingsFile = 'settings.json';
 
+  Future<List<InsanichessGame>> getPlayedGames() async {
+    final String directoryPath = await _gamesPath;
+    final Directory directory = Directory(directoryPath);
+
+    final List<InsanichessGame> games = <InsanichessGame>[];
+    for (final FileSystemEntity fse in directory.listSync(followLinks: false)) {
+      games.add(await readGame(fse.path.split(Platform.pathSeparator).last));
+    }
+    return games;
+  }
+
   Future<void> saveGame(InsanichessGame game) async {
     final String directoryPath = await _gamesPath;
     final Directory directory = Directory(directoryPath);

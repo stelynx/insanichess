@@ -45,6 +45,7 @@ class _GameScreen extends StatelessWidget {
       builder: (BuildContext context, GameState state) {
         return CupertinoPageScaffold(
           navigationBar: CupertinoNavigationBar(
+            border: const Border(),
             leading: CupertinoNavigationBarBackButton(
               onPressed: () {
                 if (!state.game.inProgress) {

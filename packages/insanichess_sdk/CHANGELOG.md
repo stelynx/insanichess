@@ -1,3 +1,7 @@
+## 0.1.9
+
+- Fix a bug with `InsanichessGame.fromICString`.
+
 ## 0.1.8
 
 - Add `InsanichessGame.fromICString` factory.

@@ -28,6 +28,10 @@ class LocalStorageService {
   Future<List<InsanichessGame>> getPlayedGames() async {
     final String directoryPath = await _gamesPath;
     final Directory directory = Directory(directoryPath);
+    if (!await directory.exists()) {
+      directory.create();
+      return const <InsanichessGame>[];
+    }
 
     final List<InsanichessGame> games = <InsanichessGame>[];
     for (final FileSystemEntity fse in directory.listSync(followLinks: false)) {

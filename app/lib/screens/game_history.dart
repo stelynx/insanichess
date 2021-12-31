@@ -36,27 +36,36 @@ class _GameHistoryScreen extends StatelessWidget {
         if (state.isLoading) {
           child = const Center(child: CupertinoActivityIndicator());
         } else if (state.games != null) {
-          child = CupertinoListSection(
-            children: state.games!
-                .map<Widget>(
-                  (InsanichessGame game) => CupertinoListTile(
-                    title: Text(game.id),
-                    trailing: const CupertinoListTileChevron(),
-                    additionalInfo: Text(
-                      game.status == insanichess.GameStatus.whiteWon
-                          ? '1 - 0'
-                          : game.status == insanichess.GameStatus.blackWon
-                              ? '0 - 1'
-                              : '½ - ½',
+          if (state.games!.isEmpty) {
+            child = const Center(
+              child: Text('No games'),
+            );
+          } else {
+            child = CupertinoListSection(
+              hasLeading: false,
+              backgroundColor:
+                  CupertinoTheme.of(context).scaffoldBackgroundColor,
+              children: state.games!
+                  .map<Widget>(
+                    (InsanichessGame game) => CupertinoListTile(
+                      title: Text(game.id),
+                      trailing: const CupertinoListTileChevron(),
+                      additionalInfo: Text(
+                        game.status == insanichess.GameStatus.whiteWon
+                            ? '1 - 0'
+                            : game.status == insanichess.GameStatus.blackWon
+                                ? '0 - 1'
+                                : '½ - ½',
+                      ),
+                      onTap: () => Navigator.of(context).pushNamed(
+                        ICRoute.game,
+                        arguments: GameScreenArgs(gameBeingShown: game),
+                      ),
                     ),
-                    onTap: () => Navigator.of(context).pushNamed(
-                      ICRoute.game,
-                      arguments: GameScreenArgs(gameBeingShown: game),
-                    ),
-                  ),
-                )
-                .toList(),
-          );
+                  )
+                  .toList(),
+            );
+          }
         } else {
           child = Container();
         }
@@ -64,6 +73,7 @@ class _GameHistoryScreen extends StatelessWidget {
         return CupertinoPageScaffold(
           navigationBar: const CupertinoNavigationBar(
             middle: Text('Game History'),
+            border: Border(),
           ),
           child: child,
         );

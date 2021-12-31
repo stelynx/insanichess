@@ -66,10 +66,10 @@ class _ICBoardState extends State<ICBoard> with TickerProviderStateMixin {
   }
 
   @override
-  Future<void> dispose() async {
+  void dispose() {
     _transformationController.dispose();
     _controllerReset.dispose();
-    await _resetZoomSubscription?.cancel();
+    _resetZoomSubscription?.cancel();
     super.dispose();
   }
 

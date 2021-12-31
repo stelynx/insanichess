@@ -12,20 +12,24 @@ part 'game_state.dart';
 
 class GameBloc extends Bloc<_GameEvent, GameState> {
   final LocalStorageService _localStorageService;
+  final InsanichessGame? _gameBeingShown;
 
   GameBloc({
     required LocalStorageService localStorageService,
+    required InsanichessGame? gameBeingShown,
     required bool isOtb,
     required InsanichessSettings settings,
   })  : _localStorageService = localStorageService,
+        _gameBeingShown = gameBeingShown,
         _resetZoomStreamController = StreamController<void>.broadcast(),
         super(GameState.initial(
-          game: InsanichessGame(
-            id: '${DateTime.now().millisecondsSinceEpoch}',
-            whitePlayer: const InsanichessPlayer.testWhite(),
-            blackPlayer: const InsanichessPlayer.testBlack(),
-            timeControl: const InsanichessTimeControl.blitz(),
-          ),
+          game: gameBeingShown ??
+              InsanichessGame(
+                id: '${DateTime.now().millisecondsSinceEpoch}',
+                whitePlayer: const InsanichessPlayer.testWhite(),
+                blackPlayer: const InsanichessPlayer.testBlack(),
+                timeControl: const InsanichessTimeControl.blitz(),
+              ),
           isWhiteBottom: true,
           rotateOnMove: isOtb ? settings.otb.rotateChessboard : false,
           mirrorTopPieces: isOtb ? settings.otb.mirrorTopPieces : false,
@@ -67,6 +71,7 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
   void agreeToDraw() => add(const _AgreeToDraw());
   void newGame() => add(const _StartNewGame());
 
+  bool isLiveGame() => _gameBeingShown == null;
   bool canUndo() => state.game.canUndo;
   bool canGoBackward() => state.game.canGoBackward;
   bool canGoForward() => state.game.canGoForward;

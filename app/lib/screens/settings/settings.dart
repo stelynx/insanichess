@@ -41,7 +41,10 @@ class _SettingsScreen extends StatelessWidget {
           child: Column(
             children: <Widget>[
               CupertinoListSection(
+                hasLeading: false,
                 header: const Text('GAME TYPE'),
+                backgroundColor:
+                    CupertinoTheme.of(context).scaffoldBackgroundColor,
                 children: <Widget>[
                   CupertinoListTile(
                     title: const Text('Over-the-board'),
@@ -55,6 +58,9 @@ class _SettingsScreen extends StatelessWidget {
               ),
               CupertinoListSection(
                 header: const Text('GENERAL'),
+                hasLeading: false,
+                backgroundColor:
+                    CupertinoTheme.of(context).scaffoldBackgroundColor,
                 children: <Widget>[
                   CupertinoListTile(
                     title: const Text('Zoom-out button on left'),

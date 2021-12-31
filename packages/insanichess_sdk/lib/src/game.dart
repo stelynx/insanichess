@@ -76,6 +76,8 @@ class InsanichessGame extends insanichess.Game {
 
     for (int i = 5; i < lines.length; i++) {
       final List<String> splittedLine = lines[i].trim().split(' ');
+      if (splittedLine.first.isEmpty) break;
+
       game.move(insanichess.Move.fromICString(splittedLine.first));
       if (splittedLine.length > 1) {
         game.move(insanichess.Move.fromICString(splittedLine.last));

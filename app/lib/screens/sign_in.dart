@@ -8,6 +8,7 @@ import '../bloc/sign_in/sign_in_bloc.dart';
 import '../router/routes.dart';
 import '../style/images.dart';
 import '../widgets/ic_button.dart';
+import 'game.dart';
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -51,8 +52,16 @@ class _SignInScreen extends StatelessWidget {
                     SizedBox(height: logoSize / 10),
                     ICPrimaryButton(
                       text: 'Play',
+                      onPressed: () => Navigator.of(context).pushNamed(
+                        ICRoute.game,
+                        arguments: const GameScreenArgs(gameBeingShown: null),
+                      ),
+                    ),
+                    SizedBox(height: logoSize / 40),
+                    ICSecondaryButton(
+                      text: 'Game History',
                       onPressed: () =>
-                          Navigator.of(context).pushNamed(ICRoute.game),
+                          Navigator.of(context).pushNamed(ICRoute.gameHistory),
                     ),
                     SizedBox(height: logoSize / 40),
                     ICSecondaryButton(

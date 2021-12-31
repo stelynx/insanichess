@@ -33,6 +33,9 @@ class OtbSettingsScreen extends StatelessWidget {
           child: Column(
             children: <Widget>[
               CupertinoListSection(
+                hasLeading: false,
+                backgroundColor:
+                    CupertinoTheme.of(context).scaffoldBackgroundColor,
                 children: <Widget>[
                   CupertinoListTile(
                     title: const Text('Always promote to queen'),

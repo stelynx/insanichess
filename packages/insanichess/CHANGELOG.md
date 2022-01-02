@@ -1,3 +1,7 @@
+## 0.2.0
+
+- Lower board size to 16 and adjust initial position.
+
 ## 0.1.6
 
 - Add `Move.fromICString` and `Square.fromICString` factories.

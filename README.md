@@ -11,6 +11,7 @@ Insanichess will stay free forever and all source is available to everyone on th
 [![[insanichess] Lint & Test](https://github.com/stelynx/insanichess/actions/workflows/insanichess.lint_test.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/insanichess.lint_test.yml)
 [![[insanichess_engine] Lint & Test](https://github.com/stelynx/insanichess/actions/workflows/insanichess_engine.lint_test.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/insanichess_engine.lint_test.yml)
 [![[insanichess_sdk] Lint & Test](https://github.com/stelynx/insanichess/actions/workflows/insanichess_sdk.lint_test.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/insanichess_sdk.lint_test.yml)
+[![[server] Lint & Test](https://github.com/stelynx/insanichess/actions/workflows/server.lint_test.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/server.lint_test.yml)
 
 <hr>
 

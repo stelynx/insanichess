@@ -8,8 +8,8 @@ repository: https://github.com/stelynx/insanichess/tree/master/server
 environment:
   sdk: ">=2.14.4 <3.0.0"
 
-# dependencies:
-#   path: ^1.8.0
+dependencies:
+  postgres: ^2.4.3
 
 dev_dependencies:
   lints: ^1.0.0

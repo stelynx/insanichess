@@ -52,6 +52,17 @@ The only difference in game rules apart from chess are the following:
 - There is no concept of _stalemate_ or _mate_. To win a game, you must capture opponent's king.
 - The game can result in draw if and only if the players agree to a draw.
 
+## Repository structure
+
+Insanichess repository consists of three major parts:
+
+- [app](app) is a Flutter project containing client side code (mobile and web app);
+- [server](server) is a pure Dart project containing server side code;
+- [packages](packages) contains three Dart packages: [`insanichess`](packages/insanichess) that
+holds implementation of game rules, [`insanichess_engine`](packages/insanichess_engine) that
+holds implementation of Insanichess evaluation engine, and [`insanichess_sdk`](packages/insanichess_sdk) that
+holds extends `insanichess` package with functionality that both client and server applications need.
+
 ## Contributing
 
 If you have a feature request or a bug to report, please open an issue.

@@ -27,9 +27,7 @@ Do you have a friend that always beats you in chess? Now you have an option to b
 
 ### Future Features
 
-Currently, the mobile app is still in development. Apart from the mobile app, a web version
-is also going to be available. Of course, a backend
-will be implemented (in Dart) which will provide support for the following:
+Currently, a backend is being implemented (in pure Dart) which will provide support for the following:
 
 - Multiplayer games.
 - Tournaments.

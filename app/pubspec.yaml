@@ -1,7 +1,7 @@
 name: insanichess_app
 description: Insanichess app
 publish_to: "none"
-version: 1.0.0+12
+version: 1.0.0+13
 
 environment:
   sdk: ">=2.14.0 <3.0.0"

@@ -1,4 +1,9 @@
+![](misc/github_banner.png)
+
 # Insanichess
+
+Insanichess is a free and open-source project implemented in pure Dart with Flutter for client applications.
+Insanichess will stay free forever and all source is available to everyone on this repository.
 
 [![[app] Build Android](https://github.com/stelynx/insanichess/actions/workflows/app.build_android.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/app.build_android.yml)
 [![[app] Build iOS](https://github.com/stelynx/insanichess/actions/workflows/app.build_ios.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/app.build_ios.yml)
@@ -6,6 +11,8 @@
 [![[insanichess] Lint & Test](https://github.com/stelynx/insanichess/actions/workflows/insanichess.lint_test.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/insanichess.lint_test.yml)
 [![[insanichess_engine] Lint & Test](https://github.com/stelynx/insanichess/actions/workflows/insanichess_engine.lint_test.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/insanichess_engine.lint_test.yml)
 [![[insanichess_sdk] Lint & Test](https://github.com/stelynx/insanichess/actions/workflows/insanichess_sdk.lint_test.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/insanichess_sdk.lint_test.yml)
+
+<hr>
 
 _Are you ready to experience chess on a whole new level? More squares and more pieces make only your battle plan imagination an obstacle from achieving a victory!_
 
@@ -43,5 +50,10 @@ The game rules are pretty simple. All pieces move the same as their chess siblin
 The only difference in game rules apart from chess are the following:
 
 - Pawns can always move only by one square (even from starting position) and can move diagonally without capturing a piece.
+- There is no castling. Your king must stand his ground!
 - There is no concept of _stalemate_ or _mate_. To win a game, you must capture opponent's king.
 - The game can result in draw if and only if the players agree to a draw.
+
+## Contributing
+
+If you have a feature request or a bug to report, please open an issue.

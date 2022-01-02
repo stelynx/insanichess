@@ -1,7 +1,7 @@
 name: insanichess_app
 description: Insanichess app
 publish_to: "none"
-version: 0.2.0+11
+version: 1.0.0+12
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
@@ -15,6 +15,7 @@ dependencies:
     git:
       url: https://github.com/kenjishiromajp/flutter_inner_drawer
       ref: kenjishiromajp-update-for-2.12-null-safety-casting
+  flutter_markdown: ^0.6.9
   flutter_svg: ^1.0.0
   insanichess_sdk:
     path: ../packages/insanichess_sdk

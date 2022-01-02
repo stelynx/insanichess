@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../screens/game.dart';
 import '../screens/game_history.dart';
+import '../screens/rules.dart';
 import '../screens/settings/otb_settings.dart';
 import '../screens/settings/settings.dart';
 import '../screens/sign_in.dart';
@@ -22,7 +24,11 @@ abstract class ICRouter {
       case ICRoute.initial:
         return CupertinoPageRoute(builder: (context) => const SplashScreen());
       case ICRoute.home:
-        return CupertinoPageRoute(builder: (context) => const SignInScreen());
+        return PageRouteBuilder(
+          pageBuilder: (context, _, __) => const SignInScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
+        );
       case ICRoute.game:
         return CupertinoPageRoute(
           builder: (context) => GameScreen(
@@ -33,6 +39,8 @@ abstract class ICRouter {
         return CupertinoPageRoute(
           builder: (context) => const GameHistoryScreen(),
         );
+      case ICRoute.rules:
+        return CupertinoPageRoute(builder: (context) => const RulesScreen());
       case ICRoute.settings:
         return CupertinoPageRoute(builder: (context) => const SettingsScreen());
       case ICRoute.settingsOtb:

@@ -1,3 +1,7 @@
+## 0.2.0
+
+- Bump required `insanichess` version to `0.2.0`.
+
 ## 0.1.9
 
 - Fix a bug with `InsanichessGame.fromICString`.

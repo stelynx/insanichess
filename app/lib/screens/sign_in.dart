@@ -41,13 +41,16 @@ class _SignInScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    SvgPicture.asset(
-                      MediaQuery.of(context).platformBrightness ==
-                              Brightness.light
-                          ? ICImage.logoLight
-                          : ICImage.logoDark,
-                      width: logoSize,
-                      height: logoSize,
+                    Hero(
+                      tag: 'hero',
+                      child: SvgPicture.asset(
+                        MediaQuery.of(context).platformBrightness ==
+                                Brightness.light
+                            ? ICImage.logoLight
+                            : ICImage.logoDark,
+                        width: logoSize,
+                        height: logoSize,
+                      ),
                     ),
                     SizedBox(height: logoSize / 10),
                     ICPrimaryButton(
@@ -62,6 +65,12 @@ class _SignInScreen extends StatelessWidget {
                       text: 'Game History',
                       onPressed: () =>
                           Navigator.of(context).pushNamed(ICRoute.gameHistory),
+                    ),
+                    SizedBox(height: logoSize / 40),
+                    ICSecondaryButton(
+                      text: 'Rules',
+                      onPressed: () =>
+                          Navigator.of(context).pushNamed(ICRoute.rules),
                     ),
                     SizedBox(height: logoSize / 40),
                     ICSecondaryButton(

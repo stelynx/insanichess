@@ -4,6 +4,7 @@ abstract class ICRoute {
   static const String home = '/home';
   static const String game = '/game';
   static const String gameHistory = '/gameHistory';
+  static const String rules = '/rules';
   static const String settings = '/settings';
   static const String settingsOtb = '/settingsOtb';
 }

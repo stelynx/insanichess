@@ -51,7 +51,7 @@ class SplashScreenBloc extends Bloc<_SplashScreenEvent, SplashScreenState> {
     Emitter<SplashScreenState> emit,
   ) async {
     await Future.wait(<Future>[
-      Future.delayed(const Duration(seconds: 3)),
+      Future.delayed(const Duration(seconds: 2)),
       _initialize(),
     ]);
     _timer.cancel();

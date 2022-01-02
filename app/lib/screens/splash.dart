@@ -33,7 +33,7 @@ class _SplashScreen extends StatelessWidget {
     return BlocConsumer<SplashScreenBloc, SplashScreenState>(
       listener: (BuildContext context, SplashScreenState state) {
         if (state.initialized) {
-          Navigator.of(context).popAndPushNamed(ICRoute.home);
+          Navigator.of(context).pushNamed(ICRoute.home);
           return;
         }
       },
@@ -50,13 +50,16 @@ class _SplashScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    SvgPicture.asset(
-                      MediaQuery.of(context).platformBrightness ==
-                              Brightness.light
-                          ? ICImage.logoLight
-                          : ICImage.logoDark,
-                      width: logoSize,
-                      height: logoSize,
+                    Hero(
+                      tag: 'hero',
+                      child: SvgPicture.asset(
+                        MediaQuery.of(context).platformBrightness ==
+                                Brightness.light
+                            ? ICImage.logoLight
+                            : ICImage.logoDark,
+                        width: logoSize,
+                        height: logoSize,
+                      ),
                     ),
                   ],
                 ),

@@ -1,3 +1,7 @@
+## 0.3.0
+
+- Add fields for time-keeping support per move.
+
 ## 0.2.0
 
 - Bump required `insanichess` version to `0.2.0`.

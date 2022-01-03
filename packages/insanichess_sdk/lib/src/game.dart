@@ -20,6 +20,8 @@ class InsanichessGame extends insanichess.Game {
   /// Time control for the game.
   final InsanichessTimeControl timeControl;
 
+  final List<Duration> timesSpentPerMove;
+
   /// Remaining playing time for white.
   Duration remainingTimeWhite;
 
@@ -34,6 +36,7 @@ class InsanichessGame extends insanichess.Game {
     required this.timeControl,
   })  : remainingTimeWhite = timeControl.initialTime,
         remainingTimeBlack = timeControl.initialTime,
+        timesSpentPerMove = <Duration>[],
         super();
 
   /// Constructs a game from given [position] and [gameHistory] with option to
@@ -43,12 +46,14 @@ class InsanichessGame extends insanichess.Game {
     required this.whitePlayer,
     required this.blackPlayer,
     required this.timeControl,
+    List<Duration>? timesSpentPerMove,
     Duration? remainingTimeWhite,
     Duration? remainingTimeBlack,
     required insanichess.Position position,
     insanichess.GameHistory? gameHistory,
   })  : remainingTimeWhite = remainingTimeWhite ?? timeControl.initialTime,
         remainingTimeBlack = remainingTimeBlack ?? timeControl.initialTime,
+        timesSpentPerMove = timesSpentPerMove ?? <Duration>[],
         super.fromPosition(position: position, gameHistory: gameHistory);
 
   /// Returns new `InsanichessGame` object from ICString representation [s].
@@ -57,6 +62,7 @@ class InsanichessGame extends insanichess.Game {
 
     final List<String> timeControlStringList = lines[2].split(' ');
     final List<String> remainingTimeStringList = lines[3].split(' ');
+    final List<String> timesPerMoveStringList = lines[4].split(' ');
 
     final InsanichessGame game = InsanichessGame.fromPosition(
       id: lines[0],
@@ -67,6 +73,9 @@ class InsanichessGame extends insanichess.Game {
         incrementPerMove:
             Duration(seconds: int.parse(timeControlStringList.last)),
       ),
+      timesSpentPerMove: timesPerMoveStringList
+          .map<Duration>((String s) => Duration(milliseconds: int.parse(s)))
+          .toList(),
       remainingTimeWhite:
           Duration(milliseconds: int.parse(remainingTimeStringList.first)),
       remainingTimeBlack:
@@ -74,7 +83,7 @@ class InsanichessGame extends insanichess.Game {
       position: insanichess.Board.initialPosition,
     );
 
-    for (int i = 5; i < lines.length; i++) {
+    for (int i = 6; i < lines.length; i++) {
       final List<String> splittedLine = lines[i].trim().split(' ');
       if (splittedLine.first.isEmpty) break;
 
@@ -105,6 +114,13 @@ class InsanichessGame extends insanichess.Game {
         '${timeControl.initialTime.inSeconds} ${timeControl.incrementPerMove.inSeconds}\n';
     icString +=
         '${remainingTimeWhite.inMilliseconds} ${remainingTimeBlack.inMilliseconds}\n';
+    if (timesSpentPerMove.isNotEmpty) {
+      icString += '${timesSpentPerMove.first.inMilliseconds}';
+      for (int i = 1; i < timesSpentPerMove.length; i++) {
+        icString += ' ${timesSpentPerMove[i].inMilliseconds}';
+      }
+    }
+    icString += '\n';
     icString += board.getFenRepresentation() + '\n';
 
     int moveIndex = 0;

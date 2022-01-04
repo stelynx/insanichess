@@ -5,6 +5,9 @@
 Insanichess is a free and open-source project implemented in pure Dart with Flutter for client applications.
 Insanichess will stay free forever and all source is available to everyone on this repository.
 
+[![](misc/download-on-the-app-store.png)](https://apps.apple.com/us/app/insanichess/id1600564831)
+[![](misc/google-play-badge.png)](https://play.google.com/store/apps/details?id=com.stelynx.insanichess)
+
 [![[app] Build Android](https://github.com/stelynx/insanichess/actions/workflows/app.build_android.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/app.build_android.yml)
 [![[app] Build iOS](https://github.com/stelynx/insanichess/actions/workflows/app.build_ios.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/app.build_ios.yml)
 [![[app] Lint & Test](https://github.com/stelynx/insanichess/actions/workflows/app.lint_test.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/app.lint_test.yml)
@@ -60,9 +63,9 @@ Insanichess repository consists of three major parts:
 - [app](app) is a Flutter project containing client side code (mobile and web app);
 - [server](server) is a pure Dart project containing server side code;
 - [packages](packages) contains three Dart packages: [`insanichess`](packages/insanichess) that
-holds implementation of game rules, [`insanichess_engine`](packages/insanichess_engine) that
-holds implementation of Insanichess evaluation engine, and [`insanichess_sdk`](packages/insanichess_sdk) that
-holds extends `insanichess` package with functionality that both client and server applications need.
+  holds implementation of game rules, [`insanichess_engine`](packages/insanichess_engine) that
+  holds implementation of Insanichess evaluation engine, and [`insanichess_sdk`](packages/insanichess_sdk) that
+  holds extends `insanichess` package with functionality that both client and server applications need.
 
 ## Contributing
 

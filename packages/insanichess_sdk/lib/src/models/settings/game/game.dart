@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import '../../../util/enum/auto_zoom_out_on_move_behaviour.dart';
 
 /// Model for game settings.
@@ -50,7 +48,6 @@ class InsanichessGameSettings {
   }
 
   /// Converts this object to json representation.
-  @mustCallSuper
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       InsanichessGameSettingsJsonKey.allowUndo: allowUndo,

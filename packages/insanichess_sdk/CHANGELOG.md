@@ -1,3 +1,8 @@
+## 0.4.0
+
+- Remove flutter from dependencies.
+- Bump required `insanichess` version to `0.3.0`.
+
 ## 0.3.0
 
 - Add fields for time-keeping support per move.

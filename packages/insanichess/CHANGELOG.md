@@ -1,3 +1,7 @@
+## 0.3.0
+
+- Remove flutter from dependencies.
+
 ## 0.2.0
 
 - Lower board size to 16 and adjust initial position.

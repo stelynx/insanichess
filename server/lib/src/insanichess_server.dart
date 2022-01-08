@@ -1,19 +1,32 @@
 import 'dart:io';
 
-import 'package:insanichess_server/src/util/logger.dart';
+import 'router/ic_router.dart';
+import 'util/logger.dart';
 
 class InsanichessServer {
   final Logger _logger;
+  final ICRouter _router;
 
-  const InsanichessServer({
+  InsanichessServer({
     required Logger logger,
-  }) : _logger = logger;
+    required ICRouter router,
+  })  : _logger = logger,
+        _router = router;
 
-  Future<void> create() async {
+  Future<void> start() async {
     final InternetAddress address = InternetAddress.loopbackIPv4;
     final int port =
         int.parse(Platform.environment['INSANICHESS_PORT'] ?? '4040');
-    await HttpServer.bind(address, port);
+
+    final HttpServer server = await HttpServer.bind(address, port);
     _logger.info('InsanichessServer.create', 'Server listening on port $port');
+
+    await _handleRequests(onServer: server);
+  }
+
+  Future<void> _handleRequests({required HttpServer onServer}) async {
+    await for (final HttpRequest request in onServer) {
+      await _router.handle(request);
+    }
   }
 }

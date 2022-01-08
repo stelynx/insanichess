@@ -1,3 +1,8 @@
+## 0.5.0
+
+- Create `InsanichessModel` base model.
+- Create `InsanichessUser` for basic auth purposes.
+
 ## 0.4.0
 
 - Remove flutter from dependencies.

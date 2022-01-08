@@ -1,3 +1,7 @@
+## 0.5.1
+
+- Add optional field for Apple ID to `InsanichessUser` to support login with Apple and changing of the email.
+
 ## 0.5.0
 
 - Create `InsanichessModel` base model.

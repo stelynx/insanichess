@@ -3,16 +3,24 @@ import 'dart:io';
 import 'router/ic_router.dart';
 import 'util/logger.dart';
 
+/// The main class of the server package.
 class InsanichessServer {
+  /// Logger instance.
   final Logger _logger;
+
+  /// Main router instance.
   final ICRouter _router;
 
+  /// Constructs new `InsanichessServer` object.
+  ///
+  /// To actually start the server, call [start] method.
   InsanichessServer({
     required Logger logger,
     required ICRouter router,
   })  : _logger = logger,
         _router = router;
 
+  /// Starts the server.
   Future<void> start() async {
     final InternetAddress address = InternetAddress.loopbackIPv4;
     final int port =
@@ -24,6 +32,7 @@ class InsanichessServer {
     await _handleRequests(onServer: server);
   }
 
+  /// Passes every request [onServer] to [_router].
   Future<void> _handleRequests({required HttpServer onServer}) async {
     await for (final HttpRequest request in onServer) {
       await _router.handle(request);

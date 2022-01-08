@@ -1,8 +1,4 @@
 import 'package:insanichess_server/insanichess_server.dart';
-import 'package:insanichess_server/src/config/db.dart';
-import 'package:insanichess_server/src/router/ic_router.dart';
-import 'package:insanichess_server/src/services/database/database_service.dart';
-import 'package:insanichess_server/src/util/logger.dart';
 
 Future<void> main() async {
   Logger();

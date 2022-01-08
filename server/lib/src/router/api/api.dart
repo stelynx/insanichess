@@ -8,11 +8,14 @@ import 'auth/auth.dart';
 
 /// Router that handles requests on `/ICServerRouter.api`.
 class ApiRouter implements RouterInterface {
+  /// Router that handles auth requests.
   final AuthRouter _authRouter;
 
+  /// Constructs new `ApiRouter` with given [authRouter].
   ApiRouter({AuthRouter? authRouter})
       : _authRouter = authRouter ?? AuthRouter();
 
+  /// Request handler / rerouter.
   @override
   Future<void> handle(HttpRequest request) async {
     final List<String> pathSegments = request.uri.pathSegments;

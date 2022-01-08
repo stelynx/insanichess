@@ -22,6 +22,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  insanichess:
+    dependency: transitive
+    description:
+      name: insanichess
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
+  insanichess_sdk:
+    dependency: "direct main"
+    description:
+      path: "../packages/insanichess_sdk"
+      relative: true
+    source: path
+    version: "0.4.0"
   lints:
     dependency: "direct dev"
     description:

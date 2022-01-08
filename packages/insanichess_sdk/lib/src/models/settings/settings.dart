@@ -1,7 +1,8 @@
+import '../insanichess_model.dart';
 import 'game/otb.dart';
 
 /// Model for all settings for the app.
-class InsanichessSettings {
+class InsanichessSettings implements InsanichessModel {
   /// OTB settings.
   final InsanichessOtbSettings otb;
 
@@ -48,7 +49,8 @@ class InsanichessSettings {
   }
 
   /// Converts this object to json representation.
-  Map<String, dynamic> toJson() {
+  @override
+  Map<String, Object?> toJson() {
     return <String, dynamic>{
       InsanichessSettingsJsonKey.otb: otb.toJson(),
       InsanichessSettingsJsonKey.showZoomOutButtonOnLeft:

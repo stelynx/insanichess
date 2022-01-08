@@ -10,8 +10,9 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE ic_users (
   id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-  username TEXT NOT NULL,
+  -- username TEXT NOT NULL,
   email TEXT NOT NULL,
+  apple_id TEXT,
   created_at TIMESTAMP DEFAULT NOW()
 ) WITH ( OIDS = FALSE );
 ALTER TABLE ic_users OWNER TO insanichess_admin;

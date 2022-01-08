@@ -1,6 +1,6 @@
 import 'package:insanichess/insanichess.dart' as insanichess;
 
-import 'player.dart';
+import 'models/user/player.dart';
 import 'time_control.dart';
 
 /// Contains all information about the game.

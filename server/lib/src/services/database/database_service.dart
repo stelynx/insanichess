@@ -1,3 +1,4 @@
+import 'package:dbcrypt/dbcrypt.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:postgres/postgres.dart';
 
@@ -58,9 +59,39 @@ class DatabaseService {
     }
   }
 
-  /// Gets the user with [email]. This method does not set the appleId field of
-  /// the user, because it is meant to be only called on login attempts without
-  /// Apple ID provided.
+  Future<Either<DatabaseFailure, bool>> existsUserWithEmailAndPassword(
+    String email, [
+    String? password,
+  ]) async {
+    _logger.debug(
+      'DatabaseService.existsUserWithEmailAndPassword',
+      'checking user with email $email and password',
+    );
+
+    final PostgreSQLResult result;
+    try {
+      result = await _connection!.query(
+          "SELECT hashed_password FROM ic_users WHERE email = '$email' LIMIT 1;");
+    } catch (e) {
+      _logger.error('DatabaseService.existsUserWithEmailAndPassword', e);
+      return error(const DatabaseFailure());
+    }
+
+    if (result.isEmpty) {
+      _logger.debug(
+        'DatabaseService.existsUserWithEmailAndPassword',
+        'user with email $email and given password does not exists',
+      );
+      return value(false);
+    }
+
+    return value(password == null
+        ? true
+        : DBCrypt()
+            .checkpw(password, result.first.toColumnMap()['hashed_password']));
+  }
+
+  /// Gets the user with [email].
   ///
   /// Returns `InsanichessUser` if the user exists, otherwise `null`. In case
   /// something goes south, the return error is `DatabaseFailure`.
@@ -82,70 +113,43 @@ class DatabaseService {
       return error(const DatabaseFailure());
     }
 
-    if (result.isEmpty) return value(null);
-
-    final Map<String, dynamic> userData = result.first.toColumnMap();
-    return value(
-      InsanichessUser(
-        id: userData['id'],
-        email: userData['email'],
-      ),
-    );
-  }
-
-  /// Gets the user with [appleId].
-  ///
-  /// Returns `InsanichessUser` if the user exists, otherwise `null`. In case
-  /// something goes south, the return error is `DatabaseFailure`.
-  Future<Either<DatabaseFailure, InsanichessUser?>> getUserWithAppleId(
-    String appleId,
-  ) async {
-    _logger.debug(
-      'DatabaseService.getUserWithAppleId',
-      'getting user with email $appleId',
-    );
-
-    final PostgreSQLResult result;
-    try {
-      result = await _connection!.query(
-        "SELECT * FROM ic_users WHERE apple_id = '$appleId' LIMIT 1;",
+    if (result.isEmpty) {
+      _logger.debug(
+        'DatabaseService.getUserWithEmail',
+        'user with email $email does not exist',
       );
-    } catch (e) {
-      _logger.error('DatabaseService.getUserWithAppleId', e);
-      return error(const DatabaseFailure());
+      return value(null);
     }
 
-    if (result.isEmpty) return value(null);
-
     final Map<String, dynamic> userData = result.first.toColumnMap();
     return value(
       InsanichessUser(
         id: userData['id'],
         email: userData['email'],
-        appleId: userData['apple_id'],
       ),
     );
   }
 
-  /// Creates the user with [email] and optional [appleId].
+  /// Creates the user with [email] and plain [password].
   ///
   /// Returns newly created `InsanichessUser`. In case something goes south, the
   /// return error is `DatabaseFailure`.
   Future<Either<DatabaseFailure, InsanichessUser>> createUser({
     required String email,
-    String? appleId,
+    required String password,
   }) async {
     _logger.debug(
       'DatabaseService.createUser',
       'creating user with email $email',
     );
 
+    final String hashedPassword =
+        DBCrypt().hashpw(password, DBCrypt().gensalt());
+
     final PostgreSQLResult result;
     try {
       await _connection!.query(
-        appleId == null
-            ? "INSERT INTO ic_users (email) VALUES ('$email');"
-            : "INSERT INTO ic_users (email, apple_id) VALUES ('$email', '$appleId');",
+        "INSERT INTO ic_users (email, hashed_password) VALUES ('$email', '$hashedPassword');",
       );
       result = await _connection!.query(
         "SELECT * FROM ic_users WHERE email = '$email' LIMIT 1;",
@@ -164,7 +168,6 @@ class DatabaseService {
     return value(InsanichessUser(
       id: newUser['id'],
       email: newUser['email'],
-      appleId: newUser['apple_id'],
     ));
   }
 
@@ -176,7 +179,7 @@ class DatabaseService {
 
     try {
       await _connection!.query(
-        "UPDATE ic_users SET email = '${user.email}', apple_id = ${user.appleId == null ? 'NULL' : "'${user.appleId}'"} WHERE id = '${user.id}';",
+        "UPDATE ic_users SET email = '${user.email}' WHERE id = '${user.id}';",
       );
     } catch (e) {
       _logger.error('DatabaseService.updateUser', e);

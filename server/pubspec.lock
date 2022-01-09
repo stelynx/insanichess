@@ -22,6 +22,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  dbcrypt:
+    dependency: "direct main"
+    description:
+      name: dbcrypt
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   insanichess:
     dependency: transitive
     description:
@@ -35,7 +42,7 @@ packages:
       path: "../packages/insanichess_sdk"
       relative: true
     source: path
-    version: "0.5.1"
+    version: "0.5.2"
   lints:
     dependency: "direct dev"
     description:

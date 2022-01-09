@@ -22,10 +22,7 @@ class InsanichessServer {
 
   /// Starts the server.
   Future<void> start() async {
-    final InternetAddress address =
-        Platform.environment['INSANICHESS_HOST'] != null
-            ? InternetAddress(Platform.environment['INSANICHESS_HOST']!)
-            : InternetAddress.loopbackIPv4;
+    final InternetAddress address = InternetAddress.loopbackIPv4;
     final int port =
         int.parse(Platform.environment['INSANICHESS_PORT'] ?? '4040');
 

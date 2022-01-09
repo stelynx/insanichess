@@ -75,6 +75,7 @@ class AuthController {
     }
 
     final String content = await utf8.decodeStream(request);
+    print(content);
     final Map<String, dynamic> body = jsonDecode(content);
 
     final String? email = body[InsanichessUserJsonKey.email];

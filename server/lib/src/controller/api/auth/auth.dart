@@ -117,6 +117,8 @@ class AuthController {
         'loc': 'eu',
       },
     });
-    return jwt.sign(SecretKey('secret_passphrase_should_change'));
+    return jwt.sign(
+      SecretKey(Platform.environment['INSANICHESS_JWT_SECRET_KEY']!),
+    );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../../../services/database/database_service.dart';
@@ -54,7 +55,12 @@ class AuthController {
         await _databaseService.getUserWithEmail(email);
     return userOrFailure.isError() || !userOrFailure.hasValue()
         ? respondWithInternalServerError(request)
-        : respondWithJson(request, userOrFailure.value!.toJson());
+        : respondWithJson(
+            request,
+            userOrFailure.value!
+                .copyWith(jwtToken: _generateJwtForUser(userOrFailure.value!))
+                .toJson(),
+          );
   }
 
   Future<void> handleRegistration(HttpRequest request) async {
@@ -91,6 +97,22 @@ class AuthController {
       return respondWithInternalServerError(request);
     }
 
-    return respondWithJson(request, userOrFailure.value.toJson());
+    return respondWithJson(
+      request,
+      userOrFailure.value
+          .copyWith(jwtToken: _generateJwtForUser(userOrFailure.value))
+          .toJson(),
+    );
+  }
+
+  String _generateJwtForUser(InsanichessUser user) {
+    final JWT jwt = JWT(<String, dynamic>{
+      'id': user.id,
+      'server': {
+        'id': 'insanichess_server',
+        'loc': 'eu',
+      },
+    });
+    return jwt.sign(SecretKey('secret_passphrase_should_change'));
   }
 }

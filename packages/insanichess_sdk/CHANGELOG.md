@@ -1,3 +1,7 @@
+## 0.5.3
+
+- Add JWT to `InsanichessUser`.
+
 ## 0.5.2
 
 - Remove appleId field and add optional password field to `InsanichessUser`.

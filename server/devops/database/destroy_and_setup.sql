@@ -10,12 +10,19 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE ic_users (
   id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-  -- username TEXT NOT NULL,
-  email TEXT NOT NULL,
-  apple_id TEXT,
+  email TEXT UNIQUE NOT NULL,
+  hashed_password TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT NOW()
 ) WITH ( OIDS = FALSE );
 ALTER TABLE ic_users OWNER TO insanichess_admin;
+
+CREATE TABLE ic_players (
+  id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  ic_user UUID UNIQUE NOT NULL,
+  CONSTRAINT ic_player_user FOREIGN KEY (ic_user) REFERENCES ic_users(id)
+) WITH ( OIDS = FALSE);
+ALTER TABLE ic_players OWNER TO insanichess_admin;
 
 CREATE TABLE ic_games (
   id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,

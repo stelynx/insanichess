@@ -29,6 +29,8 @@ class AuthRouter implements RouterInterface {
     switch (pathSegments[2]) {
       case ICServerRoute.apiAuthLogin:
         return _authController.handleLogin(request);
+      case ICServerRoute.apiAuthRegister:
+        return _authController.handleRegistration(request);
       default:
         return respondWithBadRequest(request);
     }

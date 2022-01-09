@@ -9,6 +9,7 @@ environment:
   sdk: ">=2.14.4 <3.0.0"
 
 dependencies:
+  dbcrypt: ^2.0.0
   insanichess_sdk:
     path: ../packages/insanichess_sdk
   postgres: ^2.4.3

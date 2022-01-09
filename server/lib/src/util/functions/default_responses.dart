@@ -13,6 +13,12 @@ void respondWithBadRequest(HttpRequest request) {
     ..close();
 }
 
+void respondWithNotFound(HttpRequest request) {
+  request.response
+    ..statusCode = HttpStatus.notFound
+    ..close();
+}
+
 void respondWithInternalServerError(HttpRequest request) {
   request.response
     ..statusCode = HttpStatus.internalServerError

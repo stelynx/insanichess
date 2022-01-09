@@ -1,3 +1,7 @@
+## 0.5.2
+
+- Remove appleId field and add optional password field to `InsanichessUser`.
+
 ## 0.5.1
 
 - Add optional field for Apple ID to `InsanichessUser` to support login with Apple and changing of the email.

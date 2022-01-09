@@ -165,6 +165,7 @@ class DatabaseService {
     );
 
     final Map<String, dynamic> newUser = result.first.toColumnMap();
+
     return value(InsanichessUser(
       id: newUser['id'],
       email: newUser['email'],

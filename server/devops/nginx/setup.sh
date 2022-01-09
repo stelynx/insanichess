@@ -1,4 +1,4 @@
-REPO_DIR=$(pwd)/server
+REPO_DIR=$(pwd)
 USR=$(whoami)
 
 sudo apt update && sudo apt upgrade

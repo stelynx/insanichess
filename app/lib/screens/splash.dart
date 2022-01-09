@@ -33,7 +33,11 @@ class _SplashScreen extends StatelessWidget {
     return BlocConsumer<SplashScreenBloc, SplashScreenState>(
       listener: (BuildContext context, SplashScreenState state) {
         if (state.initialized) {
-          Navigator.of(context).pushNamed(ICRoute.home);
+          if (state.authenticated ?? false) {
+            Navigator.of(context).pushNamed(ICRoute.home);
+            return;
+          }
+          Navigator.of(context).pushNamed(ICRoute.signIn);
           return;
         }
       },

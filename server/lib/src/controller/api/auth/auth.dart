@@ -41,6 +41,10 @@ class AuthController {
     if (email == null || plainPassword == null) {
       return respondWithBadRequest(request);
     }
+    if (!InsanichessValidator.isValidEmail(email) ||
+        !InsanichessValidator.isValidPassword(plainPassword)) {
+      return respondWithBadRequest(request);
+    }
 
     final Either<DatabaseFailure, bool> userExistsOrFailure =
         await _databaseService.existsUserWithEmailAndPassword(
@@ -86,7 +90,7 @@ class AuthController {
       return respondWithInternalServerError(request);
     }
     if (userExistsOrFailure.value == true) {
-      return respondWithBadRequest(request);
+      return respondWithForbidden(request);
     }
 
     final Either<DatabaseFailure, InsanichessUser> userOrFailure =

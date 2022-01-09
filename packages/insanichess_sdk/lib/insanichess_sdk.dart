@@ -16,3 +16,4 @@ export 'src/server/routes.dart';
 export 'src/time_control.dart';
 export 'src/util/enum/auto_zoom_out_on_move_behaviour.dart';
 export 'src/util/position.dart';
+export 'src/util/validator.dart';

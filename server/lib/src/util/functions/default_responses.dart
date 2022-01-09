@@ -13,6 +13,12 @@ void respondWithBadRequest(HttpRequest request) {
     ..close();
 }
 
+void respondWithForbidden(HttpRequest request) {
+  request.response
+    ..statusCode = HttpStatus.forbidden
+    ..close();
+}
+
 void respondWithNotFound(HttpRequest request) {
   request.response
     ..statusCode = HttpStatus.notFound

@@ -55,7 +55,10 @@ class SplashScreenBloc extends Bloc<_SplashScreenEvent, SplashScreenState> {
       _initialize(),
     ]);
     _timer.cancel();
-    emit(state.copyWith(initialized: true));
+    emit(state.copyWith(
+      initialized: true,
+      authenticated: _globalBloc.state.jwtToken != null,
+    ));
   }
 
   FutureOr<void> _onTimerTick(
@@ -76,5 +79,10 @@ class SplashScreenBloc extends Bloc<_SplashScreenEvent, SplashScreenState> {
       await _localStorageService.saveSettings(settings);
     }
     _globalBloc.changeSettings(settings);
+
+    String? jwtToken = await _localStorageService.readJwtToken();
+    if (jwtToken != null) {
+      _globalBloc.updateJwtToken(jwtToken);
+    }
   }
 }

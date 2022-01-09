@@ -24,6 +24,25 @@ class LocalStorageService {
   Future<String> get _gamesPath async =>
       '${(await getApplicationDocumentsDirectory()).path}/games';
   static const String _settingsFile = 'settings.json';
+  static const String _dataFile = 'data.json';
+
+  Future<void> saveJwtToken(String jwtToken) async {
+    final LocalStorage storage = LocalStorage(_dataFile);
+    await storage.ready;
+
+    await storage.setItem('jwt_token', jwtToken);
+    Logger.instance.info(
+      'LocalStorageService.saveJwtToken',
+      'token saved',
+    );
+  }
+
+  Future<String?> readJwtToken() async {
+    final LocalStorage storage = LocalStorage(_dataFile);
+    await storage.ready;
+
+    return storage.getItem('jwt_token');
+  }
 
   Future<List<InsanichessGame>> getPlayedGames() async {
     final String directoryPath = await _gamesPath;

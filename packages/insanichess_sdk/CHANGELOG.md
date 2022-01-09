@@ -1,3 +1,7 @@
+## 0.5.4
+
+- Add email and password validators.
+
 ## 0.5.3
 
 - Add JWT to `InsanichessUser`.

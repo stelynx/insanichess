@@ -30,8 +30,13 @@ class GlobalBloc {
       _settingsStreamController.stream;
 
   // Public API
+
   void changeSettings(InsanichessSettings settings) {
     _state = _state.copyWith(settings: settings);
     _settingsStreamController.add(settings);
+  }
+
+  void updateJwtToken(String jwtToken) {
+    _state = _state.copyWith(jwtToken: jwtToken);
   }
 }

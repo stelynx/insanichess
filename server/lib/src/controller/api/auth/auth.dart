@@ -75,6 +75,7 @@ class AuthController {
     }
 
     final String content = await utf8.decodeStream(request);
+    print(content);
     final Map<String, dynamic> body = jsonDecode(content);
 
     final String? email = body[InsanichessUserJsonKey.email];
@@ -117,6 +118,8 @@ class AuthController {
         'loc': 'eu',
       },
     });
-    return jwt.sign(SecretKey('secret_passphrase_should_change'));
+    return jwt.sign(
+      SecretKey(Platform.environment['INSANICHESS_JWT_SECRET_KEY']!),
+    );
   }
 }

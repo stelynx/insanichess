@@ -6,6 +6,8 @@ sudo apt update && sudo apt upgrade
 cd
 
 sudo snap install flutter --classic
+flutter --doctor
+
 sudo apt install -y nginx
 sudo apt install -y build-essential
 

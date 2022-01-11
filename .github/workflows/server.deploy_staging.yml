@@ -26,7 +26,7 @@ jobs:
           port: 22
           script: |
             cd ~/insanichess/server
-            kill $(cat insanichess_server.pid) 
+            if [[ -f "insanichess_server.pid" ]]; then kill $(cat insanichess_server.pid); fi
             git fetch
             git reset --hard origin/master
             bash devops/run.sh

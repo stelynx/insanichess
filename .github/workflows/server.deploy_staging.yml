@@ -1,0 +1,32 @@
+name: "[server] Deploy Staging"
+
+on:
+  push:
+    # branches:
+    #   - master
+    # paths:
+    #   - "server/**"
+    #   - "packages/insanichess_sdk/**"
+
+jobs:
+  build:
+    name: Deploy Server to Staging
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - name: ssh deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.INSANICHESS_BACKEND_URL_STAGING }}
+          username: ${{ secrets.INSANICHESS_BACKEND_USERNAME_STAGING }}
+          key: ${{ secrets.INSANICHESS_BACKEND_SSH_PRIVATE_KEY_STAGING }}
+          port: 22
+          script: |
+            cd ~/insanichess/server
+            kill $(cat insanichess_server.pid) 
+            git fetch
+            git reset --hard origin/master
+            bash devops/build_and_run.sh

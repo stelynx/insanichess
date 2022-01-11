@@ -2,11 +2,11 @@ name: "[server] Deploy Staging"
 
 on:
   push:
-    # branches:
-    #   - master
-    # paths:
-    #   - "server/**"
-    #   - "packages/insanichess_sdk/**"
+    branches:
+      - master
+    paths:
+      - "server/**"
+      - "packages/insanichess_sdk/**"
 
 jobs:
   build:
@@ -29,4 +29,5 @@ jobs:
             if [[ -f ".insanichess_server.pid" ]]; then kill $(cat .insanichess_server.pid); fi
             git fetch
             git reset --hard origin/master
+            sed -i'.bak' -e 's/static const bool isDebug = true/static const bool isDebug = false/g' lib/src/config/config.dart
             bash devops/run.sh

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'config/config.dart';
 import 'router/ic_router.dart';
 import 'util/functions/default_responses.dart';
 import 'util/logger.dart';
@@ -38,9 +39,10 @@ class InsanichessServer {
     await for (final HttpRequest request in onServer) {
       try {
         await _router.handle(request);
-      } catch (e) {
-        _logger.error('InsanichessServer', e);
+      } on Error catch (e) {
+        _logger.error('InsanichessServer', e.stackTrace);
         respondWithInternalServerError(request);
+        if (Config.isDebug) rethrow;
       }
     }
   }

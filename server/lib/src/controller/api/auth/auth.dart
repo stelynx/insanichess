@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../../../services/database/database_service.dart';
 import '../../../util/either.dart';
 import '../../../util/failures/database_failure.dart';
+import '../../../util/functions/body_parser.dart';
 import '../../../util/functions/default_responses.dart';
+import '../../../util/functions/jwt.dart';
 
 /// Controller that handles auth requests.
 class AuthController {
@@ -33,11 +34,10 @@ class AuthController {
       return respondWithBadRequest(request);
     }
 
-    final String content = await utf8.decodeStream(request);
-    final Map<String, dynamic> body = jsonDecode(content);
+    final Map<String, dynamic> body = await parseBodyFromRequest(request);
 
     final String? email = body[InsanichessUserJsonKey.email];
-    final String? plainPassword = body['password'];
+    final String? plainPassword = body[InsanichessUserJsonKey.password];
     if (email == null || plainPassword == null) {
       return respondWithBadRequest(request);
     }
@@ -62,11 +62,18 @@ class AuthController {
         : respondWithJson(
             request,
             userOrFailure.value!
-                .copyWith(jwtToken: _generateJwtForUser(userOrFailure.value!))
+                .copyWith(jwtToken: generateJwtForUser(userOrFailure.value!))
                 .toJson(),
           );
   }
 
+  /// Handler for registration POST [request].
+  ///
+  /// In case the request is not POST or the request body is not correct, the
+  /// response has status code 400. In case a database error occurs, response
+  /// code is 500. In case of successful login, status code is set to 201.
+  ///
+  /// The response contains data about the user.
   Future<void> handleRegistration(HttpRequest request) async {
     if (request.method != 'POST' ||
         request.contentLength <= 0 ||
@@ -104,21 +111,9 @@ class AuthController {
     return respondWithJson(
       request,
       userOrFailure.value
-          .copyWith(jwtToken: _generateJwtForUser(userOrFailure.value))
+          .copyWith(jwtToken: generateJwtForUser(userOrFailure.value))
           .toJson(),
-    );
-  }
-
-  String _generateJwtForUser(InsanichessUser user) {
-    final JWT jwt = JWT(<String, dynamic>{
-      'id': user.id,
-      'server': {
-        'id': 'insanichess_server',
-        'loc': 'eu',
-      },
-    });
-    return jwt.sign(
-      SecretKey(Platform.environment['INSANICHESS_JWT_SECRET_KEY']!),
+      statusCode: 201,
     );
   }
 }

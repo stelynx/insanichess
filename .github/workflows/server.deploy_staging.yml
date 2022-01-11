@@ -12,7 +12,7 @@ jobs:
   build:
     name: Deploy Server to Staging
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 60
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -28,5 +28,5 @@ jobs:
             cd ~/insanichess/server
             if [[ -f "insanichess_server.pid" ]]; then kill $(cat insanichess_server.pid); fi
             git fetch
-            git reset --hard origin/master
+            git pull
             bash devops/run.sh

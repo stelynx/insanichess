@@ -1,3 +1,8 @@
+## 0.5.5
+
+- Add route for POST /api/player.
+- Change JSON key for JWT token.
+
 ## 0.5.4
 
 - Add email and password validators.

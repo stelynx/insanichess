@@ -2,11 +2,11 @@ name: "[server] Deploy Staging"
 
 on:
   push:
-    # branches:
-    #   - master
-    # paths:
-    #   - "server/**"
-    #   - "packages/insanichess_sdk/**"
+    branches:
+      - master
+    paths:
+      - "server/**"
+      - "packages/insanichess_sdk/**"
 
 jobs:
   build:

@@ -67,5 +67,5 @@ abstract class InsanichessUserJsonKey {
   static const String password = 'password';
 
   /// Key for `InsanichessUser.jwtToken`.
-  static const String jwtToken = 'jwtToken';
+  static const String jwtToken = 'jwt_token';
 }

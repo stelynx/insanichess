@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'config/config.dart';
 import 'router/ic_router.dart';
 import 'util/functions/default_responses.dart';
 import 'util/logger.dart';
@@ -28,7 +29,10 @@ class InsanichessServer {
         int.parse(Platform.environment['INSANICHESS_PORT'] ?? '4040');
 
     final HttpServer server = await HttpServer.bind(address, port);
-    _logger.info('InsanichessServer.create', 'Server listening on port $port');
+    _logger.info(
+      'InsanichessServer.create',
+      'Server listening on port $port in ${Config.isDebug ? 'DEBUG' : 'RELEASE'} mode.',
+    );
 
     await _handleRequests(onServer: server);
   }
@@ -38,9 +42,10 @@ class InsanichessServer {
     await for (final HttpRequest request in onServer) {
       try {
         await _router.handle(request);
-      } catch (e) {
-        _logger.error('InsanichessServer', e);
+      } on Error catch (e) {
+        _logger.error('InsanichessServer', e.stackTrace);
         respondWithInternalServerError(request);
+        if (Config.isDebug) rethrow;
       }
     }
   }

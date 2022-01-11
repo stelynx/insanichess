@@ -59,6 +59,11 @@ class DatabaseService {
     }
   }
 
+  /// Checks if user with [email] and [password] exists. If [password] is `null`
+  /// only email is checked.
+  ///
+  /// Returns `true` if user exists, otherwise `false`. If something goes south,
+  /// it returns `DatabaseFailure` instead.
   Future<Either<DatabaseFailure, bool>> existsUserWithEmailAndPassword(
     String email, [
     String? password,
@@ -189,5 +194,120 @@ class DatabaseService {
 
     _logger.info('DatabaseService.updateUser', 'user ${user.id} updated');
     return value(null);
+  }
+
+  /// Gets the player with [username].
+  ///
+  /// Returns `InsanichessPlayer` if the user exists, otherwise `null`. In case
+  /// something goes south, the return error is `DatabaseFailure`.
+  Future<Either<DatabaseFailure, InsanichessPlayer?>> getPlayerWithUsername(
+    String username,
+  ) async {
+    _logger.debug(
+      'DatabaseService.getPlayerWithUsername',
+      'getting player with username "$username"',
+    );
+
+    final PostgreSQLResult result;
+    try {
+      result = await _connection!.query(
+        "SELECT * FROM ic_players WHERE username = '$username' LIMIT 1;",
+      );
+    } catch (e) {
+      _logger.error('DatabaseService.getUserWithEmail', e);
+      return error(const DatabaseFailure());
+    }
+
+    if (result.isEmpty) {
+      _logger.debug(
+        'DatabaseService.getPlayerWithUsername',
+        'player with username "$username" does not exist',
+      );
+      return value(null);
+    }
+
+    final Map<String, dynamic> playerData = result.first.toColumnMap();
+    return value(
+      InsanichessPlayer(
+        id: playerData['id'],
+        username: playerData['username'],
+      ),
+    );
+  }
+
+  /// Gets the player with [userId].
+  ///
+  /// Returns `InsanichessPlayer` if the user exists, otherwise `null`. In case
+  /// something goes south, the return error is `DatabaseFailure`.
+  Future<Either<DatabaseFailure, InsanichessPlayer?>> getPlayerWithUserId(
+    String userId,
+  ) async {
+    _logger.debug(
+      'DatabaseService.getPlayerWithUsername',
+      'getting player with user id "$userId"',
+    );
+
+    final PostgreSQLResult result;
+    try {
+      result = await _connection!.query(
+        "SELECT * FROM ic_players WHERE ic_user = '$userId' LIMIT 1;",
+      );
+    } catch (e) {
+      _logger.error('DatabaseService.getUserWithUserId', e);
+      return error(const DatabaseFailure());
+    }
+
+    if (result.isEmpty) {
+      _logger.debug(
+        'DatabaseService.getPlayerWithUsername',
+        'player with user id "$userId" does not exist',
+      );
+      return value(null);
+    }
+
+    final Map<String, dynamic> playerData = result.first.toColumnMap();
+    return value(
+      InsanichessPlayer(
+        id: playerData['id'],
+        username: playerData['username'],
+      ),
+    );
+  }
+
+  /// Creates the player with [username].
+  ///
+  /// Returns newly created `InsanichessUser`. In case something goes south, the
+  /// return error is `DatabaseFailure`.
+  Future<Either<DatabaseFailure, InsanichessPlayer>> createPlayer({
+    required String username,
+    required String userId,
+  }) async {
+    _logger.debug(
+      'DatabaseService.createPlayer',
+      'creating player with username "$username"',
+    );
+
+    final PostgreSQLResult result;
+    try {
+      await _connection!.query(
+          "INSERT INTO ic_players (username, ic_user) VALUES ('$username', '$userId');");
+      result = await _connection!.query(
+          "SELECT * FROM ic_players WHERE username = '$username' LIMIT 1;");
+    } catch (e) {
+      _logger.error('DatabaseService.createPlayer', e);
+      return error(const DatabaseFailure());
+    }
+
+    _logger.info(
+      'DatabaseService.createPlayer',
+      'player with username $username created',
+    );
+
+    final Map<String, dynamic> newPlayer = result.first.toColumnMap();
+
+    return value(InsanichessPlayer(
+      id: newPlayer['id'],
+      username: newPlayer['username'],
+    ));
   }
 }

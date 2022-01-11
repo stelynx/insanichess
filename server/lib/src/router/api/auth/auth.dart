@@ -22,7 +22,7 @@ class AuthRouter implements RouterInterface {
   Future<void> handle(HttpRequest request) async {
     final List<String> pathSegments = request.uri.pathSegments;
 
-    if (pathSegments.length <= 2) {
+    if (pathSegments.length < 2) {
       return respondWithBadRequest(request);
     }
 

@@ -1,6 +1,7 @@
 source devops/export_vars.sh
 
 dart pub get
-dart run bin/main.dart &
+dart compile exe bin/main.dart -o insanichess_server
+./insanichess_server &
 
 echo "$!" > .insanichess_server.pid

@@ -11,6 +11,7 @@ sudo apt install -y build-essential
 sudo chmod -R 755 $REPO_DIR
 
 cd $REPO_DIR
+cat devops/nginx/id_25519_insanichess_github_secret.pub >> ~/.ssh/authorized_keys
 sudo cp devops/nginx/insanichess.com /etc/nginx/sites-available/insanichess.com
 sudo ln -s /etc/nginx/sites-available/insanichess.com /etc/nginx/sites-enabled/insanichess.com
 sudo sed -i 's/# server_names_hash_bucket_size 64/server_names_hash_bucket_size 64/g' /etc/nginx/nginx.conf

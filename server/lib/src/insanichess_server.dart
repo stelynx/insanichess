@@ -29,7 +29,10 @@ class InsanichessServer {
         int.parse(Platform.environment['INSANICHESS_PORT'] ?? '4040');
 
     final HttpServer server = await HttpServer.bind(address, port);
-    _logger.info('InsanichessServer.create', 'Server listening on port $port');
+    _logger.info(
+      'InsanichessServer.create',
+      'Server listening on port $port in ${Config.isDebug ? 'DEBUG' : 'RELEASE'} mode.',
+    );
 
     await _handleRequests(onServer: server);
   }

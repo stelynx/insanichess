@@ -29,4 +29,4 @@ jobs:
             kill $(cat insanichess_server.pid) 
             git fetch
             git reset --hard origin/master
-            bash devops/build_and_run.sh
+            bash devops/run.sh

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'router/ic_router.dart';
+import 'util/functions/default_responses.dart';
 import 'util/logger.dart';
 
 /// The main class of the server package.
@@ -35,7 +36,12 @@ class InsanichessServer {
   /// Passes every request [onServer] to [_router].
   Future<void> _handleRequests({required HttpServer onServer}) async {
     await for (final HttpRequest request in onServer) {
-      await _router.handle(request);
+      try {
+        await _router.handle(request);
+      } catch (e) {
+        _logger.error('InsanichessServer', e);
+        respondWithInternalServerError(request);
+      }
     }
   }
 }

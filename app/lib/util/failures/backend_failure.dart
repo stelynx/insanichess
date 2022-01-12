@@ -8,6 +8,10 @@ class BadRequestBackendFailure extends BackendFailure {
   const BadRequestBackendFailure();
 }
 
+class UnauthorizedBackendFailure extends BackendFailure {
+  const UnauthorizedBackendFailure();
+}
+
 class ForbiddenBackendFailure extends BackendFailure {
   const ForbiddenBackendFailure();
 }

@@ -3,29 +3,29 @@ part of 'splash_screen_bloc.dart';
 @immutable
 class SplashScreenState {
   final bool initialized;
-  final bool? authenticated;
+  final String? pushRoute;
 
   final double deltaLogoSize;
 
   const SplashScreenState({
     required this.initialized,
-    required this.authenticated,
+    required this.pushRoute,
     required this.deltaLogoSize,
   });
 
   const SplashScreenState.initial()
       : initialized = false,
-        authenticated = null,
+        pushRoute = null,
         deltaLogoSize = 0;
 
   SplashScreenState copyWith({
     bool? initialized,
-    bool? authenticated,
+    String? pushRoute,
     double? deltaLogoSize,
   }) {
     return SplashScreenState(
       initialized: initialized ?? this.initialized,
-      authenticated: authenticated,
+      pushRoute: pushRoute,
       deltaLogoSize: deltaLogoSize ?? this.deltaLogoSize,
     );
   }

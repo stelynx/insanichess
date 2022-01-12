@@ -11,4 +11,9 @@ abstract class InsanichessValidator {
   static bool isValidPassword(String password) {
     return password.contains(' ') ? false : password.length >= 8;
   }
+
+  /// Validates [username].
+  static bool isValidUsername(String username) {
+    return username.length >= 4 && RegExp('[a-zA-Z0-9]+').hasMatch(username);
+  }
 }

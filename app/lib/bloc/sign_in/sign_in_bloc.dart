@@ -5,6 +5,7 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:meta/meta.dart';
 
 import '../../services/auth_service.dart';
+import '../../services/backend_service.dart';
 import '../../services/local_storage_service.dart';
 import '../../util/either.dart';
 import '../../util/failures/backend_failure.dart';
@@ -18,14 +19,17 @@ part 'sign_in_state.dart';
 class SignInBloc extends Bloc<_SignInEvent, SignInState> {
   final GlobalBloc _globalBloc;
   final AuthService _authService;
+  final BackendService _backendService;
   final LocalStorageService _localStorageService;
 
   SignInBloc({
     required GlobalBloc globalBloc,
     required AuthService authService,
+    required BackendService backendService,
     required LocalStorageService localStorageService,
   })  : _globalBloc = globalBloc,
         _authService = authService,
+        _backendService = backendService,
         _localStorageService = localStorageService,
         super(const SignInState.initial()) {
     on<_EmailChanged>(_onEmailChanged);
@@ -88,9 +92,22 @@ class SignInBloc extends Bloc<_SignInEvent, SignInState> {
     _globalBloc.updateJwtToken(userOrFailure.value.jwtToken!);
     _localStorageService.saveJwtToken(userOrFailure.value.jwtToken!);
 
+    final Either<BackendFailure, InsanichessPlayer?> maybePlayerOrFailure =
+        await _backendService.getPlayerMyself();
+    if (maybePlayerOrFailure.isError()) {
+      emit(state.copyWith(
+        isLoading: false,
+        failure: maybePlayerOrFailure.error,
+      ));
+      return;
+    }
+    if (maybePlayerOrFailure.value != null) {
+      _globalBloc.updatePlayerMyself(maybePlayerOrFailure.value!);
+    }
     emit(state.copyWith(
       isLoading: false,
       signInSuccessful: true,
+      hasPlayerProfile: maybePlayerOrFailure.value != null,
     ));
   }
 
@@ -128,6 +145,7 @@ class SignInBloc extends Bloc<_SignInEvent, SignInState> {
     emit(state.copyWith(
       isLoading: false,
       signInSuccessful: true,
+      hasPlayerProfile: false,
     ));
   }
 }

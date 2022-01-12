@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import '../screens/game.dart';
 import '../screens/game_history.dart';
 import '../screens/home.dart';
+import '../screens/player_registration.dart';
 import '../screens/rules.dart';
 import '../screens/settings/otb_settings.dart';
 import '../screens/settings/settings.dart';
@@ -26,6 +27,12 @@ abstract class ICRouter {
       case ICRoute.signIn:
         return PageRouteBuilder(
           pageBuilder: (context, _, __) => const SignInScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
+        );
+      case ICRoute.playerRegistration:
+        return PageRouteBuilder(
+          pageBuilder: (context, _, __) => const PlayerRegistrationScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               FadeTransition(opacity: animation, child: child),
         );

@@ -8,8 +8,8 @@ class Either<E, T> {
   T get value => _value!;
 
   bool isError() => _error != null;
-  // This should not be `_value != null` in case `T` is `void`!
-  bool hasValue() => !isError();
+  // This is not the opposite of isError() !
+  bool hasValue() => _value != null;
 }
 
 Either<E, T> error<E, T>(E e) => Either._(e, null);

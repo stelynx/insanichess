@@ -5,16 +5,18 @@ import 'bloc/global/global_bloc.dart';
 import 'router/router.dart';
 import 'router/routes.dart';
 import 'services/auth_service.dart';
+import 'services/backend_service.dart';
 import 'services/local_storage_service.dart';
 import 'style/theme.dart';
 import 'util/logger.dart';
 
 void main() {
-  Logger();
+  final Logger logger = Logger();
 
-  GlobalBloc();
+  GlobalBloc(logger: logger);
 
   AuthService();
+  BackendService();
   LocalStorageService();
 
   runApp(const InsanichessApp());

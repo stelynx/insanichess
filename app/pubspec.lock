@@ -159,7 +159,7 @@ packages:
       path: "../packages/insanichess_sdk"
       relative: true
     source: path
-    version: "0.5.4"
+    version: "0.5.6"
   lints:
     dependency: transitive
     description:

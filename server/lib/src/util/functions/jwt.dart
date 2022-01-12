@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
@@ -23,4 +25,12 @@ String? getUserIdFromJwtToken(String token) {
   } catch (e) {
     return null;
   }
+}
+
+/// Extracts JWT from [request]'s Authorization header.
+String? getJwtFromRequest(HttpRequest request) {
+  return request.headers[HttpHeaders.authorizationHeader]?.isEmpty ?? true
+      ? null
+      : request.headers[HttpHeaders.authorizationHeader]!.first
+          .substring('Bearer '.length);
 }

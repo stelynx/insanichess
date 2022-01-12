@@ -8,6 +8,7 @@ import '../bloc/global/global_bloc.dart';
 import '../bloc/sign_in/sign_in_bloc.dart';
 import '../router/routes.dart';
 import '../services/auth_service.dart';
+import '../services/backend_service.dart';
 import '../services/local_storage_service.dart';
 import '../style/images.dart';
 import '../util/failures/backend_failure.dart';
@@ -24,6 +25,7 @@ class SignInScreen extends StatelessWidget {
       create: (BuildContext context) => SignInBloc(
         globalBloc: GlobalBloc.instance,
         authService: AuthService.instance,
+        backendService: BackendService.instance,
         localStorageService: LocalStorageService.instance,
       ),
       child: const _SignInScreen(),
@@ -41,7 +43,11 @@ class _SignInScreen extends StatelessWidget {
     return BlocConsumer<SignInBloc, SignInState>(
       listener: (BuildContext context, SignInState state) {
         if (state.signInSuccessful ?? false) {
-          Navigator.of(context).pushNamed(ICRoute.home);
+          if (state.hasPlayerProfile!) {
+            Navigator.of(context).pushNamed(ICRoute.home);
+          } else {
+            Navigator.of(context).pushNamed(ICRoute.playerRegistration);
+          }
           return;
         }
       },

@@ -6,6 +6,7 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../util/either.dart';
 import '../util/failures/backend_failure.dart';
+import '../util/functions/uri_for_path.dart';
 
 class AuthService {
   static AuthService? _instance;
@@ -27,7 +28,7 @@ class AuthService {
     String password,
   ) async {
     final http.Response response = await http.post(
-      _uriForPath([
+      uriForPath([
         ICServerRoute.api,
         ICServerRoute.apiAuth,
         ICServerRoute.apiAuthLogin,
@@ -60,7 +61,7 @@ class AuthService {
     String password,
   ) async {
     final http.Response response = await http.post(
-      _uriForPath([
+      uriForPath([
         ICServerRoute.api,
         ICServerRoute.apiAuth,
         ICServerRoute.apiAuthRegister,
@@ -75,7 +76,7 @@ class AuthService {
     );
 
     switch (response.statusCode) {
-      case HttpStatus.ok:
+      case HttpStatus.created:
         return value(InsanichessUser.fromJson(jsonDecode(response.body)));
       case HttpStatus.badRequest:
         return error(const BadRequestBackendFailure());
@@ -88,9 +89,5 @@ class AuthService {
       default:
         return error(const UnknownBackendFailure());
     }
-  }
-
-  Uri _uriForPath(List<String> path) {
-    return Uri.parse('http://localhost:4040/${path.join('/')}');
   }
 }

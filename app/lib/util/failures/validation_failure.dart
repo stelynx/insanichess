@@ -11,3 +11,7 @@ class EmailValidationFailure extends ValidationFailure {
 class PasswordValidationFailure extends ValidationFailure {
   const PasswordValidationFailure();
 }
+
+class UsernameValidationFailure extends ValidationFailure {
+  const UsernameValidationFailure();
+}

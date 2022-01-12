@@ -27,6 +27,8 @@ class PlayerRouter implements RouterInterface {
         case ICServerRoute.apiPlayer:
           if (request.method == 'POST') {
             return await _playerController.handleCreatePlayer(request);
+          } else if (request.method == 'GET') {
+            return await _playerController.handleGetPlayerMyself(request);
           }
           return respondWithBadRequest(request);
         default:

@@ -6,7 +6,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../bloc/global/global_bloc.dart';
 import '../bloc/splash_screen/splash_screen_bloc.dart';
-import '../router/routes.dart';
+import '../services/backend_service.dart';
 import '../services/local_storage_service.dart';
 import '../style/images.dart';
 
@@ -18,6 +18,7 @@ class SplashScreen extends StatelessWidget {
     return BlocProvider<SplashScreenBloc>(
       create: (BuildContext context) => SplashScreenBloc(
         globalBloc: GlobalBloc.instance,
+        backendService: BackendService.instance,
         localStorageService: LocalStorageService.instance,
       ),
       child: const _SplashScreen(),
@@ -33,11 +34,7 @@ class _SplashScreen extends StatelessWidget {
     return BlocConsumer<SplashScreenBloc, SplashScreenState>(
       listener: (BuildContext context, SplashScreenState state) {
         if (state.initialized) {
-          if (state.authenticated ?? false) {
-            Navigator.of(context).pushNamed(ICRoute.home);
-            return;
-          }
-          Navigator.of(context).pushNamed(ICRoute.signIn);
+          Navigator.of(context).pushNamed(state.pushRoute!);
           return;
         }
       },

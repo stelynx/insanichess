@@ -1,3 +1,7 @@
+## 0.5.6
+
+- Add `isValidUsername` validator.
+
 ## 0.5.5
 
 - Add route for POST /api/player.

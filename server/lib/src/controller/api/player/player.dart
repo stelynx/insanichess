@@ -27,25 +27,25 @@ class PlayerController {
   ///
   /// Response contains data about the created player.
   Future<void> handleCreatePlayer(HttpRequest request) async {
-    print(request.contentLength);
-    print(request.headers.contentType?.value);
     if (request.contentLength <= 0 &&
         request.headers.contentType?.value != ContentType.json.value) {
       return respondWithBadRequest(request);
     }
 
     final Map<String, dynamic> body = await parseBodyFromRequest(request);
-    final String? jwtToken = body[InsanichessUserJsonKey.jwtToken];
-    final String? username = body[InsanichessPlayerJsonKey.username];
-    if (username == null || jwtToken == null) {
-      return respondWithBadRequest(request);
-    }
 
     // Check JWT.
+    final String? jwtToken = getJwtFromRequest(request);
+    if (jwtToken == null) return respondWithUnauthorized(request);
     final String? userIdIfValid = getUserIdFromJwtToken(jwtToken);
     if (userIdIfValid == null) return respondWithUnauthorized(request);
 
     // Check username already in use.
+    final String? username = body[InsanichessPlayerJsonKey.username];
+    if (username == null || !InsanichessValidator.isValidUsername(username)) {
+      return respondWithBadRequest(request);
+    }
+
     final Either<DatabaseFailure, InsanichessPlayer?>
         playerWithUsernameOrFailure =
         await _databaseService.getPlayerWithUsername(username);
@@ -83,5 +83,31 @@ class PlayerController {
       playerOrFailure.value.toJson(),
       statusCode: 201,
     );
+  }
+
+  /// Gets player data for user parsed from JWT token.
+  ///
+  /// The returned status code is 400 in case of malformed request, 500 in case
+  /// of internal server error, 401 in case JWT token is not valid, 404 in case
+  /// user does not have player data, and 200 with player data in body if player
+  /// found.
+  Future<void> handleGetPlayerMyself(HttpRequest request) async {
+    // Check JWT.
+    final String? jwtToken = getJwtFromRequest(request);
+    if (jwtToken == null) return respondWithUnauthorized(request);
+    final String? userIdIfValid = getUserIdFromJwtToken(jwtToken);
+    if (userIdIfValid == null) return respondWithUnauthorized(request);
+
+    // Get player.
+    final Either<DatabaseFailure, InsanichessPlayer?>
+        playerWithUserIdOrFailure =
+        await _databaseService.getPlayerWithUserId(userIdIfValid);
+    if (playerWithUserIdOrFailure.isError()) {
+      return respondWithInternalServerError(request);
+    }
+
+    return playerWithUserIdOrFailure.hasValue()
+        ? respondWithJson(request, playerWithUserIdOrFailure.value!.toJson())
+        : respondWithNotFound(request);
   }
 }

@@ -7,6 +7,7 @@ class SignInState {
 
   final bool isLoading;
   final bool? signInSuccessful;
+  final bool? hasPlayerProfile;
   final Failure? failure;
 
   const SignInState({
@@ -14,6 +15,7 @@ class SignInState {
     required this.password,
     required this.isLoading,
     required this.signInSuccessful,
+    required this.hasPlayerProfile,
     required this.failure,
   });
 
@@ -22,6 +24,7 @@ class SignInState {
         password = '',
         isLoading = false,
         signInSuccessful = null,
+        hasPlayerProfile = null,
         failure = null;
 
   SignInState copyWith({
@@ -29,6 +32,7 @@ class SignInState {
     String? password,
     bool? isLoading,
     bool? signInSuccessful,
+    bool? hasPlayerProfile,
     Failure? failure,
   }) {
     return SignInState(
@@ -36,6 +40,7 @@ class SignInState {
       password: password ?? this.password,
       isLoading: isLoading ?? this.isLoading,
       signInSuccessful: signInSuccessful,
+      hasPlayerProfile: hasPlayerProfile,
       failure: failure,
     );
   }

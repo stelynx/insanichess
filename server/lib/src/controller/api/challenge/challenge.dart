@@ -20,6 +20,16 @@ class ChallengeController {
   const ChallengeController({required DatabaseService databaseService})
       : _databaseService = databaseService;
 
+  /// Handler for POST challenge [request].
+  ///
+  /// Creates a challenge in [memory] that lasts for one minute. After that, the
+  /// challenge is automatically deleted.
+  ///
+  /// The response is 500 in case of internal server error, 400 in case of bad
+  /// request, 401 in case no JWT token provided, otherwise 201 with challenge
+  /// id in body.
+  ///
+  /// Response contains challenge id.
   Future<void> handleCreateChallenge(HttpRequest request) async {
     if (request.contentLength <= 0 ||
         request.headers.contentType?.value != ContentType.json.value) {
@@ -56,6 +66,46 @@ class ChallengeController {
     throw UnimplementedError();
   }
 
+  /// Handler for GET challenge.
+  ///
+  /// Returns data about challenge with [challengeId].
+  ///
+  /// Response is 500 in case of internal server error, 401 if no JWT token is
+  /// provided, 400 in case [challengeId] is empty, 404 if challenge with
+  /// [challengeId] not found in [memory.openChallenges], and 200 if challenge
+  /// is found with challenge details in body.
+  ///
+  /// Returns challenge details.
+  Future<void> handleGetChallengeDetails(
+    HttpRequest request, {
+    required String challengeId,
+  }) async {
+    // Check JWT.
+    final String? jwtToken = getJwtFromRequest(request);
+    if (jwtToken == null) return respondWithUnauthorized(request);
+    final String? userIdIfValid = getUserIdFromJwtToken(jwtToken);
+    if (userIdIfValid == null) return respondWithUnauthorized(request);
+
+    if (challengeId.isEmpty) return respondWithBadRequest(request);
+
+    if (!memory.openChallenges.containsKey(challengeId)) {
+      return respondWithNotFound(request);
+    }
+
+    return respondWithJson(
+      request,
+      memory.openChallenges[challengeId]!.toJson(),
+    );
+  }
+
+  /// Handler for DELETE challenge.
+  ///
+  /// Deletes the challenge with [challengeId] from [memory].
+  ///
+  /// Response is 500 in case of internal server error, 401 if no JWT token is
+  /// provided, 400 if [challengeId] is empty, 404 if [challengeId] not found in
+  /// [memory.openChallenges], 403 if user from JWT token did not create the
+  /// challenge, and 200 in case a delete was successful.
   Future<void> handleCancelChallenge(
     HttpRequest request, {
     required String challengeId,

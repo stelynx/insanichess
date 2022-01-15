@@ -5,7 +5,7 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 import '../../util/functions/default_responses.dart';
 import '../router_interface.dart';
 import 'auth/auth.dart';
-import 'game/challenge.dart';
+import 'challenge/challenge.dart';
 import 'player/player.dart';
 
 /// Router that handles requests on `/ICServerRouter.api`.

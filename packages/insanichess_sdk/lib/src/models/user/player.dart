@@ -29,6 +29,7 @@ class InsanichessPlayer implements InsanichessModel {
         username = 'Black';
 
   /// Converts this object to json representation.
+  @override
   Map<String, Object?> toJson() {
     return <String, Object?>{
       InsanichessPlayerJsonKey.id: id,

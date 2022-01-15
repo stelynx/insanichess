@@ -1,13 +1,14 @@
 import 'package:insanichess/insanichess.dart' as insanichess;
 
-import 'models/user/player.dart';
-import 'time_control.dart';
+import '../../time_control.dart';
+import '../insanichess_model.dart';
+import '../user/player.dart';
 
 /// Contains all information about the game.
 ///
 /// Apart from basic game rules, this class adds information that is usable both
 /// to client and server in order to be able to play a game of Insanichess.
-class InsanichessGame extends insanichess.Game {
+class InsanichessGame extends insanichess.Game implements InsanichessModel {
   /// The id of the game.
   final String id;
 
@@ -20,6 +21,7 @@ class InsanichessGame extends insanichess.Game {
   /// Time control for the game.
   final InsanichessTimeControl timeControl;
 
+  /// The durations player needed for each move.
   final List<Duration> timesSpentPerMove;
 
   /// Remaining playing time for white.
@@ -55,6 +57,23 @@ class InsanichessGame extends insanichess.Game {
         remainingTimeBlack = remainingTimeBlack ?? timeControl.initialTime,
         timesSpentPerMove = timesSpentPerMove ?? <Duration>[],
         super.fromPosition(position: position, gameHistory: gameHistory);
+
+  /// Creates new `InsanichessGame` object from [json].
+  InsanichessGame.fromJson(Map<String, dynamic> json)
+      : id = json[InsanichessGameJsonKey.id],
+        whitePlayer = InsanichessPlayer.fromJson(
+            json[InsanichessGameJsonKey.whitePlayer]),
+        blackPlayer = InsanichessPlayer.fromJson(
+            json[InsanichessGameJsonKey.blackPlayer]),
+        timeControl = InsanichessTimeControl.fromJson(
+            json[InsanichessGameJsonKey.timeControl]),
+        timesSpentPerMove = json[InsanichessGameJsonKey.timesSpentPerMove]
+            .map((e) => Duration(milliseconds: e))
+            .toList(),
+        remainingTimeWhite =
+            Duration(seconds: json[InsanichessGameJsonKey.remainingTimeWhite]),
+        remainingTimeBlack =
+            Duration(seconds: json[InsanichessGameJsonKey.remainingTimeBlack]);
 
   /// Returns new `InsanichessGame` object from ICString representation [s].
   factory InsanichessGame.fromICString(String s) {
@@ -161,4 +180,45 @@ class InsanichessGame extends insanichess.Game {
   /// [hashCode] for `InsanichessGame` is simply [id.hashCode].
   @override
   int get hashCode => id.hashCode;
+
+  /// Converts this object to json representation.
+  @override
+  Map<String, Object?> toJson() {
+    return <String, Object?>{
+      InsanichessGameJsonKey.id: id,
+      InsanichessGameJsonKey.whitePlayer: whitePlayer.toJson(),
+      InsanichessGameJsonKey.blackPlayer: blackPlayer.toJson(),
+      InsanichessGameJsonKey.timeControl: timeControl.toJson(),
+      InsanichessGameJsonKey.timesSpentPerMove:
+          timesSpentPerMove.map((Duration d) => d.inMilliseconds).toList(),
+      InsanichessGameJsonKey.remainingTimeWhite:
+          remainingTimeWhite.inMilliseconds,
+      InsanichessGameJsonKey.remainingTimeBlack:
+          remainingTimeBlack.inMilliseconds,
+    };
+  }
+}
+
+/// Keys used in `InsanichessGame` json representations.
+abstract class InsanichessGameJsonKey {
+  /// Key for `InsanichessGame.id`.
+  static const String id = 'id';
+
+  /// Key for `InsanichessGame.whitePlayer`.
+  static const String whitePlayer = 'white';
+
+  /// Key for `InsanichessGame.blackPlayer`.
+  static const String blackPlayer = 'black';
+
+  /// Key for `InsanichessGame.timeControl`.
+  static const String timeControl = 'time_control';
+
+  /// Key for `InsanichessGame.timesSpentPerMove`.
+  static const String timesSpentPerMove = 'times_per_move';
+
+  /// Key for `InsanichessGame.remainingTimeWhite`.
+  static const String remainingTimeWhite = 'remaining_white';
+
+  /// Key for `InsanichessGame.remainingTimeBlack`.
+  static const String remainingTimeBlack = 'remaining_black';
 }

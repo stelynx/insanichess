@@ -1,3 +1,8 @@
+## 0.5.7
+
+- Add route for POST /api/game.
+- Add `InsanichessChallenge` model for challenges.
+
 ## 0.5.6
 
 - Add `isValidUsername` validator.

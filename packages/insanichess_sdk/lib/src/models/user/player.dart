@@ -1,7 +1,9 @@
+import '../insanichess_model.dart';
+
 /// A player of the game.
 ///
 /// This class contains all the necessary data for a player / user.
-class InsanichessPlayer {
+class InsanichessPlayer implements InsanichessModel {
   /// The id of the player.
   final String id;
 
@@ -27,6 +29,7 @@ class InsanichessPlayer {
         username = 'Black';
 
   /// Converts this object to json representation.
+  @override
   Map<String, Object?> toJson() {
     return <String, Object?>{
       InsanichessPlayerJsonKey.id: id,
@@ -35,7 +38,7 @@ class InsanichessPlayer {
   }
 }
 
-/// Keys used in `InsanichessPlayerJsonKey` json representations.
+/// Keys used in `InsanichessPlayer` json representations.
 abstract class InsanichessPlayerJsonKey {
   /// Key for `InsanichessPlayer.id`.
   static const String id = 'id';

@@ -31,12 +31,23 @@ class ChallengeRouter implements RouterInterface {
 
     // /api/challenge/<id>
     if (pathSegments.length == 3) {
+      if (request.method == 'GET') {
+        return await _challengeController.handleGetChallengeDetails(
+          request,
+          challengeId: pathSegments[2],
+        );
+      }
+
       if (request.method == 'DELETE') {
         return await _challengeController.handleCancelChallenge(
           request,
           challengeId: pathSegments[2],
         );
       }
+
+      return respondWithBadRequest(request);
     }
+
+    return respondWithBadRequest(request);
   }
 }

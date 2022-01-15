@@ -74,6 +74,13 @@ class GameController {
     }
 
     memory.openChallenges[id] = challenge;
+    Future.delayed(
+      const Duration(minutes: 1),
+      () {
+        memory.openChallenges.remove(id);
+        print(memory.openChallenges);
+      },
+    );
     print(memory.openChallenges);
 
     return respondWithJson(

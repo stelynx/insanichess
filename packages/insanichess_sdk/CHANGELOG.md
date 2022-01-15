@@ -1,3 +1,7 @@
+## 0.5.8
+
+- Rename /api/game to /api/challenge.
+
 ## 0.5.7
 
 - Add route for POST /api/game.

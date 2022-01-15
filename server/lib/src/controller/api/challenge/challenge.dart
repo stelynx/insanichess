@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../insanichess_server.dart';
-// ignore: unnecessary_import
+import '../../../memory/memory.dart';
 import '../../../services/database/database_service.dart';
 import '../../../util/either.dart';
 import '../../../util/failures/database_failure.dart';
@@ -12,20 +11,18 @@ import '../../../util/functions/body_parser.dart';
 import '../../../util/functions/default_responses.dart';
 import '../../../util/functions/jwt.dart';
 
-/// Controller that handles game requests.
-class GameController {
+/// Controller that handles challenge requests.
+class ChallengeController {
   /// Database service instance.
-  // ignore: unused_field
   final DatabaseService _databaseService;
 
-  /// Constructs new `GameController` object with [databaseService].
-  const GameController({required DatabaseService databaseService})
+  /// Constructs new `ChallengeController` object with [databaseService].
+  const ChallengeController({required DatabaseService databaseService})
       : _databaseService = databaseService;
 
-  Future<void> handleCreateGame(HttpRequest request) async {
+  Future<void> handleCreateChallenge(HttpRequest request) async {
     if (request.contentLength <= 0 ||
         request.headers.contentType?.value != ContentType.json.value) {
-      print('here');
       return respondWithBadRequest(request);
     }
 
@@ -57,6 +54,38 @@ class GameController {
     }
 
     throw UnimplementedError();
+  }
+
+  Future<void> handleCancelChallenge(
+    HttpRequest request, {
+    required String challengeId,
+  }) async {
+    // Check JWT.
+    final String? jwtToken = getJwtFromRequest(request);
+    if (jwtToken == null) return respondWithUnauthorized(request);
+    final String? userIdIfValid = getUserIdFromJwtToken(jwtToken);
+    if (userIdIfValid == null) return respondWithUnauthorized(request);
+
+    if (challengeId.isEmpty) return respondWithBadRequest(request);
+
+    if (!memory.openChallenges.containsKey(challengeId)) {
+      return respondWithNotFound(request);
+    }
+
+    final Either<DatabaseFailure, InsanichessPlayer?> playerOrFailure =
+        await _databaseService.getPlayerWithUserId(userIdIfValid);
+    if (playerOrFailure.isError()) {
+      return respondWithInternalServerError(request);
+    }
+    if (!playerOrFailure.hasValue()) return respondWithBadRequest(request);
+
+    if (memory.openChallenges[challengeId]!.createdBy !=
+        playerOrFailure.value!.username) {
+      return respondWithForbidden(request);
+    }
+
+    memory.openChallenges.remove(challengeId);
+    return respondWithOk(request);
   }
 
   // Helpers

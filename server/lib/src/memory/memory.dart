@@ -1,5 +1,8 @@
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
+/// Globally accessible memory.
+final Memory memory = Memory();
+
 /// In-memory storage for server.
 class Memory {
   /// List of currently opened challenges.

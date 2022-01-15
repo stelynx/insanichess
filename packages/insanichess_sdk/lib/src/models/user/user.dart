@@ -55,7 +55,7 @@ class InsanichessUser implements InsanichessModel {
   }
 }
 
-/// Keys used in `InsanichessUserJsonKey` json representations.
+/// Keys used in `InsanichessUser` json representations.
 abstract class InsanichessUserJsonKey {
   /// Key for `InsanichessUser.id`.
   static const String id = 'id';

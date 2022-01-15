@@ -5,6 +5,7 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 import '../../util/functions/default_responses.dart';
 import '../router_interface.dart';
 import 'auth/auth.dart';
+import 'game/game.dart';
 import 'player/player.dart';
 
 /// Router that handles requests on `/ICServerRouter.api`.
@@ -15,12 +16,17 @@ class ApiRouter implements RouterInterface {
   /// Router that handles requests regarding players.
   final PlayerRouter _playerRouter;
 
+  /// Router that handles requests for games.
+  final GameRouter _gameRouter;
+
   /// Constructs new `ApiRouter` with given [authRouter].
   ApiRouter({
     AuthRouter? authRouter,
     PlayerRouter? playerRouter,
+    GameRouter? gameRouter,
   })  : _authRouter = authRouter ?? AuthRouter(),
-        _playerRouter = playerRouter ?? PlayerRouter();
+        _playerRouter = playerRouter ?? PlayerRouter(),
+        _gameRouter = gameRouter ?? GameRouter();
 
   /// Request handler / rerouter.
   @override
@@ -36,6 +42,8 @@ class ApiRouter implements RouterInterface {
         return await _authRouter.handle(request);
       case ICServerRoute.apiPlayer:
         return await _playerRouter.handle(request);
+      case ICServerRoute.apiGame:
+        return await _gameRouter.handle(request);
       default:
         return respondWithBadRequest(request);
     }

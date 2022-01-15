@@ -6,4 +6,6 @@ abstract class ICServerRoute {
   static const String apiAuthRegister = 'register';
 
   static const String apiPlayer = 'player';
+
+  static const String apiGame = 'game';
 }

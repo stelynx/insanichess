@@ -18,6 +18,47 @@ class SettingsController {
   const SettingsController({required DatabaseService databaseService})
       : _databaseService = databaseService;
 
+  /// Handles settings GET [request].
+  ///
+  /// Returns 500 in case of internal server error, 401 if bad JWT token, 200 if
+  /// everything is ok.
+  ///
+  /// Returns settings in body. If settings were not found, it creates new entry
+  /// in database with default values.
+  Future<void> handleGetSettings(HttpRequest request) async {
+    // Check JWT.
+    final String? jwtToken = getJwtFromRequest(request);
+    if (jwtToken == null) return respondWithUnauthorized(request);
+    final String? userIdIfValid = getUserIdFromJwtToken(jwtToken);
+    if (userIdIfValid == null) return respondWithUnauthorized(request);
+
+    // Check for user's settings
+    final Either<DatabaseFailure, InsanichessSettings?>
+        existingSettingsOrFailure =
+        await _databaseService.getSettingsForUserWithUserId(userIdIfValid);
+    if (existingSettingsOrFailure.isError()) {
+      return respondWithInternalServerError(request);
+    }
+
+    // Return settings if present.
+    if (existingSettingsOrFailure.hasValue()) {
+      return respondWithJson(
+        request,
+        existingSettingsOrFailure.value!.toJson(),
+      );
+    }
+
+    // Create settings if missing.
+    final Either<DatabaseFailure, InsanichessSettings> settingsOrFailure =
+        await _databaseService
+            .createDefaultSettingsForUserWithUserId(userIdIfValid);
+    if (settingsOrFailure.isError()) {
+      return respondWithInternalServerError(request);
+    }
+
+    return respondWithJson(request, settingsOrFailure.value.toJson());
+  }
+
   /// Handles PATCH [request] that updates settings.
   ///
   /// If the user's settings are not found, they are created with defaults and

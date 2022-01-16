@@ -26,6 +26,9 @@ class SettingsRouter implements RouterInterface {
     if (pathSegments.length == 2) {
       switch (pathSegments[1]) {
         case ICServerRoute.apiSettings:
+          if (request.method == 'GET') {
+            return await _settingsController.handleGetSettings(request);
+          }
           if (request.method == 'PATCH') {
             return await _settingsController.handlePatchSettings(request);
           }

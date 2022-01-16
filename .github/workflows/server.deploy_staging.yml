@@ -26,7 +26,7 @@ jobs:
         uses: tj-actions/changed-files@v13.1
 
       - name: Reset database if destroy_and_setup.sql changed
-        if: contains(steps.changed-filed.outputs.modified_files, 'server/devops/database/destroy_and_setup.sql')
+        if: contains(steps.changed-files.outputs.modified_files, 'server/devops/database/destroy_and_setup.sql')
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.INSANICHESS_BACKEND_URL_STAGING }}

@@ -9,9 +9,5 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GlobalKey<ICDrawerState> drawerKey = GlobalKey<ICDrawerState>();
 
-  HomeBloc() : super(HomeInitial()) {
-    on<HomeEvent>((event, emit) {
-      // TODO: implement event handler
-    });
-  }
+  HomeBloc() : super(HomeInitial());
 }

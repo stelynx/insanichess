@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
-import 'package:meta/meta.dart';
 
 import '../../services/backend_service.dart';
 import '../../util/either.dart';

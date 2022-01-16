@@ -142,7 +142,7 @@ class ICConfirmButton extends ICTextButton {
 }
 
 class ICGameControlButton extends ICTrailingButton {
-  ICGameControlButton({
+  const ICGameControlButton({
     Key? key,
     required IconData icon,
     VoidCallback? onPressed,

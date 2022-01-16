@@ -124,8 +124,6 @@ class ICDrawerState extends State<ICDrawer>
     with SingleTickerProviderStateMixin {
   ColorTween _colorTransitionChild = ColorTween(
       begin: ICColor.transparent, end: ICColor.primary.elevatedColor);
-  ColorTween _colorTransitionScaffold = ColorTween(
-      begin: ICColor.primary.elevatedColor, end: ICColor.transparent);
 
   double _initWidth = _kWidth;
   Orientation _orientation = Orientation.portrait;
@@ -158,12 +156,6 @@ class ICDrawerState extends State<ICDrawer>
       _colorTransitionChild = ColorTween(
           begin: widget.colorTransitionChild!.withOpacity(0.0),
           end: widget.colorTransitionChild);
-    }
-
-    if (widget.colorTransitionScaffold != null) {
-      _colorTransitionScaffold = ColorTween(
-          begin: widget.colorTransitionScaffold,
-          end: widget.colorTransitionScaffold!.withOpacity(0.0));
     }
 
     if (widget.onDragUpdate != null && _controller.value < 1) {
@@ -483,7 +475,6 @@ class ICDrawerState extends State<ICDrawer>
   }
 
   Widget? get _leftChild {
-    // TODO build menu
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: double.infinity,

@@ -8,4 +8,6 @@ abstract class ICServerRoute {
   static const String apiPlayer = 'player';
 
   static const String apiChallenge = 'challenge';
+
+  static const String apiSettings = 'settings';
 }

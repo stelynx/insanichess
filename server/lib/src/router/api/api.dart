@@ -7,6 +7,7 @@ import '../router_interface.dart';
 import 'auth/auth.dart';
 import 'challenge/challenge.dart';
 import 'player/player.dart';
+import 'settings/settings.dart';
 
 /// Router that handles requests on `/ICServerRouter.api`.
 class ApiRouter implements RouterInterface {
@@ -19,14 +20,19 @@ class ApiRouter implements RouterInterface {
   /// Router that handles requests for games.
   final ChallengeRouter _challengeRouter;
 
+  /// Router that handles requests for settings.
+  final SettingsRouter _settingsRouter;
+
   /// Constructs new `ApiRouter` with given [authRouter].
   ApiRouter({
     AuthRouter? authRouter,
     PlayerRouter? playerRouter,
     ChallengeRouter? challengeRouter,
+    SettingsRouter? settingsRouter,
   })  : _authRouter = authRouter ?? AuthRouter(),
         _playerRouter = playerRouter ?? PlayerRouter(),
-        _challengeRouter = challengeRouter ?? ChallengeRouter();
+        _challengeRouter = challengeRouter ?? ChallengeRouter(),
+        _settingsRouter = settingsRouter ?? SettingsRouter();
 
   /// Request handler / rerouter.
   @override
@@ -44,6 +50,8 @@ class ApiRouter implements RouterInterface {
         return await _playerRouter.handle(request);
       case ICServerRoute.apiChallenge:
         return await _challengeRouter.handle(request);
+      case ICServerRoute.apiSettings:
+        return await _settingsRouter.handle(request);
       default:
         return respondWithBadRequest(request);
     }

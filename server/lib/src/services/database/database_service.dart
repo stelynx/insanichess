@@ -5,6 +5,7 @@ import 'package:postgres/postgres.dart';
 import '../../config/db.dart';
 import '../../util/either.dart';
 import '../../util/failures/database_failure.dart';
+import '../../util/functions/on_entity.dart';
 import '../../util/logger.dart';
 
 /// Service for communication with database.
@@ -330,22 +331,22 @@ class DatabaseService {
     ));
   }
 
-  /// Creates default settings for [user].
+  /// Creates default settings for user with [userId].
   Future<Either<DatabaseFailure, InsanichessSettings>>
-      createDefaultSettingsForUser(
-    InsanichessUser user,
+      createDefaultSettingsForUserWithUserId(
+    String userId,
   ) async {
     _logger.debug(
       'DatabaseService.createDefaultSettingsForUser',
-      'creating settings for user with id "${user.id}"',
+      'creating settings for user with id "$userId"',
     );
 
     final PostgreSQLResult result;
     try {
-      await _connection!.query(
-          "INSERT INTO ic_user_settings (ic_user) VALUES ('${user.id}');");
+      await _connection!
+          .query("INSERT INTO ic_user_settings (ic_user) VALUES ('$userId');");
       result = await _connection!.query(
-          "SELECT * FROM ic_user_settings WHERE ic_user = '${user.id}' LIMIT 1");
+          "SELECT * FROM ic_user_settings WHERE ic_user = '$userId' LIMIT 1");
     } catch (e) {
       _logger.error('DatabaseService.createDefaultSettingsForUser', e);
       return error(const DatabaseFailure());
@@ -353,41 +354,76 @@ class DatabaseService {
 
     _logger.info(
       'DatabaseService.createDefaultSettingsForUser',
-      'settings for user with id  ${user.id} created',
+      'settings for user with id  $userId created',
     );
 
-    final Map<String, dynamic> settings = result.first.toColumnMap();
-
-    final AutoZoomOutOnMoveBehaviour otbAutoZoomOutOnMove;
-    switch (settings['otb_auto_zoom_out']) {
-      case 0:
-        otbAutoZoomOutOnMove = AutoZoomOutOnMoveBehaviour.never;
-        break;
-      case 1:
-        otbAutoZoomOutOnMove = AutoZoomOutOnMoveBehaviour.onMyMove;
-        break;
-      case 2:
-        otbAutoZoomOutOnMove = AutoZoomOutOnMoveBehaviour.onOpponentMove;
-        break;
-      case 3:
-        otbAutoZoomOutOnMove = AutoZoomOutOnMoveBehaviour.always;
-        break;
-      default:
-        await _connection!.query(
-            "DELETE FROM ic_user_settings WHERE id = '${settings['id']}';");
-        return error(const DatabaseFailure());
+    final Map<String, dynamic> data = result.first.toColumnMap();
+    final InsanichessSettings? settings = settingsFromDatabase(data);
+    if (settings == null) {
+      await _connection!
+          .query("DELETE FROM ic_user_settings WHERE id = '${data['id']}';");
+      return error(const DatabaseFailure());
     }
 
-    return value(InsanichessSettings(
-      showZoomOutButtonOnLeft: settings['zoom_out_button_left'],
-      showLegalMoves: settings['show_legal_moves'],
-      otb: InsanichessOtbSettings(
-        allowUndo: settings['otb_allow_undo'],
-        rotateChessboard: settings['otb_rotate_chessboard'],
-        mirrorTopPieces: settings['otb_mirror_top_pieces'],
-        alwaysPromoteToQueen: settings['otb_promote_queen'],
-        autoZoomOutOnMove: otbAutoZoomOutOnMove,
-      ),
-    ));
+    return value(settings);
+  }
+
+  /// Returns `InsanichessSettings` for user with [userId].
+  Future<Either<DatabaseFailure, InsanichessSettings?>>
+      getSettingsForUserWithUserId(String userId) async {
+    _logger.debug(
+      'DatabaseService.getSettingsForUserWithUserId',
+      'getting settings for user with id "$userId"',
+    );
+
+    final PostgreSQLResult result;
+    try {
+      result = await _connection!.query(
+          "SELECT * FROM ic_user_settings WHERE ic_user = '$userId' LIMIT 1");
+    } catch (e) {
+      _logger.error('DatabaseService.getSettingsForUserWithUserId', e);
+      return error(const DatabaseFailure());
+    }
+
+    _logger.debug(
+      'DatabaseService.getSettingsForUserWithUserId',
+      'settings for user with id $userId acquired',
+    );
+
+    if (result.isEmpty) return value(null);
+
+    final Map<String, dynamic> data = result.first.toColumnMap();
+    final InsanichessSettings? settings = settingsFromDatabase(data);
+    if (settings == null) {
+      return error(const DatabaseFailure());
+    }
+
+    return value(settings);
+  }
+
+  Future<Either<DatabaseFailure, void>> updateSettingsValue(
+    String columnName,
+    dynamic columnValue, {
+    required String userId,
+  }) async {
+    _logger.debug(
+      'DatabaseService.updateSettings',
+      'updating settings for user with id "$userId"',
+    );
+
+    try {
+      if (columnValue is String) {
+        await _connection!.query(
+            "UPDATE ic_user_settings SET $columnName = '$columnValue' WHERE ic_user = '$userId';");
+      } else {
+        await _connection!.query(
+            "UPDATE ic_user_settings SET $columnName = $columnValue WHERE ic_user = '$userId';");
+      }
+    } catch (e) {
+      _logger.error('DatabaseService.updateSettingsValue', e);
+      return error(const DatabaseFailure());
+    }
+
+    return value(null);
   }
 }

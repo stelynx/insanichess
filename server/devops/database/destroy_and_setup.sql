@@ -52,3 +52,4 @@ CREATE TABLE ic_games (
   CONSTRAINT ic_game_user_black FOREIGN KEY (player_black) REFERENCES ic_users(id)
 ) WITH ( OIDS = FALSE );
 ALTER TABLE ic_games OWNER TO insanichess_admin;
+

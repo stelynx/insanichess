@@ -1,15 +1,18 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/widgets.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
-import 'package:meta/meta.dart';
 
 import '../../services/local_storage_service.dart';
+import '../../widgets/ic_drawer.dart';
 
 part 'game_history_event.dart';
 part 'game_history_state.dart';
 
 class GameHistoryBloc extends Bloc<_GameHistoryEvent, GameHistoryState> {
+  final GlobalKey<ICDrawerState> drawerKey = GlobalKey<ICDrawerState>();
+
   final LocalStorageService _localStorageService;
 
   GameHistoryBloc({

@@ -3,11 +3,11 @@ import 'package:flutter/widgets.dart';
 
 import '../../widgets/ic_drawer.dart';
 
-part 'home_event.dart';
-part 'home_state.dart';
+part 'rules_event.dart';
+part 'rules_state.dart';
 
-class HomeBloc extends Bloc<HomeEvent, HomeState> {
+class RulesBloc extends Bloc<_RulesEvent, RulesState> {
   final GlobalKey<ICDrawerState> drawerKey = GlobalKey<ICDrawerState>();
 
-  HomeBloc() : super(HomeInitial());
+  RulesBloc() : super(const RulesState.initial());
 }

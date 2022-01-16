@@ -6,6 +6,8 @@ import '../../bloc/settings/settings_bloc.dart';
 import '../../router/router.dart';
 import '../../router/routes.dart';
 import '../../services/backend_service.dart';
+import '../../widgets/ic_button.dart';
+import '../../widgets/ic_drawer.dart';
 import '../../widgets/ic_toast.dart';
 import '../../widgets/util/cupertino_list_section.dart';
 import '../../widgets/util/cupertino_list_tile.dart';
@@ -36,56 +38,64 @@ class _SettingsScreen extends StatelessWidget {
     return BlocConsumer<SettingsBloc, SettingsState>(
       listener: (BuildContext context, SettingsState state) {},
       builder: (BuildContext context, SettingsState state) {
-        Widget child = CupertinoPageScaffold(
-          navigationBar: const CupertinoNavigationBar(
-            middle: Text('Settings'),
-            border: Border(),
-          ),
-          child: Column(
-            children: <Widget>[
-              CupertinoListSection(
-                hasLeading: false,
-                header: const Text('GAME TYPE'),
-                backgroundColor:
-                    CupertinoTheme.of(context).scaffoldBackgroundColor,
-                children: <Widget>[
-                  CupertinoListTile(
-                    title: const Text('Over-the-board'),
-                    trailing: const CupertinoListTileChevron(),
-                    onTap: () {
-                      bloc.hideFailure();
-                      return ICRouter.pushNamed(
-                        context,
-                        ICRoute.settingsOtb,
-                        arguments: OtbSettingsScreenArgs(settingsBloc: bloc),
-                      );
-                    },
-                  ),
-                ],
+        Widget child = ICDrawer(
+          key: bloc.drawerKey,
+          scaffold: CupertinoPageScaffold(
+            navigationBar: CupertinoNavigationBar(
+              middle: const Text('Settings'),
+              border: const Border(),
+              trailing: ICTrailingButton(
+                icon: CupertinoIcons.line_horizontal_3,
+                // must not shortcut to: bloc.drawerKey.currentState?.open
+                onPressed: () => bloc.drawerKey.currentState?.open(),
               ),
-              CupertinoListSection(
-                header: const Text('GENERAL'),
-                hasLeading: false,
-                backgroundColor:
-                    CupertinoTheme.of(context).scaffoldBackgroundColor,
-                children: <Widget>[
-                  CupertinoListTile(
-                    title: const Text('Zoom-out button on left'),
-                    trailing: CupertinoSwitch(
-                      value: state.showZoomOutButtonOnLeft,
-                      onChanged: (_) => bloc.toggleShowZoomButtonOnLeft(),
+            ),
+            child: Column(
+              children: <Widget>[
+                CupertinoListSection(
+                  hasLeading: false,
+                  header: const Text('GAME TYPE'),
+                  backgroundColor:
+                      CupertinoTheme.of(context).scaffoldBackgroundColor,
+                  children: <Widget>[
+                    CupertinoListTile(
+                      title: const Text('Over-the-board'),
+                      trailing: const CupertinoListTileChevron(),
+                      onTap: () {
+                        bloc.hideFailure();
+                        return ICRouter.pushNamed(
+                          context,
+                          ICRoute.settingsOtb,
+                          arguments: OtbSettingsScreenArgs(settingsBloc: bloc),
+                        );
+                      },
                     ),
-                  ),
-                  CupertinoListTile(
-                    title: const Text('Show legal moves'),
-                    trailing: CupertinoSwitch(
-                      value: state.showLegalMoves,
-                      onChanged: (_) => bloc.toggleShowLegalMoves(),
+                  ],
+                ),
+                CupertinoListSection(
+                  header: const Text('GENERAL'),
+                  hasLeading: false,
+                  backgroundColor:
+                      CupertinoTheme.of(context).scaffoldBackgroundColor,
+                  children: <Widget>[
+                    CupertinoListTile(
+                      title: const Text('Zoom-out button on left'),
+                      trailing: CupertinoSwitch(
+                        value: state.showZoomOutButtonOnLeft,
+                        onChanged: (_) => bloc.toggleShowZoomButtonOnLeft(),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    CupertinoListTile(
+                      title: const Text('Show legal moves'),
+                      trailing: CupertinoSwitch(
+                        value: state.showLegalMoves,
+                        onChanged: (_) => bloc.toggleShowLegalMoves(),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
 

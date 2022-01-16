@@ -7,6 +7,8 @@ import '../bloc/game_history/game_history_bloc.dart';
 import '../router/router.dart';
 import '../router/routes.dart';
 import '../services/local_storage_service.dart';
+import '../widgets/ic_button.dart';
+import '../widgets/ic_drawer.dart';
 import '../widgets/util/cupertino_list_section.dart';
 import '../widgets/util/cupertino_list_tile.dart';
 import 'game.dart';
@@ -30,6 +32,8 @@ class _GameHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final GameHistoryBloc bloc = BlocProvider.of<GameHistoryBloc>(context);
+
     return BlocConsumer<GameHistoryBloc, GameHistoryState>(
       listener: (BuildContext context, GameHistoryState state) {},
       builder: (BuildContext context, GameHistoryState state) {
@@ -72,12 +76,20 @@ class _GameHistoryScreen extends StatelessWidget {
           child = Container();
         }
 
-        return CupertinoPageScaffold(
-          navigationBar: const CupertinoNavigationBar(
-            middle: Text('Game History'),
-            border: Border(),
+        return ICDrawer(
+          key: bloc.drawerKey,
+          scaffold: CupertinoPageScaffold(
+            navigationBar: CupertinoNavigationBar(
+              middle: const Text('Game History'),
+              border: const Border(),
+              trailing: ICTrailingButton(
+                icon: CupertinoIcons.line_horizontal_3,
+                // must not shortcut to: bloc.drawerKey.currentState?.open
+                onPressed: () => bloc.drawerKey.currentState?.open(),
+              ),
+            ),
+            child: child,
           ),
-          child: child,
         );
       },
     );

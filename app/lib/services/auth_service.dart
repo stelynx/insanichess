@@ -56,7 +56,7 @@ class AuthService {
     }
   }
 
-  Future<Either<BackendFailure, InsanichessUser>> registerWithEmailAndPassword(
+  Future<Either<BackendFailure, List>> registerWithEmailAndPassword(
     String email,
     String password,
   ) async {
@@ -75,9 +75,14 @@ class AuthService {
       }),
     );
 
+    final Map<String, dynamic> body = jsonDecode(response.body);
+
     switch (response.statusCode) {
       case HttpStatus.created:
-        return value(InsanichessUser.fromJson(jsonDecode(response.body)));
+        return value([
+          InsanichessUser.fromJson(body['json']),
+          InsanichessSettings.fromJson(body['settings']),
+        ]);
       case HttpStatus.badRequest:
         return error(const BadRequestBackendFailure());
       case HttpStatus.forbidden:

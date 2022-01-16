@@ -126,21 +126,25 @@ class SignInBloc extends Bloc<_SignInEvent, SignInState> {
 
     emit(state.copyWith(isLoading: true));
 
-    final Either<BackendFailure, InsanichessUser> userOrFailure =
+    final Either<BackendFailure, List> userAndSettingsOrFailure =
         await _authService.registerWithEmailAndPassword(
             state.email, state.password);
 
-    if (userOrFailure.isError()) {
+    if (userAndSettingsOrFailure.isError()) {
       emit(state.copyWith(
         isLoading: false,
         signInSuccessful: false,
-        failure: userOrFailure.error,
+        failure: userAndSettingsOrFailure.error,
       ));
       return;
     }
 
-    _globalBloc.updateJwtToken(userOrFailure.value.jwtToken!);
-    _localStorageService.saveJwtToken(userOrFailure.value.jwtToken!);
+    _globalBloc.updateJwtToken(userAndSettingsOrFailure.value.first.jwtToken!);
+    _localStorageService
+        .saveJwtToken(userAndSettingsOrFailure.value.first.jwtToken!);
+
+    _globalBloc.changeSettings(userAndSettingsOrFailure.value[1]);
+    _localStorageService.saveSettings(userAndSettingsOrFailure.value[1]);
 
     emit(state.copyWith(
       isLoading: false,

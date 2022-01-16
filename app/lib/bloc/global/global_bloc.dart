@@ -51,4 +51,9 @@ class GlobalBloc {
     _state = state.copyWith(playerMyself: player);
     _logger.info('GlobalBloc.updatePlayerMyself', 'playerMyself updated');
   }
+
+  void reset() {
+    _state = const GlobalState.initial();
+    _logger.info('GlobalBloc.reset', 'state reset');
+  }
 }

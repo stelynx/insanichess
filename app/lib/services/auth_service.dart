@@ -80,7 +80,7 @@ class AuthService {
     switch (response.statusCode) {
       case HttpStatus.created:
         return value([
-          InsanichessUser.fromJson(body['json']),
+          InsanichessUser.fromJson(body['user']),
           InsanichessSettings.fromJson(body['settings']),
         ]);
       case HttpStatus.badRequest:

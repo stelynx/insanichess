@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/global/global_bloc.dart';
 import '../../bloc/settings/settings_bloc.dart';
 import '../../router/routes.dart';
-import '../../services/local_storage_service.dart';
+import '../../services/backend_service.dart';
 import '../../widgets/util/cupertino_list_section.dart';
 import '../../widgets/util/cupertino_list_tile.dart';
 import 'otb_settings.dart';
@@ -17,7 +17,7 @@ class SettingsScreen extends StatelessWidget {
     return BlocProvider<SettingsBloc>(
       create: (BuildContext context) => SettingsBloc(
         globalBloc: GlobalBloc.instance,
-        localStorageService: LocalStorageService.instance,
+        backendService: BackendService.instance,
       ),
       child: const _SettingsScreen(),
     );

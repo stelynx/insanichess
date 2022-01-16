@@ -77,4 +77,52 @@ class BackendService {
         return error(const UnknownBackendFailure());
     }
   }
+
+  Future<Either<BackendFailure, InsanichessSettings>> getSettings() async {
+    final http.Response response = await http.get(
+      uriForPath([ICServerRoute.api, ICServerRoute.apiSettings]),
+      headers: <String, String>{
+        HttpHeaders.authorizationHeader: authHeaderValue(),
+      },
+    );
+
+    switch (response.statusCode) {
+      case HttpStatus.ok:
+        return value(InsanichessSettings.fromJson(jsonDecode(response.body)));
+      case HttpStatus.unauthorized:
+        return error(const UnauthorizedBackendFailure());
+      case HttpStatus.internalServerError:
+        return error(const InternalServerErrorBackendFailure());
+      default:
+        return error(const UnknownBackendFailure());
+    }
+  }
+
+  /// Updates settings with [settingObject] which is either a key:value pair or
+  /// otb:{key:value}.
+  Future<Either<BackendFailure, void>> updateSetting(
+    Map<String, dynamic> settingObject,
+  ) async {
+    final http.Response response = await http.patch(
+      uriForPath([ICServerRoute.api, ICServerRoute.apiSettings]),
+      headers: <String, String>{
+        HttpHeaders.authorizationHeader: authHeaderValue(),
+        HttpHeaders.contentTypeHeader: ContentType.json.value,
+      },
+      body: jsonEncode(settingObject),
+    );
+
+    switch (response.statusCode) {
+      case HttpStatus.ok:
+        return value(null);
+      case HttpStatus.unauthorized:
+        return error(const UnauthorizedBackendFailure());
+      case HttpStatus.badRequest:
+        return error(const BadRequestBackendFailure());
+      case HttpStatus.internalServerError:
+        return error(const InternalServerErrorBackendFailure());
+      default:
+        return error(const UnknownBackendFailure());
+    }
+  }
 }

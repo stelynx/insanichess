@@ -92,6 +92,21 @@ class SignInBloc extends Bloc<_SignInEvent, SignInState> {
     _globalBloc.updateJwtToken(userOrFailure.value.jwtToken!);
     _localStorageService.saveJwtToken(userOrFailure.value.jwtToken!);
 
+    final Either<BackendFailure, InsanichessSettings> settingsOrFailure =
+        await _backendService.getSettings();
+
+    if (settingsOrFailure.isError()) {
+      _globalBloc.reset();
+      emit(state.copyWith(
+        isLoading: false,
+        signInSuccessful: false,
+        failure: settingsOrFailure.error,
+      ));
+      return;
+    }
+
+    _globalBloc.changeSettings(settingsOrFailure.value);
+
     final Either<BackendFailure, InsanichessPlayer?> maybePlayerOrFailure =
         await _backendService.getPlayerMyself();
     if (maybePlayerOrFailure.isError()) {
@@ -144,7 +159,6 @@ class SignInBloc extends Bloc<_SignInEvent, SignInState> {
         .saveJwtToken(userAndSettingsOrFailure.value.first.jwtToken!);
 
     _globalBloc.changeSettings(userAndSettingsOrFailure.value[1]);
-    _localStorageService.saveSettings(userAndSettingsOrFailure.value[1]);
 
     emit(state.copyWith(
       isLoading: false,

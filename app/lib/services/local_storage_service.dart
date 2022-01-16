@@ -85,6 +85,8 @@ class LocalStorageService {
     return InsanichessGame.fromICString(await f.readAsString());
   }
 
+  @Deprecated('Settings are now saved on the server. We keep this method for'
+      'future reference and potential usage.')
   Future<void> saveSettings(InsanichessSettings settings) async {
     final LocalStorage storage = LocalStorage(_settingsFile);
     await storage.ready;
@@ -96,6 +98,8 @@ class LocalStorageService {
     );
   }
 
+  @Deprecated('Settings are now saved on the server. We keep this method for'
+      'future reference and potential usage.')
   Future<InsanichessSettings?> readSettings() async {
     final LocalStorage storage = LocalStorage(_settingsFile);
     await storage.ready;

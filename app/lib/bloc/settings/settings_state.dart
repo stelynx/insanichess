@@ -10,6 +10,8 @@ class SettingsState {
   final bool showZoomOutButtonOnLeft;
   final bool showLegalMoves;
 
+  final BackendFailure? backendFailure;
+
   const SettingsState({
     required this.otbRotateChessboard,
     required this.otbMirrorTopPieces,
@@ -18,6 +20,7 @@ class SettingsState {
     required this.otbAutoZoomOutOnMove,
     required this.showZoomOutButtonOnLeft,
     required this.showLegalMoves,
+    required this.backendFailure,
   });
 
   SettingsState.initial(InsanichessSettings settings)
@@ -27,7 +30,8 @@ class SettingsState {
         otbAlwaysPromoteToQueen = settings.otb.alwaysPromoteToQueen,
         otbAutoZoomOutOnMove = settings.otb.autoZoomOutOnMove,
         showZoomOutButtonOnLeft = settings.showZoomOutButtonOnLeft,
-        showLegalMoves = settings.showLegalMoves;
+        showLegalMoves = settings.showLegalMoves,
+        backendFailure = null;
 
   SettingsState copyWith({
     bool? otbRotateChessboard,
@@ -37,6 +41,7 @@ class SettingsState {
     AutoZoomOutOnMoveBehaviour? otbAutoZoomOutOnMove,
     bool? showZoomOutButtonOnLeft,
     bool? showLegalMoves,
+    BackendFailure? backendFailure,
   }) {
     return SettingsState(
       otbRotateChessboard: otbRotateChessboard ?? this.otbRotateChessboard,
@@ -48,6 +53,7 @@ class SettingsState {
       showZoomOutButtonOnLeft:
           showZoomOutButtonOnLeft ?? this.showZoomOutButtonOnLeft,
       showLegalMoves: showLegalMoves ?? this.showLegalMoves,
+      backendFailure: backendFailure,
     );
   }
 }

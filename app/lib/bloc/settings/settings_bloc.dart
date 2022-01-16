@@ -4,7 +4,9 @@ import 'package:bloc/bloc.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:meta/meta.dart';
 
-import '../../services/local_storage_service.dart';
+import '../../services/backend_service.dart';
+import '../../util/either.dart';
+import '../../util/failures/backend_failure.dart';
 import '../global/global_bloc.dart';
 
 part 'settings_event.dart';
@@ -12,16 +14,13 @@ part 'settings_state.dart';
 
 class SettingsBloc extends Bloc<_SettingsEvent, SettingsState> {
   final GlobalBloc _globalBloc;
-
-  final StreamSubscription<InsanichessSettings> _settingsStreamSubscription;
+  final BackendService _backendService;
 
   SettingsBloc({
     required GlobalBloc globalBloc,
-    required LocalStorageService localStorageService,
+    required BackendService backendService,
   })  : _globalBloc = globalBloc,
-        _settingsStreamSubscription = globalBloc.settingsStream.listen(
-            (InsanichessSettings settings) =>
-                localStorageService.saveSettings(settings)),
+        _backendService = backendService,
         super(SettingsState.initial(globalBloc.state.settings!)) {
     on<_ToggleShowLegalMoves>(_onToggleShowLegalMoves);
     on<_ToggleShowZoomButtonOnLeft>(_onToggleShowZoomButtonOnLeft);
@@ -30,12 +29,6 @@ class SettingsBloc extends Bloc<_SettingsEvent, SettingsState> {
     on<_ToggleOtbAllowUndo>(_onToggleOtbAllowUndo);
     on<_ToggleOtbAlwaysPromoteToQueen>(_onToggleOtbAlwaysPromoteToQueen);
     on<_ToggleOtbAutoZoomOutOnMove>(_onToggleOtbAutoZoomOutOnMove);
-  }
-
-  @override
-  Future<void> close() async {
-    await _settingsStreamSubscription.cancel();
-    return super.close();
   }
 
   // Public API
@@ -55,83 +48,189 @@ class SettingsBloc extends Bloc<_SettingsEvent, SettingsState> {
     _ToggleShowLegalMoves event,
     Emitter<SettingsState> emit,
   ) async {
-    _globalBloc.changeSettings(_globalBloc.state.settings!
-        .copyWith(showLegalMoves: !state.showLegalMoves));
-    emit(state.copyWith(showLegalMoves: !state.showLegalMoves));
+    final bool oldValue = state.showLegalMoves;
+    final bool newValue = !oldValue;
+    emit(state.copyWith(showLegalMoves: newValue));
+
+    final Either<BackendFailure, void> updateResult =
+        await _backendService.updateSetting(<String, dynamic>{
+      InsanichessSettingsJsonKey.showLegalMoves: newValue,
+    });
+    if (updateResult.isError()) {
+      emit(state.copyWith(
+        showLegalMoves: oldValue,
+        backendFailure: updateResult.error,
+      ));
+      return;
+    }
+
+    _globalBloc.changeSettings(
+        _globalBloc.state.settings!.copyWith(showLegalMoves: newValue));
   }
 
   FutureOr<void> _onToggleShowZoomButtonOnLeft(
     _ToggleShowZoomButtonOnLeft event,
     Emitter<SettingsState> emit,
   ) async {
+    final bool oldValue = state.showZoomOutButtonOnLeft;
+    final bool newValue = !oldValue;
+    emit(state.copyWith(showZoomOutButtonOnLeft: newValue));
+
+    final Either<BackendFailure, void> updateResult =
+        await _backendService.updateSetting(<String, dynamic>{
+      InsanichessSettingsJsonKey.showZoomOutButtonOnLeft: newValue,
+    });
+    if (updateResult.isError()) {
+      emit(state.copyWith(
+        showZoomOutButtonOnLeft: oldValue,
+        backendFailure: updateResult.error,
+      ));
+      return;
+    }
+
     _globalBloc.changeSettings(_globalBloc.state.settings!
-        .copyWith(showZoomOutButtonOnLeft: !state.showZoomOutButtonOnLeft));
-    emit(state.copyWith(
-      showZoomOutButtonOnLeft: !state.showZoomOutButtonOnLeft,
-    ));
+        .copyWith(showZoomOutButtonOnLeft: newValue));
   }
 
   FutureOr<void> _onToggleOtbRotateChessboard(
     _ToggleOtbRotateChessBoard event,
     Emitter<SettingsState> emit,
   ) async {
+    final bool oldValue = state.otbRotateChessboard;
+    final bool newValue = !oldValue;
+    emit(state.copyWith(otbRotateChessboard: newValue));
+
+    final Either<BackendFailure, void> updateResult =
+        await _backendService.updateSetting(<String, dynamic>{
+      InsanichessSettingsJsonKey.otb: <String, dynamic>{
+        InsanichessOtbSettingsJsonKey.rotateChessboard: newValue,
+      },
+    });
+    if (updateResult.isError()) {
+      emit(state.copyWith(
+        otbRotateChessboard: oldValue,
+        backendFailure: updateResult.error,
+      ));
+      return;
+    }
+
     _globalBloc.changeSettings(_globalBloc.state.settings!.copyWith(
-      otb: _globalBloc.state.settings!.otb
-          .copyWith(rotateChessboard: !state.otbRotateChessboard),
+      otb: _globalBloc.state.settings!.otb.copyWith(rotateChessboard: newValue),
     ));
-    emit(state.copyWith(otbRotateChessboard: !state.otbRotateChessboard));
   }
 
   FutureOr<void> _onToggleOtbAllowUndo(
     _ToggleOtbAllowUndo event,
     Emitter<SettingsState> emit,
   ) async {
+    final bool oldValue = state.otbAllowUndo;
+    final bool newValue = !oldValue;
+    emit(state.copyWith(otbAllowUndo: newValue));
+
+    final Either<BackendFailure, void> updateResult =
+        await _backendService.updateSetting(<String, dynamic>{
+      InsanichessSettingsJsonKey.otb: <String, dynamic>{
+        InsanichessGameSettingsJsonKey.allowUndo: newValue,
+      },
+    });
+    if (updateResult.isError()) {
+      emit(state.copyWith(
+        otbAllowUndo: oldValue,
+        backendFailure: updateResult.error,
+      ));
+      return;
+    }
+
     _globalBloc.changeSettings(_globalBloc.state.settings!.copyWith(
-      otb: _globalBloc.state.settings!.otb
-          .copyWith(allowUndo: !state.otbAllowUndo),
+      otb: _globalBloc.state.settings!.otb.copyWith(allowUndo: newValue),
     ));
-    emit(state.copyWith(otbAllowUndo: !state.otbAllowUndo));
   }
 
   FutureOr<void> _onToggleOtbMirrorTopPieces(
     _ToggleOtbMirrorTopPieces event,
     Emitter<SettingsState> emit,
   ) async {
+    final bool oldValue = state.otbMirrorTopPieces;
+    final bool newValue = !oldValue;
+    emit(state.copyWith(otbMirrorTopPieces: newValue));
+
+    final Either<BackendFailure, void> updateResult =
+        await _backendService.updateSetting(<String, dynamic>{
+      InsanichessSettingsJsonKey.otb: <String, dynamic>{
+        InsanichessOtbSettingsJsonKey.mirrorTopPieces: newValue,
+      },
+    });
+    if (updateResult.isError()) {
+      emit(state.copyWith(
+        otbMirrorTopPieces: oldValue,
+        backendFailure: updateResult.error,
+      ));
+      return;
+    }
+
     _globalBloc.changeSettings(_globalBloc.state.settings!.copyWith(
-      otb: _globalBloc.state.settings!.otb
-          .copyWith(mirrorTopPieces: !state.otbMirrorTopPieces),
+      otb: _globalBloc.state.settings!.otb.copyWith(mirrorTopPieces: newValue),
     ));
-    emit(state.copyWith(otbMirrorTopPieces: !state.otbMirrorTopPieces));
   }
 
   FutureOr<void> _onToggleOtbAlwaysPromoteToQueen(
     _ToggleOtbAlwaysPromoteToQueen event,
     Emitter<SettingsState> emit,
   ) async {
+    final bool oldValue = state.otbAlwaysPromoteToQueen;
+    final bool newValue = !oldValue;
+    emit(state.copyWith(otbAlwaysPromoteToQueen: newValue));
+
+    final Either<BackendFailure, void> updateResult =
+        await _backendService.updateSetting(<String, dynamic>{
+      InsanichessSettingsJsonKey.otb: <String, dynamic>{
+        InsanichessGameSettingsJsonKey.alwaysPromoteToQueen: newValue,
+      },
+    });
+    if (updateResult.isError()) {
+      emit(state.copyWith(
+        otbAlwaysPromoteToQueen: oldValue,
+        backendFailure: updateResult.error,
+      ));
+      return;
+    }
+
     _globalBloc.changeSettings(_globalBloc.state.settings!.copyWith(
       otb: _globalBloc.state.settings!.otb
-          .copyWith(alwaysPromoteToQueen: !state.otbAlwaysPromoteToQueen),
+          .copyWith(alwaysPromoteToQueen: newValue),
     ));
-    emit(state.copyWith(
-        otbAlwaysPromoteToQueen: !state.otbAlwaysPromoteToQueen));
   }
 
   FutureOr<void> _onToggleOtbAutoZoomOutOnMove(
     _ToggleOtbAutoZoomOutOnMove event,
     Emitter<SettingsState> emit,
   ) async {
+    final AutoZoomOutOnMoveBehaviour oldValue = state.otbAutoZoomOutOnMove;
+    final AutoZoomOutOnMoveBehaviour newValue =
+        oldValue == AutoZoomOutOnMoveBehaviour.always
+            ? AutoZoomOutOnMoveBehaviour.never
+            : AutoZoomOutOnMoveBehaviour.always;
+    emit(state.copyWith(otbAutoZoomOutOnMove: newValue));
+
+    final Either<BackendFailure, void> updateResult =
+        await _backendService.updateSetting(<String, dynamic>{
+      InsanichessSettingsJsonKey.otb: <String, dynamic>{
+        InsanichessGameSettingsJsonKey.autoZoomOutOnMove:
+            newValue == AutoZoomOutOnMoveBehaviour.always ? 3 : 0,
+      },
+    });
+    if (updateResult.isError()) {
+      emit(state.copyWith(
+        otbAutoZoomOutOnMove: oldValue,
+        backendFailure: updateResult.error,
+      ));
+      return;
+    }
+
     _globalBloc.changeSettings(_globalBloc.state.settings!.copyWith(
       otb: _globalBloc.state.settings!.otb.copyWith(
-          autoZoomOutOnMove:
-              state.otbAutoZoomOutOnMove == AutoZoomOutOnMoveBehaviour.always
-                  ? AutoZoomOutOnMoveBehaviour.never
-                  : AutoZoomOutOnMoveBehaviour.always),
-    ));
-    emit(state.copyWith(
-      otbAutoZoomOutOnMove:
-          state.otbAutoZoomOutOnMove == AutoZoomOutOnMoveBehaviour.always
-              ? AutoZoomOutOnMoveBehaviour.never
-              : AutoZoomOutOnMoveBehaviour.always,
+        autoZoomOutOnMove: newValue,
+      ),
     ));
   }
 }

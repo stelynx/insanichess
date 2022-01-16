@@ -81,13 +81,6 @@ class SplashScreenBloc extends Bloc<_SplashScreenEvent, SplashScreenState> {
   // Helpers
 
   Future<String> _initialize() async {
-    InsanichessSettings? settings = await _localStorageService.readSettings();
-    if (settings == null) {
-      settings = const InsanichessSettings.defaults();
-      await _localStorageService.saveSettings(settings);
-    }
-    _globalBloc.changeSettings(settings);
-
     String? jwtToken = await _localStorageService.readJwtToken();
     if (jwtToken == null) {
       return ICRoute.signIn;
@@ -99,6 +92,15 @@ class SplashScreenBloc extends Bloc<_SplashScreenEvent, SplashScreenState> {
     if (playerOrFailure.isError()) return ICRoute.signIn;
     if (!playerOrFailure.hasValue()) return ICRoute.playerRegistration;
     _globalBloc.updatePlayerMyself(playerOrFailure.value!);
+
+    final Either<BackendFailure, InsanichessSettings> settingsOrFailure =
+        await _backendService.getSettings();
+    if (settingsOrFailure.isError()) {
+      _globalBloc.reset();
+      return ICRoute.signIn;
+    }
+    _globalBloc.changeSettings(settingsOrFailure.value);
+
     return ICRoute.home;
   }
 }

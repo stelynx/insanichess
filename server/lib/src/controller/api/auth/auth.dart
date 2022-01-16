@@ -77,7 +77,7 @@ class AuthController {
   /// response has status code 400. In case a database error occurs, response
   /// code is 500. In case of successful login, status code is set to 201.
   ///
-  /// The response contains data about the user.
+  /// The response contains data about the user and settings.
   Future<void> handleRegistration(HttpRequest request) async {
     if (request.method != 'POST' ||
         request.contentLength <= 0 ||

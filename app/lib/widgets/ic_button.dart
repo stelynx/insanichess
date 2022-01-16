@@ -32,16 +32,43 @@ class ICButton extends StatelessWidget {
   }
 }
 
-class ICIconButton extends ICButton {
-  ICIconButton({
+class ICTrailingButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onPressed;
+
+  const ICTrailingButton({
     Key? key,
-    required IconData icon,
-    VoidCallback? onPressed,
-  }) : super(
-          key: key,
-          child: Icon(icon),
-          onPressed: onPressed,
-        );
+    required this.icon,
+    this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      child: Semantics(
+        container: true,
+        excludeSemantics: true,
+        label: 'Menu',
+        button: true,
+        child: DefaultTextStyle(
+          style: CupertinoTheme.of(context).textTheme.navActionTextStyle,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 50),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                const Padding(padding: EdgeInsetsDirectional.only(start: 6.0)),
+                Icon(icon),
+              ],
+            ),
+          ),
+        ),
+      ),
+      onPressed: onPressed,
+    );
+  }
 }
 
 class ICTextButton extends ICButton {
@@ -114,7 +141,7 @@ class ICConfirmButton extends ICTextButton {
         );
 }
 
-class ICGameControlButton extends ICIconButton {
+class ICGameControlButton extends ICTrailingButton {
   ICGameControlButton({
     Key? key,
     required IconData icon,

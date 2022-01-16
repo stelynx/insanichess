@@ -11,10 +11,6 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   flutter_bloc: ^8.0.0
-  flutter_inner_drawer:
-    git:
-      url: https://github.com/kenjishiromajp/flutter_inner_drawer
-      ref: kenjishiromajp-update-for-2.12-null-safety-casting
   flutter_markdown: ^0.6.9
   flutter_svg: ^1.0.0
   http: ^0.13.4

@@ -82,53 +82,56 @@ class _SignInScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Hero(
-                      tag: 'hero',
-                      child: SvgPicture.asset(
-                        MediaQuery.of(context).platformBrightness ==
-                                Brightness.light
-                            ? ICImage.logoLight
-                            : ICImage.logoDark,
-                        width: logoSize,
-                        height: logoSize,
+                child: SizedBox(
+                  width: min(500, MediaQuery.of(context).size.width - 60),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Hero(
+                        tag: 'hero',
+                        child: SvgPicture.asset(
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.light
+                              ? ICImage.logoLight
+                              : ICImage.logoDark,
+                          width: logoSize,
+                          height: logoSize,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: logoSize / 10),
-                    ICTextField(
-                      placeholder: 'Email',
-                      onChanged: bloc.emailChanged,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    SizedBox(height: logoSize / 40),
-                    ICTextField(
-                      placeholder: 'Password',
-                      onChanged: bloc.passwordChanged,
-                      obscureText: true,
-                    ),
-                    SizedBox(height: logoSize / 40),
-                    if (errorMessage != null) ...[
-                      Text(
-                        errorMessage,
-                        textAlign: TextAlign.center,
-                        style:
-                            const TextStyle(color: CupertinoColors.systemRed),
+                      SizedBox(height: logoSize / 10),
+                      ICTextField(
+                        placeholder: 'Email',
+                        onChanged: bloc.emailChanged,
+                        keyboardType: TextInputType.emailAddress,
                       ),
                       SizedBox(height: logoSize / 40),
+                      ICTextField(
+                        placeholder: 'Password',
+                        onChanged: bloc.passwordChanged,
+                        obscureText: true,
+                      ),
+                      SizedBox(height: logoSize / 40),
+                      if (errorMessage != null) ...[
+                        Text(
+                          errorMessage,
+                          textAlign: TextAlign.center,
+                          style:
+                              const TextStyle(color: CupertinoColors.systemRed),
+                        ),
+                        SizedBox(height: logoSize / 40),
+                      ],
+                      ICPrimaryButton(
+                        text: 'Sign in',
+                        onPressed: state.isLoading ? null : bloc.signIn,
+                      ),
+                      SizedBox(height: logoSize / 20),
+                      ICSecondaryButton(
+                        text: 'Register',
+                        onPressed: state.isLoading ? null : bloc.register,
+                      ),
                     ],
-                    ICPrimaryButton(
-                      text: 'Sign in',
-                      onPressed: state.isLoading ? null : bloc.signIn,
-                    ),
-                    SizedBox(height: logoSize / 20),
-                    ICSecondaryButton(
-                      text: 'Register',
-                      onPressed: state.isLoading ? null : bloc.register,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

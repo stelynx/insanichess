@@ -25,10 +25,18 @@ abstract class ICColor {
     darkColor: Color(0xff000000),
   );
 
+  static const CupertinoDynamicColor highlightColor =
+      CupertinoDynamicColor.withBrightness(
+    color: Color(0xffcccccc),
+    darkColor: Color(0xff333333),
+  );
+
   /// Color used for filled buttons that confirm actions and for success.
   static const Color confirm = CupertinoColors.activeGreen;
 
   /// Color used for filled buttons that confirm destructive actions and for
   /// failure.
   static const Color danger = CupertinoColors.destructiveRed;
+
+  static const Color transparent = Color(0x00000000);
 }

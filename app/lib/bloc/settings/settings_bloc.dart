@@ -1,18 +1,23 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/widgets.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:meta/meta.dart';
 
 import '../../services/backend_service.dart';
 import '../../util/either.dart';
 import '../../util/failures/backend_failure.dart';
+import '../../widgets/ic_drawer.dart';
 import '../global/global_bloc.dart';
 
 part 'settings_event.dart';
 part 'settings_state.dart';
 
 class SettingsBloc extends Bloc<_SettingsEvent, SettingsState> {
+  final GlobalKey<ICDrawerState> drawerKey = GlobalKey<ICDrawerState>();
+  final GlobalKey<ICDrawerState> drawerKeyOtb = GlobalKey<ICDrawerState>();
+
   final GlobalBloc _globalBloc;
   final BackendService _backendService;
 

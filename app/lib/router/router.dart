@@ -14,7 +14,7 @@ import 'routes.dart';
 
 /// Provides [onGenerateRoute] function and stores current topmost route.
 abstract class ICRouter {
-  static List<String> _routeHistory = <String>[];
+  static final List<String> _routeHistory = <String>[];
 
   static bool isCurrentRoute(String routeName) =>
       _routeHistory.last == routeName;

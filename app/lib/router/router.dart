@@ -12,8 +12,38 @@ import '../screens/splash.dart';
 import '../util/logger.dart';
 import 'routes.dart';
 
-/// Provides [onGenerateRoute] function.
+/// Provides [onGenerateRoute] function and stores current topmost route.
 abstract class ICRouter {
+  static final List<String> _routeHistory = <String>[];
+
+  static bool isCurrentRoute(String routeName) =>
+      _routeHistory.last == routeName;
+
+  /// Pops the route and updates [routeHistory].
+  static void pop(BuildContext context) {
+    _routeHistory.removeLast();
+    Navigator.of(context).pop();
+  }
+
+  /// Pops the route and updates [routeHistory].
+  static void popUntil(BuildContext context, bool Function() until) {
+    while (!until()) {
+      _routeHistory.removeLast();
+      Navigator.of(context).pop();
+    }
+  }
+
+  /// Pushes the named route with [name] and [args] and updates [routeHistory].
+  static Future<void> pushNamed(
+    BuildContext context,
+    String name, {
+    Object? arguments,
+  }) async {
+    _routeHistory.add(name);
+    return await Navigator.of(context)
+        .pushNamed<void>(name, arguments: arguments);
+  }
+
   /// Transforms [settings] into corresponding route.
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     Logger.instance.info(

@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../../bloc/settings/settings_bloc.dart';
+import '../../router/router.dart';
+import '../../router/routes.dart';
+import '../../widgets/ic_toast.dart';
 import '../../widgets/util/cupertino_list_section.dart';
 import '../../widgets/util/cupertino_list_tile.dart';
 
@@ -26,9 +29,16 @@ class OtbSettingsScreen extends StatelessWidget {
       bloc: args.settingsBloc,
       listener: (BuildContext context, SettingsState state) {},
       builder: (BuildContext context, SettingsState state) {
-        return CupertinoPageScaffold(
-          navigationBar: const CupertinoNavigationBar(
-            middle: Text('OTB Settings'),
+        Widget child = CupertinoPageScaffold(
+          navigationBar: CupertinoNavigationBar(
+            middle: const Text('OTB Settings'),
+            border: const Border(),
+            leading: CupertinoNavigationBarBackButton(
+              onPressed: () {
+                args.settingsBloc.hideFailure();
+                ICRouter.pop(context);
+              },
+            ),
           ),
           child: Column(
             children: <Widget>[
@@ -82,6 +92,28 @@ class OtbSettingsScreen extends StatelessWidget {
             ],
           ),
         );
+
+        if (state.backendFailure != null &&
+            ICRouter.isCurrentRoute(ICRoute.settingsOtb)) {
+          child = Stack(
+            alignment: Alignment.bottomCenter,
+            children: <Widget>[
+              child,
+              Positioned(
+                bottom: MediaQuery.of(context).padding.bottom == 0 ? 16 : 0,
+                child: SafeArea(
+                  child: ICToast(
+                    isSuccess: false,
+                    message: 'Could not save settings',
+                    onTap: args.settingsBloc.hideFailure,
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+
+        return child;
       },
     );
   }

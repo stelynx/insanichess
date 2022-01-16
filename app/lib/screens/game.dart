@@ -4,6 +4,7 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../bloc/game/game_bloc.dart';
 import '../bloc/global/global_bloc.dart';
+import '../router/router.dart';
 import '../services/local_storage_service.dart';
 import '../widgets/ic_board.dart';
 import '../widgets/ic_button.dart';
@@ -49,7 +50,7 @@ class _GameScreen extends StatelessWidget {
             leading: CupertinoNavigationBarBackButton(
               onPressed: () {
                 if (!state.game.inProgress) {
-                  Navigator.of(context).pop();
+                  ICRouter.pop(context);
                   return;
                 }
 
@@ -63,13 +64,13 @@ class _GameScreen extends StatelessWidget {
                       actions: <CupertinoDialogAction>[
                         CupertinoDialogAction(
                           child: const Text('Keep Playing'),
-                          onPressed: Navigator.of(context).pop,
+                          onPressed: () => ICRouter.pop(context),
                         ),
                         CupertinoDialogAction(
                           isDestructiveAction: true,
                           onPressed: () {
                             int i = 0;
-                            Navigator.of(context).popUntil((_) => i++ == 2);
+                            ICRouter.popUntil(context, () => i++ == 2);
                           },
                           child: const Text('Quit'),
                         ),
@@ -139,14 +140,15 @@ class _GameScreen extends StatelessWidget {
                                       actions: <CupertinoDialogAction>[
                                         CupertinoDialogAction(
                                           child: const Text('No'),
-                                          onPressed: Navigator.of(context).pop,
+                                          onPressed: () =>
+                                              ICRouter.pop(context),
                                         ),
                                         CupertinoDialogAction(
                                           child: const Text('Yes'),
                                           isDefaultAction: true,
                                           onPressed: () {
                                             bloc.agreeToDraw();
-                                            Navigator.of(context).pop();
+                                            () => ICRouter.pop(context);
                                           },
                                         )
                                       ],
@@ -168,14 +170,14 @@ class _GameScreen extends StatelessWidget {
                               actions: <CupertinoDialogAction>[
                                 CupertinoDialogAction(
                                   child: const Text('No'),
-                                  onPressed: Navigator.of(context).pop,
+                                  onPressed: () => ICRouter.pop(context),
                                 ),
                                 CupertinoDialogAction(
                                   child: const Text('Yes'),
                                   isDestructiveAction: true,
                                   onPressed: () {
                                     bloc.newGame();
-                                    Navigator.of(context).pop();
+                                    () => ICRouter.pop(context);
                                   },
                                 )
                               ],

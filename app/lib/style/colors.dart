@@ -25,6 +25,10 @@ abstract class ICColor {
     darkColor: Color(0xff000000),
   );
 
-  /// Color used for filled buttons that confirm actions.
+  /// Color used for filled buttons that confirm actions and for success.
   static const Color confirm = CupertinoColors.activeGreen;
+
+  /// Color used for filled buttons that confirm destructive actions and for
+  /// failure.
+  static const Color danger = CupertinoColors.destructiveRed;
 }

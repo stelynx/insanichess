@@ -22,6 +22,7 @@ class SettingsBloc extends Bloc<_SettingsEvent, SettingsState> {
   })  : _globalBloc = globalBloc,
         _backendService = backendService,
         super(SettingsState.initial(globalBloc.state.settings!)) {
+    on<_HideFailure>(_onHideFailure);
     on<_ToggleShowLegalMoves>(_onToggleShowLegalMoves);
     on<_ToggleShowZoomButtonOnLeft>(_onToggleShowZoomButtonOnLeft);
     on<_ToggleOtbRotateChessBoard>(_onToggleOtbRotateChessboard);
@@ -33,6 +34,7 @@ class SettingsBloc extends Bloc<_SettingsEvent, SettingsState> {
 
   // Public API
 
+  void hideFailure() => add(const _HideFailure());
   void toggleOtbRotateChessboard() => add(const _ToggleOtbRotateChessBoard());
   void toggleOtbMirrorTopPieces() => add(const _ToggleOtbMirrorTopPieces());
   void toggleOtbAllowUndo() => add(const _ToggleOtbAllowUndo());
@@ -43,6 +45,13 @@ class SettingsBloc extends Bloc<_SettingsEvent, SettingsState> {
   void toggleShowZoomButtonOnLeft() => add(const _ToggleShowZoomButtonOnLeft());
 
   // Handlers
+
+  FutureOr<void> _onHideFailure(
+    _HideFailure event,
+    Emitter<SettingsState> emit,
+  ) async {
+    emit(state.copyWith());
+  }
 
   FutureOr<void> _onToggleShowLegalMoves(
     _ToggleShowLegalMoves event,

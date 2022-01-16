@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/global/global_bloc.dart';
 import '../../bloc/settings/settings_bloc.dart';
+import '../../router/router.dart';
 import '../../router/routes.dart';
 import '../../services/backend_service.dart';
+import '../../widgets/ic_toast.dart';
 import '../../widgets/util/cupertino_list_section.dart';
 import '../../widgets/util/cupertino_list_tile.dart';
 import 'otb_settings.dart';
@@ -34,9 +36,10 @@ class _SettingsScreen extends StatelessWidget {
     return BlocConsumer<SettingsBloc, SettingsState>(
       listener: (BuildContext context, SettingsState state) {},
       builder: (BuildContext context, SettingsState state) {
-        return CupertinoPageScaffold(
+        Widget child = CupertinoPageScaffold(
           navigationBar: const CupertinoNavigationBar(
             middle: Text('Settings'),
+            border: Border(),
           ),
           child: Column(
             children: <Widget>[
@@ -49,10 +52,14 @@ class _SettingsScreen extends StatelessWidget {
                   CupertinoListTile(
                     title: const Text('Over-the-board'),
                     trailing: const CupertinoListTileChevron(),
-                    onTap: () => Navigator.of(context).pushNamed(
-                      ICRoute.settingsOtb,
-                      arguments: OtbSettingsScreenArgs(settingsBloc: bloc),
-                    ),
+                    onTap: () {
+                      bloc.hideFailure();
+                      return ICRouter.pushNamed(
+                        context,
+                        ICRoute.settingsOtb,
+                        arguments: OtbSettingsScreenArgs(settingsBloc: bloc),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -81,6 +88,28 @@ class _SettingsScreen extends StatelessWidget {
             ],
           ),
         );
+
+        if (state.backendFailure != null &&
+            ICRouter.isCurrentRoute(ICRoute.settings)) {
+          child = Stack(
+            alignment: Alignment.bottomCenter,
+            children: <Widget>[
+              child,
+              Positioned(
+                bottom: MediaQuery.of(context).padding.bottom == 0 ? 16 : 0,
+                child: SafeArea(
+                  child: ICToast(
+                    isSuccess: false,
+                    message: 'Could not save settings',
+                    onTap: bloc.hideFailure,
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+
+        return child;
       },
     );
   }

@@ -5,6 +5,10 @@ abstract class _SettingsEvent {
   const _SettingsEvent();
 }
 
+class _HideFailure extends _SettingsEvent {
+  const _HideFailure();
+}
+
 class _ToggleOtbRotateChessBoard extends _SettingsEvent {
   const _ToggleOtbRotateChessBoard();
 }

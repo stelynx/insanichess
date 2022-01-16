@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 
 // These constants were eyeballed from iOS 14.4 Settings app for base, Notes for
@@ -217,7 +219,7 @@ class CupertinoListTile extends StatefulWidget {
   /// The [onTap] function is called when a user taps on [CupertinoListTile]. If
   /// left `null`, the [CupertinoListTile] will not show any visual information
   /// when tapped.
-  final Future<void> Function()? onTap;
+  final FutureOr<void> Function()? onTap;
 
   /// The [backgroundColor] of the tile in normal state. Once the tile is
   /// tapped, the background color switches to [backgroundColorActivated]. It is
@@ -389,7 +391,7 @@ class _CupertinoListTileState extends State<CupertinoListTile> {
       onTapDown: (_) => setState(() => _tapped = true),
       onTapCancel: () => setState(() => _tapped = false),
       onTap: () async {
-        await widget.onTap!();
+        await widget.onTap?.call();
         setState(() => _tapped = false);
       },
       behavior: HitTestBehavior.opaque,

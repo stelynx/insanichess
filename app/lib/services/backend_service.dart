@@ -125,4 +125,32 @@ class BackendService {
         return error(const UnknownBackendFailure());
     }
   }
+
+  Future<Either<BackendFailure, InsanichessChallenge>> createChallenge(
+    InsanichessChallenge challenge,
+  ) async {
+    final http.Response response = await http.post(
+      uriForPath([ICServerRoute.api, ICServerRoute.apiChallenge]),
+      headers: <String, String>{
+        HttpHeaders.authorizationHeader: authHeaderValue(),
+        HttpHeaders.contentTypeHeader: ContentType.json.value,
+      },
+      body: jsonEncode(challenge.toJson()),
+    );
+
+    print(response.body);
+
+    switch (response.statusCode) {
+      case HttpStatus.created:
+        return value(InsanichessChallenge.fromJson(jsonDecode(response.body)));
+      case HttpStatus.badRequest:
+        return error(const BadRequestBackendFailure());
+      case HttpStatus.unauthorized:
+        return error(const UnauthorizedBackendFailure());
+      case HttpStatus.internalServerError:
+        return error(const InternalServerErrorBackendFailure());
+      default:
+        return error(const UnknownBackendFailure());
+    }
+  }
 }

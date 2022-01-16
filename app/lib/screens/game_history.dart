@@ -4,6 +4,7 @@ import 'package:insanichess/insanichess.dart' as insanichess;
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../bloc/game_history/game_history_bloc.dart';
+import '../router/router.dart';
 import '../router/routes.dart';
 import '../services/local_storage_service.dart';
 import '../widgets/util/cupertino_list_section.dart';
@@ -57,7 +58,8 @@ class _GameHistoryScreen extends StatelessWidget {
                                 ? '0 - 1'
                                 : '½ - ½',
                       ),
-                      onTap: () => Navigator.of(context).pushNamed(
+                      onTap: () => ICRouter.pushNamed(
+                        context,
                         ICRoute.game,
                         arguments: GameScreenArgs(gameBeingShown: game),
                       ),

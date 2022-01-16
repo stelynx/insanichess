@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../bloc/global/global_bloc.dart';
 import '../bloc/sign_in/sign_in_bloc.dart';
+import '../router/router.dart';
 import '../router/routes.dart';
 import '../services/auth_service.dart';
 import '../services/backend_service.dart';
@@ -44,9 +45,9 @@ class _SignInScreen extends StatelessWidget {
       listener: (BuildContext context, SignInState state) {
         if (state.signInSuccessful ?? false) {
           if (state.hasPlayerProfile!) {
-            Navigator.of(context).pushNamed(ICRoute.home);
+            ICRouter.pushNamed(context, ICRoute.home);
           } else {
-            Navigator.of(context).pushNamed(ICRoute.playerRegistration);
+            ICRouter.pushNamed(context, ICRoute.playerRegistration);
           }
           return;
         }

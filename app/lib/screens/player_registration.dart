@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../bloc/global/global_bloc.dart';
 import '../bloc/player_registration/player_registration_bloc.dart';
+import '../router/router.dart';
 import '../router/routes.dart';
 import '../services/backend_service.dart';
 import '../style/images.dart';
@@ -40,7 +41,7 @@ class _PlayerRegistrationScreen extends StatelessWidget {
     return BlocConsumer<PlayerRegistrationBloc, PlayerRegistrationState>(
       listener: (BuildContext context, PlayerRegistrationState state) {
         if (state.isRegistrationSuccessful ?? false) {
-          Navigator.of(context).pushNamed(ICRoute.home);
+          ICRouter.pushNamed(context, ICRoute.home);
           return;
         }
       },

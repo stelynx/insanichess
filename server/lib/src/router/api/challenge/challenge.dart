@@ -48,6 +48,25 @@ class ChallengeRouter implements RouterInterface {
       return respondWithBadRequest(request);
     }
 
+    // /api/challenge/<id>/{accept|decline}
+    if (pathSegments.length == 4) {
+      if (request.method == 'GET') {
+        if (pathSegments[3] == 'accept') {
+          return await _challengeController.handleAcceptChallenge(
+            request,
+            challengeId: pathSegments[2],
+          );
+        }
+
+        if (pathSegments[3] == 'decline') {
+          return await _challengeController.handleDeclineChallenge(
+            request,
+            challengeId: pathSegments[2],
+          );
+        }
+      }
+    }
+
     return respondWithBadRequest(request);
   }
 }

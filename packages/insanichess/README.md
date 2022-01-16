@@ -3,6 +3,7 @@
 _Insanichess game logic implementation._
 
 [![Lint & Test](https://github.com/stelynx/insanichess/actions/workflows/insanichess.lint_test.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/insanichess.lint_test.yml)
+[![](https://img.shields.io/pub/v/insanichess?color=3dc6fd&label=insanichess&logo=dart)](https://pub.dev/packages/insanichess)
 
 ## Overview
 

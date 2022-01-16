@@ -17,6 +17,13 @@ Insanichess will stay free forever and all source is available to everyone on th
 [![[server] Deploy Staging](https://github.com/stelynx/insanichess/actions/workflows/server.deploy_staging.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/server.deploy_staging.yml)
 [![[server] Lint & Test](https://github.com/stelynx/insanichess/actions/workflows/server.lint_test.yml/badge.svg)](https://github.com/stelynx/insanichess/actions/workflows/server.lint_test.yml)
 
+![](https://img.shields.io/github/languages/code-size/stelynx/insanichess?color=brown&logo=github&style=flat)
+![](https://img.shields.io/tokei/lines/github/stelynx/insanichess?label=lines&logo=github&style=flat)
+![](https://img.shields.io/github/license/stelynx/insanichess)
+[![](https://img.shields.io/pub/v/insanichess?color=3dc6fd&label=insanichess&logo=dart)](https://pub.dev/packages/insanichess)
+[![](https://img.shields.io/pub/v/insanichess_engine?color=3dc6fd&label=insanichess_engine&logo=dart)](https://pub.dev/packages/insanichess_engine)
+[![](https://img.shields.io/pub/v/insanichess_sdk?color=3dc6fd&label=insanichess_sdk&logo=dart)](https://pub.dev/packages/insanichess_sdk)
+
 <hr>
 
 _Are you ready to experience chess on a whole new level? More squares and more pieces make only your battle plan imagination an obstacle from achieving a victory!_

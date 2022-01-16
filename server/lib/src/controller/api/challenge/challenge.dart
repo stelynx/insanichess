@@ -147,8 +147,8 @@ class ChallengeController {
   /// [memory.openChallenges], 403 if user that created the challenge is the
   /// same as accepting it, otherwise 200.
   ///
-  /// Accepts the challenge, creates a game with temporary id and returns this
-  /// id in the body.
+  /// Accepts the challenge, creates a game with id of the challenge and returns
+  /// empty body.
   Future<void> handleAcceptChallenge(
     HttpRequest request, {
     required String challengeId,
@@ -189,13 +189,6 @@ class ChallengeController {
       return respondWithInternalServerError(request);
     }
 
-    // Generate temporary game id.
-    final Uuid uuid = Uuid();
-    String gameId = uuid.v4();
-    while (memory.gamesInProgress.containsKey(gameId)) {
-      gameId = uuid.v4();
-    }
-
     // Choose colors.
     final insanichess.PieceColor challengeCreatorColor =
         challenge.preferColor ??
@@ -213,21 +206,16 @@ class ChallengeController {
     }
 
     final InsanichessGame game = InsanichessGame(
-      id: gameId,
+      id: challengeId,
       whitePlayer: playerWhite,
       blackPlayer: playerBlack,
       timeControl: challenge.timeControl,
     );
 
-    memory.gamesInProgress[gameId] = game;
+    memory.gamesInProgress[challengeId] = game;
     print(memory.openChallenges);
     print(memory.gamesInProgress);
-    return respondWithJson(
-      request,
-      <String, dynamic>{
-        'id': gameId,
-      },
-    );
+    return respondWithOk(request);
   }
 
   /// Handler for declining challenge with [challengeId].
@@ -281,7 +269,8 @@ class ChallengeController {
     final Uuid uuid = Uuid();
 
     String id = uuid.v4();
-    while (memory.openChallenges.keys.contains(id)) {
+    while (memory.openChallenges.containsKey(id) ||
+        memory.gamesInProgress.containsKey(id)) {
       id = uuid.v4();
     }
 

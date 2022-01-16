@@ -2,11 +2,11 @@ name: "[server] Deploy Staging"
 
 on:
   push:
-    branches:
-      - master
-    paths:
-      - "server/**"
-      - "packages/insanichess_sdk/**"
+    # branches:
+    #   - master
+    # paths:
+    #   - "server/**"
+    #   - "packages/insanichess_sdk/**"
 
 jobs:
   build:
@@ -17,6 +17,27 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
+      - uses: actions/checkout@v2
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v13.1
+
+      - name: Reset database if destroy_and_setup.sql changed
+        if: contains(steps.changed-filed.outputs.modified_files, 'server/devops/database/destroy_and_setup.sql')
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.INSANICHESS_BACKEND_URL_STAGING }}
+          username: ${{ secrets.INSANICHESS_BACKEND_USERNAME_STAGING }}
+          key: ${{ secrets.INSANICHESS_BACKEND_SSH_PRIVATE_KEY_STAGING }}
+          port: 22
+          script: |
+            cd ~/insanichess/server
+            if [[ -f ".insanichess_server.pid" ]]; then kill $(cat .insanichess_server.pid); fi
+            git fetch
+            git reset --hard origin/master
+            bash devops/database/setup.sh
+
       - name: ssh deploy
         uses: appleboy/ssh-action@master
         with:

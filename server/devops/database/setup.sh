@@ -1,1 +1,1 @@
-psql -U postgres -f devops/database/destroy_and_setup.sql
+psql -U postgres -W password -f devops/database/destroy_and_setup.sql

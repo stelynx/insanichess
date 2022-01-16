@@ -38,6 +38,7 @@ jobs:
             if [[ -f ".insanichess_server.pid" ]]; then kill $(cat .insanichess_server.pid); fi
             git fetch
             git reset --hard origin/master
+            sed -i'.bak' -e 's/password/${{ secrets.INSANICHESS_POSTGRES_PASSWORD }}/g' devops/database/setup.sh
             bash devops/database/setup.sh
 
       - name: ssh deploy

@@ -1,21 +1,21 @@
 enum AutoZoomOutOnMoveBehaviour { always, onMyMove, onOpponentMove, never }
 
 extension AutoZoomOutOnMoveBehaviourExtension on AutoZoomOutOnMoveBehaviour {
-  String toJson() {
+  int toJson() {
     switch (this) {
       case AutoZoomOutOnMoveBehaviour.always:
-        return 'always';
+        return 3;
       case AutoZoomOutOnMoveBehaviour.never:
-        return 'never';
+        return 0;
       case AutoZoomOutOnMoveBehaviour.onMyMove:
-        return 'my_move';
+        return 1;
       case AutoZoomOutOnMoveBehaviour.onOpponentMove:
-        return 'opponent_move';
+        return 2;
     }
   }
 }
 
-AutoZoomOutOnMoveBehaviour autoZoomOutOnMoveBehaviourFromJson(String json) {
+AutoZoomOutOnMoveBehaviour autoZoomOutOnMoveBehaviourFromJson(int json) {
   return AutoZoomOutOnMoveBehaviour.values
       .firstWhere((AutoZoomOutOnMoveBehaviour el) => el.toJson() == json);
 }

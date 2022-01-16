@@ -118,7 +118,7 @@ class AuthController {
 
     final Either<DatabaseFailure, InsanichessSettings> settingsOrFailure =
         await _databaseService
-            .createDefaultSettingsForUser(userOrFailure.value);
+            .createDefaultSettingsForUserWithUserId(userOrFailure.value.id);
     if (settingsOrFailure.isError()) {
       Either<DatabaseFailure, void> deletionResult =
           await _databaseService.deleteUser(userOrFailure.value);

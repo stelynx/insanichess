@@ -1,3 +1,7 @@
+## 0.5.9
+
+- Add route for settings.
+
 ## 0.5.8
 
 - Rename /api/game to /api/challenge.

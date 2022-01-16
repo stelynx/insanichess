@@ -69,6 +69,10 @@ class AuthController {
 
   /// Handler for registration POST [request].
   ///
+  /// Apart from registration, this method also creates an entry in database for
+  /// settings. If anything goes south, both settings and user entries are
+  /// deleted from database.
+  ///
   /// In case the request is not POST or the request body is not correct, the
   /// response has status code 400. In case a database error occurs, response
   /// code is 500. In case of successful login, status code is set to 201.
@@ -112,11 +116,26 @@ class AuthController {
       return respondWithInternalServerError(request);
     }
 
+    final Either<DatabaseFailure, InsanichessSettings> settingsOrFailure =
+        await _databaseService
+            .createDefaultSettingsForUser(userOrFailure.value);
+    if (settingsOrFailure.isError()) {
+      Either<DatabaseFailure, void> deletionResult =
+          await _databaseService.deleteUser(userOrFailure.value);
+      while (deletionResult.isError()) {
+        deletionResult = await _databaseService.deleteUser(userOrFailure.value);
+      }
+      return respondWithInternalServerError(request);
+    }
+
     return respondWithJson(
       request,
-      userOrFailure.value
-          .copyWith(jwtToken: generateJwtForUser(userOrFailure.value))
-          .toJson(),
+      <String, dynamic>{
+        'user': userOrFailure.value
+            .copyWith(jwtToken: generateJwtForUser(userOrFailure.value))
+            .toJson(),
+        'settings': settingsOrFailure.value.toJson(),
+      },
       statusCode: 201,
     );
   }

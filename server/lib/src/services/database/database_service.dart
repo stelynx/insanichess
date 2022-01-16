@@ -235,6 +235,25 @@ class DatabaseService {
     );
   }
 
+  /// Deletes [user] from database. This call should be always made only
+  /// internal if something in the process of registration fails but user was
+  /// already created in database.
+  Future<Either<DatabaseFailure, void>> deleteUser(InsanichessUser user) async {
+    _logger.info(
+      'DatabaseService.deleteUser',
+      'deleting user id "${user.id}"',
+    );
+
+    try {
+      await _connection!.query("DELETE FROM ic_users WHERE id = '${user.id}';");
+    } catch (e) {
+      _logger.error('DatabaseService.deleteUser', e);
+      return error(const DatabaseFailure());
+    }
+
+    return value(null);
+  }
+
   /// Gets the player with [userId].
   ///
   /// Returns `InsanichessPlayer` if the user exists, otherwise `null`. In case
@@ -308,6 +327,67 @@ class DatabaseService {
     return value(InsanichessPlayer(
       id: newPlayer['id'],
       username: newPlayer['username'],
+    ));
+  }
+
+  /// Creates default settings for [user].
+  Future<Either<DatabaseFailure, InsanichessSettings>>
+      createDefaultSettingsForUser(
+    InsanichessUser user,
+  ) async {
+    _logger.debug(
+      'DatabaseService.createDefaultSettingsForUser',
+      'creating settings for user with id "${user.id}"',
+    );
+
+    final PostgreSQLResult result;
+    try {
+      await _connection!.query(
+          "INSERT INTO ic_user_settings (ic_user) VALUES ('${user.id}');");
+      result = await _connection!.query(
+          "SELECT * FROM ic_user_settings WHERE ic_user = '${user.id}' LIMIT 1");
+    } catch (e) {
+      _logger.error('DatabaseService.createDefaultSettingsForUser', e);
+      return error(const DatabaseFailure());
+    }
+
+    _logger.info(
+      'DatabaseService.createDefaultSettingsForUser',
+      'settings for user with id  ${user.id} created',
+    );
+
+    final Map<String, dynamic> settings = result.first.toColumnMap();
+
+    final AutoZoomOutOnMoveBehaviour otbAutoZoomOutOnMove;
+    switch (settings['otb_auto_zoom_out']) {
+      case 0:
+        otbAutoZoomOutOnMove = AutoZoomOutOnMoveBehaviour.never;
+        break;
+      case 1:
+        otbAutoZoomOutOnMove = AutoZoomOutOnMoveBehaviour.onMyMove;
+        break;
+      case 2:
+        otbAutoZoomOutOnMove = AutoZoomOutOnMoveBehaviour.onOpponentMove;
+        break;
+      case 3:
+        otbAutoZoomOutOnMove = AutoZoomOutOnMoveBehaviour.always;
+        break;
+      default:
+        await _connection!.query(
+            "DELETE FROM ic_user_settings WHERE id = '${settings['id']}';");
+        return error(const DatabaseFailure());
+    }
+
+    return value(InsanichessSettings(
+      showZoomOutButtonOnLeft: settings['zoom_out_button_left'],
+      showLegalMoves: settings['show_legal_moves'],
+      otb: InsanichessOtbSettings(
+        allowUndo: settings['otb_allow_undo'],
+        rotateChessboard: settings['otb_rotate_chessboard'],
+        mirrorTopPieces: settings['otb_mirror_top_pieces'],
+        alwaysPromoteToQueen: settings['otb_promote_queen'],
+        autoZoomOutOnMove: otbAutoZoomOutOnMove,
+      ),
     ));
   }
 }

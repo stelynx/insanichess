@@ -9,15 +9,26 @@ String timeControlToDisplayString(InsanichessTimeControl timeControl) {
   final int minutes = timeControl.initialTime.inMinutes;
   if (minutes > 0) s += '$minutes min';
 
-  final int seconds =
-      (timeControl.initialTime - Duration(minutes: minutes)).inSeconds;
-  if (seconds > 0) {
-    if (minutes > 0) s += ' ';
-    s += '$seconds s';
-  }
-
   final int incrementSeconds = timeControl.incrementPerMove.inSeconds;
   if (incrementSeconds > 0) s += ' + $incrementSeconds s';
+
+  return s;
+}
+
+String timeControlToDisplayStringShort(InsanichessTimeControl timeControl) {
+  if (timeControl.isInfinite) return '∞';
+
+  String s = '';
+
+  final int minutes = timeControl.initialTime.inMinutes;
+  if (minutes > 0) s += '$minutes';
+
+  final int incrementSeconds = timeControl.incrementPerMove.inSeconds;
+  if (incrementSeconds > 0) {
+    s += ' + $incrementSeconds';
+  } else {
+    s += ' min';
+  }
 
   return s;
 }

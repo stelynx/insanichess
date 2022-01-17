@@ -2,11 +2,16 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:insanichess/insanichess.dart' as insanichess;
+import 'package:insanichess_sdk/insanichess_sdk.dart';
 
+import '../../bloc/global/global_bloc.dart';
 import '../../bloc/online_play/online_play_bloc.dart';
+import '../../services/local_storage_service.dart';
 import '../../util/functions/to_display_string.dart';
 import '../../widgets/ic_button.dart';
 import '../../widgets/ic_drawer.dart';
+import '../../widgets/ic_segmented_control.dart';
 import '../../widgets/util/cupertino_list_section.dart';
 import '../../widgets/util/cupertino_list_tile.dart';
 
@@ -16,7 +21,10 @@ class OnlinePlayScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<OnlinePlayBloc>(
-      create: (BuildContext context) => OnlinePlayBloc(),
+      create: (BuildContext context) => OnlinePlayBloc(
+        localStorageService: LocalStorageService.instance,
+        globalBloc: GlobalBloc.instance,
+      ),
       child: const _OnlinePlayScreen(),
     );
   }
@@ -64,9 +72,22 @@ class _OnlinePlayScreen extends StatelessWidget {
                         onTap: bloc.toggleEditingTimeControl,
                       ),
                       if (state.editingTimeControl)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10.0),
-                          child: Text('eDiting'),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          child: ICSegmentedControl<InsanichessTimeControl>(
+                            value: state.timeControl,
+                            items: bloc.availableTimeControls,
+                            labels: bloc.availableTimeControls
+                                .map<String>((InsanichessTimeControl tc) =>
+                                    timeControlToDisplayStringShort(tc))
+                                .toList(),
+                            onChanged: bloc.changeTimeControl,
+                            width: min(
+                              400,
+                              MediaQuery.of(context).size.width - 32,
+                            ),
+                            maxItemsInRow: 3,
+                          ),
                         ),
                       CupertinoListTile(
                         title: const Text('Preferred color'),
@@ -76,9 +97,22 @@ class _OnlinePlayScreen extends StatelessWidget {
                         onTap: bloc.toggleEditingPreferColor,
                       ),
                       if (state.editingPreferColor)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10.0),
-                          child: Text('eDiting'),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          child: ICSegmentedControl<insanichess.PieceColor?>(
+                            value: state.preferColor,
+                            items: const <insanichess.PieceColor?>[
+                              insanichess.PieceColor.white,
+                              insanichess.PieceColor.black,
+                              null,
+                            ],
+                            labels: const <String>['White', 'Black', 'Any'],
+                            onChanged: bloc.changePreferredColor,
+                            width: min(
+                              400,
+                              MediaQuery.of(context).size.width - 32,
+                            ),
+                          ),
                         ),
                     ],
                   ),
@@ -94,7 +128,7 @@ class _OnlinePlayScreen extends StatelessWidget {
                             SizedBox(height: logoSize / 10),
                             ICPrimaryButton(
                               text: 'Create a challenge',
-                              onPressed: () {},
+                              onPressed: bloc.createChallenge,
                             ),
                           ],
                         ),

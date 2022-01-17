@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:insanichess_sdk/insanichess_sdk.dart';
@@ -23,7 +24,10 @@ class LocalStorageService {
 
   Future<String> get _gamesPath async =>
       '${(await getApplicationDocumentsDirectory()).path}/games';
+
+  @Deprecated('Settings are not saved locally anymore.')
   static const String _settingsFile = 'settings.json';
+
   static const String _dataFile = 'data.json';
 
   Future<void> saveJwtToken(String jwtToken) async {
@@ -83,6 +87,32 @@ class LocalStorageService {
     );
 
     return InsanichessGame.fromICString(await f.readAsString());
+  }
+
+  Future<void> saveChallengePreferences({
+    required InsanichessChallenge challenge,
+  }) async {
+    final LocalStorage storage = LocalStorage(_dataFile);
+    await storage.ready;
+
+    await storage.setItem(
+      'challenge_preference',
+      jsonEncode(challenge.toJson()),
+    );
+    Logger.instance.info(
+      'LocalStorageService.saveChallengePreferences',
+      'challenge preference saved',
+    );
+  }
+
+  Future<InsanichessChallenge?> readChallengePreferences() async {
+    final LocalStorage storage = LocalStorage(_dataFile);
+    await storage.ready;
+
+    return storage.getItem('challenge_preference') == null
+        ? null
+        : InsanichessChallenge.fromJson(
+            jsonDecode(storage.getItem('challenge_preference')));
   }
 
   @Deprecated('Settings are now saved on the server. We keep this method for'

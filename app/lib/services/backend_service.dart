@@ -126,7 +126,7 @@ class BackendService {
     }
   }
 
-  Future<Either<BackendFailure, InsanichessChallenge>> createChallenge(
+  Future<Either<BackendFailure, String>> createChallenge(
     InsanichessChallenge challenge,
   ) async {
     final http.Response response = await http.post(
@@ -138,11 +138,9 @@ class BackendService {
       body: jsonEncode(challenge.toJson()),
     );
 
-    print(response.body);
-
     switch (response.statusCode) {
       case HttpStatus.created:
-        return value(InsanichessChallenge.fromJson(jsonDecode(response.body)));
+        return value(jsonDecode(response.body)['id']);
       case HttpStatus.badRequest:
         return error(const BadRequestBackendFailure());
       case HttpStatus.unauthorized:

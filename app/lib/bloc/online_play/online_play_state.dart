@@ -12,6 +12,10 @@ class OnlinePlayState {
   final bool startedSeekPrivate;
   final bool startedSeekPublic;
 
+  final bool isLoading;
+  final String? createdChallengeId;
+  final BackendFailure? backendFailure;
+
   const OnlinePlayState({
     required this.timeControl,
     required this.preferColor,
@@ -20,6 +24,9 @@ class OnlinePlayState {
     required this.editingPreferColor,
     required this.startedSeekPrivate,
     required this.startedSeekPublic,
+    required this.isLoading,
+    required this.createdChallengeId,
+    required this.backendFailure,
   });
 
   OnlinePlayState.initial({
@@ -31,7 +38,10 @@ class OnlinePlayState {
         editingTimeControl = false,
         editingPreferColor = false,
         startedSeekPrivate = false,
-        startedSeekPublic = false;
+        startedSeekPublic = false,
+        isLoading = false,
+        createdChallengeId = null,
+        backendFailure = null;
 
   OnlinePlayState copyWith({
     InsanichessTimeControl? timeControl,
@@ -42,6 +52,9 @@ class OnlinePlayState {
     bool? editingPreferColor,
     bool? startedSeekPrivate,
     bool? startedSeekPublic,
+    bool? isLoading,
+    String? createdChallengeId,
+    BackendFailure? backendFailure,
   }) {
     return OnlinePlayState(
       timeControl: timeControl ?? this.timeControl,
@@ -52,6 +65,9 @@ class OnlinePlayState {
       editingPreferColor: editingPreferColor ?? this.editingPreferColor,
       startedSeekPrivate: startedSeekPrivate ?? this.startedSeekPrivate,
       startedSeekPublic: startedSeekPublic ?? this.startedSeekPublic,
+      isLoading: isLoading ?? this.isLoading,
+      createdChallengeId: createdChallengeId,
+      backendFailure: backendFailure,
     );
   }
 }

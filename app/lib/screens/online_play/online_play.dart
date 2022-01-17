@@ -7,7 +7,9 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../../bloc/global/global_bloc.dart';
 import '../../bloc/online_play/online_play_bloc.dart';
+import '../../services/backend_service.dart';
 import '../../services/local_storage_service.dart';
+import '../../style/colors.dart';
 import '../../util/functions/to_display_string.dart';
 import '../../widgets/ic_button.dart';
 import '../../widgets/ic_drawer.dart';
@@ -22,6 +24,7 @@ class OnlinePlayScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<OnlinePlayBloc>(
       create: (BuildContext context) => OnlinePlayBloc(
+        backendService: BackendService.instance,
         localStorageService: LocalStorageService.instance,
         globalBloc: GlobalBloc.instance,
       ),
@@ -126,10 +129,24 @@ class _OnlinePlayScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
                             SizedBox(height: logoSize / 10),
-                            ICPrimaryButton(
-                              text: 'Create a challenge',
-                              onPressed: bloc.createChallenge,
-                            ),
+                            if (state.isLoading)
+                              const CupertinoActivityIndicator()
+                            else
+                              ICPrimaryButton(
+                                text: 'Create a challenge',
+                                onPressed: bloc.createChallenge,
+                              ),
+                            if (state.backendFailure != null) ...[
+                              SizedBox(height: logoSize / 10),
+                              Text(
+                                'We could not create a challenge at the moment. Please try again later.',
+                                textAlign: TextAlign.center,
+                                style: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .copyWith(color: ICColor.danger),
+                              ),
+                            ],
                           ],
                         ),
                       ),

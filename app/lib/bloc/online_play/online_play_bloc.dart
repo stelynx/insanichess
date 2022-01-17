@@ -5,7 +5,10 @@ import 'package:flutter/widgets.dart';
 import 'package:insanichess/insanichess.dart' as insanichess;
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
+import '../../services/backend_service.dart';
 import '../../services/local_storage_service.dart';
+import '../../util/either.dart';
+import '../../util/failures/backend_failure.dart';
 import '../../widgets/ic_drawer.dart';
 import '../global/global_bloc.dart';
 
@@ -13,6 +16,7 @@ part 'online_play_event.dart';
 part 'online_play_state.dart';
 
 class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
+  final BackendService _backendService;
   final LocalStorageService _localStorageService;
   final GlobalBloc _globalBloc;
 
@@ -59,9 +63,11 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
   ];
 
   OnlinePlayBloc({
+    required BackendService backendService,
     required LocalStorageService localStorageService,
     required GlobalBloc globalBloc,
-  })  : _localStorageService = localStorageService,
+  })  : _backendService = backendService,
+        _localStorageService = localStorageService,
         _globalBloc = globalBloc,
         super(OnlinePlayState.initial(
           challengePreference: globalBloc.state.challengePreference,
@@ -120,13 +126,30 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
     _ChallengeCreated event,
     Emitter<OnlinePlayState> emit,
   ) async {
+    emit(state.copyWith(isLoading: true));
+
     final InsanichessChallenge challenge = InsanichessChallenge(
-      createdBy: _globalBloc.state.playerMyself!.username,
+      createdBy: null, // Backend will add this data
       timeControl: state.timeControl,
       preferColor: state.preferColor,
-      isPrivate: true,
+      isPrivate: state.isPrivate,
     );
 
     await _localStorageService.saveChallengePreferences(challenge: challenge);
+
+    final Either<BackendFailure, String> createdChallengeIdOrFailure =
+        await _backendService.createChallenge(challenge);
+    if (createdChallengeIdOrFailure.isError()) {
+      emit(state.copyWith(
+        isLoading: false,
+        backendFailure: createdChallengeIdOrFailure.error,
+      ));
+      return;
+    }
+
+    emit(state.copyWith(
+      isLoading: false,
+      createdChallengeId: createdChallengeIdOrFailure.value,
+    ));
   }
 }

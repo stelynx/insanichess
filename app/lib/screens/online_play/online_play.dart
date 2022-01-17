@@ -7,6 +7,7 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../../bloc/global/global_bloc.dart';
 import '../../bloc/online_play/online_play_bloc.dart';
+import '../../router/routes.dart';
 import '../../services/backend_service.dart';
 import '../../services/local_storage_service.dart';
 import '../../style/colors.dart';
@@ -16,6 +17,7 @@ import '../../widgets/ic_drawer.dart';
 import '../../widgets/ic_segmented_control.dart';
 import '../../widgets/util/cupertino_list_section.dart';
 import '../../widgets/util/cupertino_list_tile.dart';
+import 'waiting_challenge_accept.dart';
 
 class OnlinePlayScreen extends StatelessWidget {
   const OnlinePlayScreen({Key? key}) : super(key: key);
@@ -41,7 +43,22 @@ class _OnlinePlayScreen extends StatelessWidget {
     final OnlinePlayBloc bloc = BlocProvider.of<OnlinePlayBloc>(context);
 
     return BlocConsumer<OnlinePlayBloc, OnlinePlayState>(
-      listener: (BuildContext context, OnlinePlayState state) {},
+      listener: (BuildContext context, OnlinePlayState state) {
+        if (state.createdChallengeId != null) {
+          Navigator.of(context).pushNamed(
+            ICRoute.waitingChallengeAccept,
+            arguments: WaitingChallengeAcceptScreenArgs(
+              challengeId: state.createdChallengeId!,
+              challengeData: InsanichessChallenge(
+                createdBy: null,
+                timeControl: state.timeControl,
+                preferColor: state.preferColor,
+                isPrivate: state.isPrivate,
+              ),
+            ),
+          );
+        }
+      },
       builder: (BuildContext context, OnlinePlayState state) {
         final double logoSize =
             min(400.0, MediaQuery.of(context).size.width / 3 * 2);

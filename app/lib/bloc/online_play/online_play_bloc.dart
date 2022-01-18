@@ -135,6 +135,7 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
       isPrivate: state.isPrivate,
     );
 
+    _globalBloc.updateChallengePreference(challenge);
     await _localStorageService.saveChallengePreferences(challenge: challenge);
 
     final Either<BackendFailure, String> createdChallengeIdOrFailure =

@@ -32,15 +32,12 @@ class CupertinoBorderedButton extends StatefulWidget {
     required this.child,
     this.padding,
     this.color,
-    this.disabledColor = CupertinoColors.quaternarySystemFill,
     this.minSize = kMinInteractiveDimensionCupertino,
     this.pressedOpacity = 0.4,
     this.borderRadius = const BorderRadius.all(Radius.circular(8.0)),
     this.alignment = Alignment.center,
     required this.onPressed,
-  })  : assert(pressedOpacity == null ||
-            (pressedOpacity >= 0.0 && pressedOpacity <= 1.0)),
-        _filled = false,
+  })  : _filled = false,
         super(key: key);
 
   /// Creates an iOS-style button with a filled background.
@@ -53,15 +50,12 @@ class CupertinoBorderedButton extends StatefulWidget {
     Key? key,
     required this.child,
     this.padding,
-    this.disabledColor = CupertinoColors.quaternarySystemFill,
     this.minSize = kMinInteractiveDimensionCupertino,
     this.pressedOpacity = 0.4,
     this.borderRadius = const BorderRadius.all(Radius.circular(8.0)),
     this.alignment = Alignment.center,
     required this.onPressed,
-  })  : assert(pressedOpacity == null ||
-            (pressedOpacity >= 0.0 && pressedOpacity <= 1.0)),
-        color = null,
+  })  : color = null,
         _filled = true,
         super(key: key);
 
@@ -81,15 +75,7 @@ class CupertinoBorderedButton extends StatefulWidget {
   ///
   /// Defaults to the [CupertinoTheme]'s `primaryColor` when the
   /// [CupertinoBorderedButton.filled] constructor is used.
-  final CupertinoDynamicColor? color;
-
-  /// The color of the button's background when the button is disabled.
-  ///
-  /// Ignored if the [CupertinoBorderedButton] doesn't also have a [color].
-  ///
-  /// Defaults to [CupertinoColors.quaternarySystemFill] when [color] is
-  /// specified. Must not be null.
-  final Color disabledColor;
+  final Color? color;
 
   /// The callback that is called when the button is tapped or otherwise activated.
   ///
@@ -107,7 +93,7 @@ class CupertinoBorderedButton extends StatefulWidget {
   ///
   /// This defaults to 0.4. If null, opacity will not change on pressed if using
   /// your own custom effects is desired.
-  final double? pressedOpacity;
+  final double pressedOpacity;
 
   /// The radius of the button's corners when it has a background color.
   ///
@@ -173,7 +159,7 @@ class _CupertinoBorderedButtonState extends State<CupertinoBorderedButton>
   }
 
   void _setTween() {
-    _opacityTween.end = widget.pressedOpacity ?? 1.0;
+    _opacityTween.end = widget.pressedOpacity;
   }
 
   @override
@@ -227,12 +213,13 @@ class _CupertinoBorderedButtonState extends State<CupertinoBorderedButton>
         ? (widget._filled ? primaryColor : null)
         : CupertinoDynamicColor.maybeResolve(widget.color, context);
 
-    final Color foregroundColor = backgroundColor != null
-        ? primaryColor
-        : enabled
+    final Color foregroundColor = (backgroundColor != null
             ? primaryColor
-            : CupertinoDynamicColor.resolve(
-                CupertinoColors.placeholderText, context);
+            : enabled
+                ? primaryColor
+                : CupertinoDynamicColor.resolve(
+                    CupertinoColors.placeholderText, context))
+        .withOpacity(enabled ? 1 : widget.pressedOpacity);
 
     final TextStyle textStyle =
         themeData.textTheme.textStyle.copyWith(color: foregroundColor);
@@ -261,10 +248,7 @@ class _CupertinoBorderedButtonState extends State<CupertinoBorderedButton>
                   color: foregroundColor,
                   width: 1.0,
                 ),
-                color: backgroundColor != null && !enabled
-                    ? CupertinoDynamicColor.resolve(
-                        widget.disabledColor, context)
-                    : backgroundColor,
+                color: backgroundColor,
               ),
               child: Padding(
                 padding: widget.padding ??

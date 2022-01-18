@@ -7,6 +7,7 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../../bloc/global/global_bloc.dart';
 import '../../bloc/online_play/online_play_bloc.dart';
+import '../../router/router.dart';
 import '../../router/routes.dart';
 import '../../services/backend_service.dart';
 import '../../services/local_storage_service.dart';
@@ -45,7 +46,8 @@ class _OnlinePlayScreen extends StatelessWidget {
     return BlocConsumer<OnlinePlayBloc, OnlinePlayState>(
       listener: (BuildContext context, OnlinePlayState state) {
         if (state.createdChallengeId != null) {
-          Navigator.of(context).pushNamed(
+          ICRouter.pushNamed(
+            context,
             ICRoute.waitingChallengeAccept,
             arguments: WaitingChallengeAcceptScreenArgs(
               challengeId: state.createdChallengeId!,

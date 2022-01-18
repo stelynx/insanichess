@@ -28,6 +28,8 @@ class ICButton extends StatelessWidget {
       child: child,
       onPressed: onPressed,
       color: color,
+      disabledColor:
+          (color ?? CupertinoTheme.of(context).primaryColor).withOpacity(0.4),
     );
   }
 }
@@ -123,7 +125,7 @@ class ICSecondaryButton extends StatelessWidget {
     return CupertinoBorderedButton(
       child: Text(text),
       onPressed: onPressed,
-      color: ICColor.primaryContrastingColor,
+      color: CupertinoTheme.of(context).scaffoldBackgroundColor,
     );
   }
 }

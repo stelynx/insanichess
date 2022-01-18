@@ -56,6 +56,7 @@ class _OnlinePlayScreen extends StatelessWidget {
                 timeControl: state.timeControl,
                 preferColor: state.preferColor,
                 isPrivate: state.isPrivate,
+                status: ChallengeStatus.initiated,
               ),
             ),
           );

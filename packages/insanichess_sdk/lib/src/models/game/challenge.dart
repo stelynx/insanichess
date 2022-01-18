@@ -1,6 +1,7 @@
 import 'package:insanichess/insanichess.dart' as insanichess;
 
 import '../../../insanichess_sdk.dart';
+import '../../util/enum/challenge_status.dart';
 import '../insanichess_model.dart';
 
 /// Represents an issued challenge for a game.
@@ -17,6 +18,9 @@ class InsanichessChallenge implements InsanichessModel {
   /// Whether the challenge is private.
   final bool isPrivate;
 
+  /// Current status of the challenge.
+  final ChallengeStatus status;
+
   /// Creates new `InsanichessChallenge` object with [timeControl], challenger's
   /// [preferColor] selection, and whether this game [isPrivate] or not.
   const InsanichessChallenge({
@@ -24,6 +28,7 @@ class InsanichessChallenge implements InsanichessModel {
     required this.timeControl,
     required this.preferColor,
     required this.isPrivate,
+    required this.status,
   });
 
   /// Creates new `InsanichessChallenge` from [json].
@@ -36,7 +41,9 @@ class InsanichessChallenge implements InsanichessModel {
             : json[InsanichessChallengeJsonKey.preferColor] == 'b'
                 ? insanichess.PieceColor.black
                 : null,
-        isPrivate = json[InsanichessChallengeJsonKey.isPrivate];
+        isPrivate = json[InsanichessChallengeJsonKey.isPrivate],
+        status =
+            challengeStatusFromJson(json[InsanichessChallengeJsonKey.status]);
 
   /// Copies the object and sets [createdBy] to [username]. It throws
   /// `UnsupportedError` in case this object already has non-empty [createdBy]
@@ -51,6 +58,18 @@ class InsanichessChallenge implements InsanichessModel {
       timeControl: timeControl,
       preferColor: preferColor,
       isPrivate: isPrivate,
+      status: status,
+    );
+  }
+
+  /// Copies the object with new [status].
+  InsanichessChallenge updateStatus(ChallengeStatus status) {
+    return InsanichessChallenge(
+      createdBy: createdBy,
+      timeControl: timeControl,
+      preferColor: preferColor,
+      isPrivate: isPrivate,
+      status: status,
     );
   }
 
@@ -67,6 +86,7 @@ class InsanichessChallenge implements InsanichessModel {
                   ? 'b'
                   : null,
       InsanichessChallengeJsonKey.isPrivate: isPrivate,
+      InsanichessChallengeJsonKey.status: status.toJson(),
     };
   }
 }
@@ -84,4 +104,7 @@ abstract class InsanichessChallengeJsonKey {
 
   /// Key for `InsanichessChallenge.isPrivate`.
   static const String isPrivate = 'is_private';
+
+  /// Key for `InsanichessChallenge.status`.
+  static const String status = 'status';
 }

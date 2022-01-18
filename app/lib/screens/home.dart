@@ -36,11 +36,13 @@ class _HomeScreen extends StatelessWidget {
       builder: (BuildContext context, HomeState state) {
         final double logoSize =
             min(400.0, MediaQuery.of(context).size.width / 3 * 2);
+
         return ICDrawer(
           key: bloc.drawerKey,
           scaffold: CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
               automaticallyImplyLeading: false,
+              border: const Border(),
               trailing: ICTrailingButton(
                 icon: CupertinoIcons.line_horizontal_3,
                 // must not shortcut to: bloc.drawerKey.currentState?.open
@@ -72,7 +74,7 @@ class _HomeScreen extends StatelessWidget {
                         ICPrimaryButton(
                           text: 'Play Online',
                           onPressed: () =>
-                              ICRouter.pushNamed(context, ICRoute.gameHistory),
+                              ICRouter.pushNamed(context, ICRoute.onlinePlay),
                         ),
                         SizedBox(height: logoSize / 40),
                         ICSecondaryButton(

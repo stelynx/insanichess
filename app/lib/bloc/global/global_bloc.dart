@@ -48,8 +48,16 @@ class GlobalBloc {
   }
 
   void updatePlayerMyself(InsanichessPlayer player) {
-    _state = state.copyWith(playerMyself: player);
+    _state = _state.copyWith(playerMyself: player);
     _logger.info('GlobalBloc.updatePlayerMyself', 'playerMyself updated');
+  }
+
+  void updateChallengePreference(InsanichessChallenge challenge) {
+    _state = _state.copyWith(challengePreference: challenge);
+    _logger.info(
+      'GlobalBloc.updateChallengePreference',
+      'challenge preference updated',
+    );
   }
 
   void reset() {

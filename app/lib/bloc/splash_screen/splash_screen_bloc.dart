@@ -101,6 +101,12 @@ class SplashScreenBloc extends Bloc<_SplashScreenEvent, SplashScreenState> {
     }
     _globalBloc.changeSettings(settingsOrFailure.value);
 
+    final InsanichessChallenge? challengePreference =
+        await _localStorageService.readChallengePreferences();
+    if (challengePreference != null) {
+      _globalBloc.updateChallengePreference(challengePreference);
+    }
+
     return ICRoute.home;
   }
 }

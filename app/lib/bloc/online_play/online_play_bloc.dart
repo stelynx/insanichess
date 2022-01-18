@@ -133,6 +133,7 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
       timeControl: state.timeControl,
       preferColor: state.preferColor,
       isPrivate: state.isPrivate,
+      status: ChallengeStatus.initiated,
     );
 
     _globalBloc.updateChallengePreference(challenge);

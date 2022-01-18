@@ -1,3 +1,7 @@
+## 0.5.10
+
+- Add `ChallengeStatus` that represent the current status of `InsanichessChallenge`.
+
 ## 0.5.9
 
 - Add route for settings.

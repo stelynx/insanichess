@@ -53,6 +53,11 @@ class ChallengeController {
       return respondWithBadRequest(request);
     }
 
+    if (challenge.status != ChallengeStatus.initiated) {
+      print('here');
+      return respondWithBadRequest(request);
+    }
+
     final Either<DatabaseFailure, InsanichessPlayer?> playerOrFailure =
         await _databaseService.getPlayerWithUserId(userIdIfValid);
     if (playerOrFailure.isError() || !playerOrFailure.hasValue()) {
@@ -145,7 +150,8 @@ class ChallengeController {
   /// Returns 500 in case of internal error, 400 if no id is provided, 401 in
   /// case JWT is not valid, 404 if challenge with [challengeId] is not found in
   /// [memory.openChallenges], 403 if user that created the challenge is the
-  /// same as accepting it, otherwise 200.
+  /// same as accepting it or challenge is not in status `created`, otherwise
+  /// 200.
   ///
   /// Accepts the challenge, creates a game with id of the challenge and returns
   /// empty body.
@@ -177,9 +183,12 @@ class ChallengeController {
       return respondWithForbidden(request);
     }
 
-    final InsanichessChallenge? challenge =
-        memory.openChallenges.remove(challengeId);
+    final InsanichessChallenge? challenge = memory.openChallenges[challengeId];
     if (challenge == null) return respondWithInternalServerError(request);
+
+    if (challenge.status != ChallengeStatus.created) {
+      return respondWithForbidden(request);
+    }
 
     final Either<DatabaseFailure, InsanichessPlayer?>
         challengeCreatorOrFailure =
@@ -212,9 +221,9 @@ class ChallengeController {
       timeControl: challenge.timeControl,
     );
 
+    memory.openChallenges[challengeId] =
+        challenge.updateStatus(ChallengeStatus.accepted);
     memory.gamesInProgress[challengeId] = game;
-    print(memory.openChallenges);
-    print(memory.gamesInProgress);
     return respondWithOk(request);
   }
 
@@ -223,7 +232,8 @@ class ChallengeController {
   /// Returns 500 in case of internal error, 400 if no id is provided, 401 in
   /// case JWT is not valid, 404 if challenge with [challengeId] is not found in
   /// [memory.openChallenges], 403 if user that created the challenge is the
-  /// same as declining it, otherwise 200.
+  /// same as declining it or the challenge is not in status `created`,
+  /// otherwise 200.
   ///
   /// Deletes the challenge and returns nothing.
   Future<void> handleDeclineChallenge(
@@ -254,8 +264,15 @@ class ChallengeController {
       return respondWithForbidden(request);
     }
 
-    memory.openChallenges.remove(challengeId);
-    print(memory.openChallenges);
+    final InsanichessChallenge? challenge = memory.openChallenges[challengeId];
+    if (challenge == null) return respondWithInternalServerError(request);
+
+    if (challenge.status != ChallengeStatus.created) {
+      return respondWithForbidden(request);
+    }
+
+    memory.openChallenges[challengeId] =
+        challenge.updateStatus(ChallengeStatus.declined);
     return respondWithOk(request);
   }
 
@@ -274,7 +291,7 @@ class ChallengeController {
       id = uuid.v4();
     }
 
-    memory.openChallenges[id] = challenge;
+    memory.openChallenges[id] = challenge.updateStatus(ChallengeStatus.created);
     Future.delayed(
       const Duration(minutes: 1),
       () {

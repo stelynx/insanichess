@@ -1,6 +1,21 @@
-enum AutoZoomOutOnMoveBehaviour { always, onMyMove, onOpponentMove, never }
+/// Automatic board zoom-out behaviour after a move has been played.
+enum AutoZoomOutOnMoveBehaviour {
+  /// Auto zoom out on every move.
+  always,
 
+  /// Auto zoom out when I make a move.
+  onMyMove,
+
+  /// Auto zoom out when opponent made a move.
+  onOpponentMove,
+
+  /// Never zoom out automatically.
+  never,
+}
+
+/// Defines additional functions on [AutoZoomOutOnMoveBehaviour].
 extension AutoZoomOutOnMoveBehaviourExtension on AutoZoomOutOnMoveBehaviour {
+  /// Returns json representation of [AutoZoomOutOnMoveBehaviour].
   int toJson() {
     switch (this) {
       case AutoZoomOutOnMoveBehaviour.always:
@@ -15,6 +30,7 @@ extension AutoZoomOutOnMoveBehaviourExtension on AutoZoomOutOnMoveBehaviour {
   }
 }
 
+/// Returns [AutoZoomOutOnMoveBehaviour] from [json] representation.
 AutoZoomOutOnMoveBehaviour autoZoomOutOnMoveBehaviourFromJson(int json) {
   return AutoZoomOutOnMoveBehaviour.values
       .firstWhere((AutoZoomOutOnMoveBehaviour el) => el.toJson() == json);

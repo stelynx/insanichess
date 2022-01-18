@@ -14,6 +14,7 @@ class OnlinePlayState {
 
   final bool isLoading;
   final String? createdChallengeId;
+  final bool challengeDeclined;
   final BackendFailure? backendFailure;
 
   const OnlinePlayState({
@@ -26,6 +27,7 @@ class OnlinePlayState {
     required this.startedSeekPublic,
     required this.isLoading,
     required this.createdChallengeId,
+    required this.challengeDeclined,
     required this.backendFailure,
   });
 
@@ -41,6 +43,7 @@ class OnlinePlayState {
         startedSeekPublic = false,
         isLoading = false,
         createdChallengeId = null,
+        challengeDeclined = false,
         backendFailure = null;
 
   OnlinePlayState copyWith({
@@ -54,6 +57,7 @@ class OnlinePlayState {
     bool? startedSeekPublic,
     bool? isLoading,
     String? createdChallengeId,
+    bool? challengeDeclined,
     BackendFailure? backendFailure,
   }) {
     return OnlinePlayState(
@@ -67,6 +71,7 @@ class OnlinePlayState {
       startedSeekPublic: startedSeekPublic ?? this.startedSeekPublic,
       isLoading: isLoading ?? this.isLoading,
       createdChallengeId: createdChallengeId,
+      challengeDeclined: challengeDeclined ?? this.challengeDeclined,
       backendFailure: backendFailure,
     );
   }

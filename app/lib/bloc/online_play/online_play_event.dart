@@ -28,3 +28,11 @@ class _PreferredColorChanged extends _OnlinePlayEvent {
 class _ChallengeCreated extends _OnlinePlayEvent {
   const _ChallengeCreated();
 }
+
+class _ShowChallengeDeclinedToast extends _OnlinePlayEvent {
+  const _ShowChallengeDeclinedToast();
+}
+
+class _HideChallengeDeclinedToast extends _OnlinePlayEvent {
+  const _HideChallengeDeclinedToast();
+}

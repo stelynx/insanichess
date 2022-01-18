@@ -18,6 +18,8 @@ class WaitingChallengeAcceptBloc
 
   final BackendService _backendService;
 
+  late Timer _challengeDataRefreshTimer;
+
   WaitingChallengeAcceptBloc({
     required this.challenge,
     required String challengeId,
@@ -27,6 +29,19 @@ class WaitingChallengeAcceptBloc
         super(const WaitingChallengeAcceptState.initial()) {
     on<_ChallengeExpired>(_onChallengeExpired);
     on<_CancelChallenge>(_onCancelChallenge);
+    on<_FetchChallengeData>(_onFetchChallengeData);
+
+    // For now we do not need a stream here. Might add it later.
+    _challengeDataRefreshTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => add(const _FetchChallengeData()),
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _challengeDataRefreshTimer.cancel();
+    return super.close();
   }
 
   // Public API
@@ -56,5 +71,32 @@ class WaitingChallengeAcceptBloc
       cancellationInProgress: false,
       challengeCancelled: !nullOrFailure.isError(),
     ));
+  }
+
+  FutureOr<void> _onFetchChallengeData(
+    _FetchChallengeData event,
+    Emitter<WaitingChallengeAcceptState> emit,
+  ) async {
+    final Either<BackendFailure, InsanichessChallenge> challengeOrNull =
+        await _backendService.getChallenge(_challengeId);
+    if (challengeOrNull.isError()) {
+      // Let server garbage collect the challenge
+      emit(state.copyWith(challengeCancelled: true));
+    }
+
+    switch (challengeOrNull.value.status) {
+      case ChallengeStatus.created:
+        break;
+      case ChallengeStatus.accepted:
+        emit(state.copyWith(gameId: _challengeId));
+        break;
+      case ChallengeStatus.declined:
+        emit(state.copyWith(challengeDeclined: true));
+        break;
+      case ChallengeStatus.initiated:
+        // This case should not occur. If it occurs, let the server garbage
+        // collect the challenge.
+        emit(state.copyWith(challengeCancelled: true));
+    }
   }
 }

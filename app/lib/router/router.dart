@@ -22,9 +22,9 @@ abstract class ICRouter {
       _routeHistory.last == routeName;
 
   /// Pops the route and updates [routeHistory].
-  static void pop(BuildContext context) {
+  static void pop<T>(BuildContext context, [T? result]) {
     _routeHistory.removeLast();
-    Navigator.of(context).pop();
+    return Navigator.of(context).pop<T>(result);
   }
 
   /// Pops the route and updates [routeHistory].
@@ -35,15 +35,23 @@ abstract class ICRouter {
     }
   }
 
+  /// Pops the current route and adds new route on to [routeHistory].
+  static void popAndPushNamed(
+    BuildContext context,
+    String name, {
+    Object? arguments,
+  }) {
+    return popAndPushNamed(context, name, arguments: arguments);
+  }
+
   /// Pushes the named route with [name] and [args] and updates [routeHistory].
-  static Future<void> pushNamed(
+  static Future<T?> pushNamed<T>(
     BuildContext context,
     String name, {
     Object? arguments,
   }) async {
     _routeHistory.add(name);
-    return await Navigator.of(context)
-        .pushNamed<void>(name, arguments: arguments);
+    return await Navigator.of(context).pushNamed<T>(name, arguments: arguments);
   }
 
   /// Transforms [settings] into corresponding route.
@@ -81,7 +89,7 @@ abstract class ICRouter {
               FadeTransition(opacity: animation, child: child),
         );
       case ICRoute.waitingChallengeAccept:
-        return CupertinoPageRoute(
+        return CupertinoPageRoute<bool>(
           builder: (context) => WaitingChallengeAcceptScreen(
             args: settings.arguments as WaitingChallengeAcceptScreenArgs,
           ),

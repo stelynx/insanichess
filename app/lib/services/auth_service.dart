@@ -75,10 +75,9 @@ class AuthService {
       }),
     );
 
-    final Map<String, dynamic> body = jsonDecode(response.body);
-
     switch (response.statusCode) {
       case HttpStatus.created:
+        final Map<String, dynamic> body = jsonDecode(response.body);
         return value([
           InsanichessUser.fromJson(body['user']),
           InsanichessSettings.fromJson(body['settings']),

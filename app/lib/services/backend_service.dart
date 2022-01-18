@@ -35,16 +35,8 @@ class BackendService {
     switch (response.statusCode) {
       case HttpStatus.ok:
         return value(InsanichessPlayer.fromJson(jsonDecode(response.body)));
-      case HttpStatus.notFound:
-        return value(null);
-      case HttpStatus.badRequest:
-        return error(const BadRequestBackendFailure());
-      case HttpStatus.internalServerError:
-        return error(const InternalServerErrorBackendFailure());
-      case HttpStatus.unauthorized:
-        return error(const UnauthorizedBackendFailure());
       default:
-        return error(const UnknownBackendFailure());
+        return error(BackendFailure.fromStatusCode(response.statusCode));
     }
   }
 
@@ -65,16 +57,8 @@ class BackendService {
     switch (response.statusCode) {
       case HttpStatus.created:
         return value(InsanichessPlayer.fromJson(jsonDecode(response.body)));
-      case HttpStatus.forbidden:
-        return error(const ForbiddenBackendFailure());
-      case HttpStatus.badRequest:
-        return error(const BadRequestBackendFailure());
-      case HttpStatus.internalServerError:
-        return error(const InternalServerErrorBackendFailure());
-      case HttpStatus.unauthorized:
-        return error(const UnauthorizedBackendFailure());
       default:
-        return error(const UnknownBackendFailure());
+        return error(BackendFailure.fromStatusCode(response.statusCode));
     }
   }
 
@@ -89,12 +73,8 @@ class BackendService {
     switch (response.statusCode) {
       case HttpStatus.ok:
         return value(InsanichessSettings.fromJson(jsonDecode(response.body)));
-      case HttpStatus.unauthorized:
-        return error(const UnauthorizedBackendFailure());
-      case HttpStatus.internalServerError:
-        return error(const InternalServerErrorBackendFailure());
       default:
-        return error(const UnknownBackendFailure());
+        return error(BackendFailure.fromStatusCode(response.statusCode));
     }
   }
 
@@ -115,14 +95,8 @@ class BackendService {
     switch (response.statusCode) {
       case HttpStatus.ok:
         return value(null);
-      case HttpStatus.unauthorized:
-        return error(const UnauthorizedBackendFailure());
-      case HttpStatus.badRequest:
-        return error(const BadRequestBackendFailure());
-      case HttpStatus.internalServerError:
-        return error(const InternalServerErrorBackendFailure());
       default:
-        return error(const UnknownBackendFailure());
+        return error(BackendFailure.fromStatusCode(response.statusCode));
     }
   }
 
@@ -141,14 +115,26 @@ class BackendService {
     switch (response.statusCode) {
       case HttpStatus.created:
         return value(jsonDecode(response.body)['id']);
-      case HttpStatus.badRequest:
-        return error(const BadRequestBackendFailure());
-      case HttpStatus.unauthorized:
-        return error(const UnauthorizedBackendFailure());
-      case HttpStatus.internalServerError:
-        return error(const InternalServerErrorBackendFailure());
       default:
-        return error(const UnknownBackendFailure());
+        return error(BackendFailure.fromStatusCode(response.statusCode));
+    }
+  }
+
+  Future<Either<BackendFailure, InsanichessChallenge>> getChallenge(
+    String challengeId,
+  ) async {
+    final http.Response response = await http.get(
+      uriForPath([ICServerRoute.api, ICServerRoute.apiChallenge, challengeId]),
+      headers: <String, String>{
+        HttpHeaders.authorizationHeader: authHeaderValue(),
+      },
+    );
+
+    switch (response.statusCode) {
+      case HttpStatus.ok:
+        return value(InsanichessChallenge.fromJson(jsonDecode(response.body)));
+      default:
+        return error(BackendFailure.fromStatusCode(response.statusCode));
     }
   }
 
@@ -165,16 +151,8 @@ class BackendService {
     switch (response.statusCode) {
       case HttpStatus.ok:
         return value(null);
-      case HttpStatus.badRequest:
-        return error(const BadRequestBackendFailure());
-      case HttpStatus.unauthorized:
-        return error(const UnauthorizedBackendFailure());
-      case HttpStatus.forbidden:
-        return error(const ForbiddenBackendFailure());
-      case HttpStatus.internalServerError:
-        return error(const InternalServerErrorBackendFailure());
       default:
-        return error(const UnknownBackendFailure());
+        return error(BackendFailure.fromStatusCode(response.statusCode));
     }
   }
 }

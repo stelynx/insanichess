@@ -12,3 +12,7 @@ class _ChallengeExpired extends _WaitingChallengeAcceptEvent {
 class _CancelChallenge extends _WaitingChallengeAcceptEvent {
   const _CancelChallenge();
 }
+
+class _FetchChallengeData extends _WaitingChallengeAcceptEvent {
+  const _FetchChallengeData();
+}

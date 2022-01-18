@@ -16,6 +16,7 @@ import '../../util/functions/to_display_string.dart';
 import '../../widgets/ic_button.dart';
 import '../../widgets/ic_drawer.dart';
 import '../../widgets/ic_segmented_control.dart';
+import '../../widgets/ic_toast.dart';
 import '../../widgets/util/cupertino_list_section.dart';
 import '../../widgets/util/cupertino_list_tile.dart';
 import 'waiting_challenge_accept.dart';
@@ -44,9 +45,9 @@ class _OnlinePlayScreen extends StatelessWidget {
     final OnlinePlayBloc bloc = BlocProvider.of<OnlinePlayBloc>(context);
 
     return BlocConsumer<OnlinePlayBloc, OnlinePlayState>(
-      listener: (BuildContext context, OnlinePlayState state) {
+      listener: (BuildContext context, OnlinePlayState state) async {
         if (state.createdChallengeId != null) {
-          ICRouter.pushNamed(
+          final challengeDeclined = await ICRouter.pushNamed<bool>(
             context,
             ICRoute.waitingChallengeAccept,
             arguments: WaitingChallengeAcceptScreenArgs(
@@ -60,13 +61,17 @@ class _OnlinePlayScreen extends StatelessWidget {
               ),
             ),
           );
+
+          if (challengeDeclined ?? false) {
+            bloc.showChallengeDeclinedToast();
+          }
         }
       },
       builder: (BuildContext context, OnlinePlayState state) {
         final double logoSize =
             min(400.0, MediaQuery.of(context).size.width / 3 * 2);
 
-        return ICDrawer(
+        Widget child = ICDrawer(
           key: bloc.drawerKey,
           scaffold: CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
@@ -177,6 +182,23 @@ class _OnlinePlayScreen extends StatelessWidget {
             ),
           ),
         );
+
+        if (state.challengeDeclined) {
+          child = Stack(
+            alignment: Alignment.bottomCenter,
+            children: <Widget>[
+              child,
+              ICToast.builder(
+                context,
+                message: 'Challenge declined',
+                isSuccess: false,
+                dismissWith: bloc.hideChallengeDeclinedToast,
+              ),
+            ],
+          );
+        }
+
+        return child;
       },
     );
   }

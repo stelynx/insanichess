@@ -111,15 +111,11 @@ class OtbSettingsScreen extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             children: <Widget>[
               child,
-              Positioned(
-                bottom: MediaQuery.of(context).padding.bottom == 0 ? 16 : 0,
-                child: SafeArea(
-                  child: ICToast(
-                    isSuccess: false,
-                    message: 'Could not save settings',
-                    onTap: args.settingsBloc.hideFailure,
-                  ),
-                ),
+              ICToast.builder(
+                context,
+                message: 'Could not save settings',
+                isSuccess: false,
+                dismissWith: args.settingsBloc.hideFailure,
               ),
             ],
           );

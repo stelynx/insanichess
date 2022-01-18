@@ -77,6 +77,8 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
     on<_TimeControlChanged>(_onTimeControlChanged);
     on<_PreferredColorChanged>(_onPreferredColorChanged);
     on<_ChallengeCreated>(_onChallengeCreated);
+    on<_ShowChallengeDeclinedToast>(_onShowChallengeDeclinedToast);
+    on<_HideChallengeDeclinedToast>(_onHideChallengeDeclinedToast);
   }
 
   // Public API
@@ -88,6 +90,8 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
   void changePreferredColor(insanichess.PieceColor? value) =>
       add(_PreferredColorChanged(value));
   void createChallenge() => add(const _ChallengeCreated());
+  void showChallengeDeclinedToast() => add(const _ShowChallengeDeclinedToast());
+  void hideChallengeDeclinedToast() => add(const _HideChallengeDeclinedToast());
 
   // Handlers
 
@@ -153,5 +157,19 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
       isLoading: false,
       createdChallengeId: createdChallengeIdOrFailure.value,
     ));
+  }
+
+  FutureOr<void> _onShowChallengeDeclinedToast(
+    _ShowChallengeDeclinedToast event,
+    Emitter<OnlinePlayState> emit,
+  ) async {
+    emit(state.copyWith(challengeDeclined: true));
+  }
+
+  FutureOr<void> _onHideChallengeDeclinedToast(
+    _HideChallengeDeclinedToast event,
+    Emitter<OnlinePlayState> emit,
+  ) async {
+    emit(state.copyWith(challengeDeclined: false));
   }
 }

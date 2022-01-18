@@ -54,8 +54,15 @@ class _WaitingChallengeAcceptScreen extends StatelessWidget {
         WaitingChallengeAcceptState>(
       listener: (BuildContext context, WaitingChallengeAcceptState state) {
         if (state.challengeCancelled) {
-          ICRouter.pop(context);
+          ICRouter.pop<bool>(context, false);
           return;
+        }
+        if (state.gameId != null) {
+          // we shall start a game here
+          return;
+        }
+        if (state.challengeDeclined) {
+          ICRouter.pop<bool>(context, true);
         }
       },
       builder: (BuildContext context, WaitingChallengeAcceptState state) {

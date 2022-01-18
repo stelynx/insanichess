@@ -1,6 +1,6 @@
 import 'package:insanichess/insanichess.dart' as insanichess;
 
-import '../../../insanichess_sdk.dart';
+import '../../time_control.dart';
 import '../../util/enum/challenge_status.dart';
 import '../insanichess_model.dart';
 

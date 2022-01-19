@@ -1,7 +1,7 @@
 import '../insanichess_model.dart';
 
 /// Model representing base user info.
-class InsanichessUser implements InsanichessModel {
+class InsanichessUser implements InsanichessDatabaseModel {
   /// The id of the user.
   final String id;
 

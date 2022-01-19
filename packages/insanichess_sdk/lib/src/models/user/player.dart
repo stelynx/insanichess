@@ -3,7 +3,7 @@ import '../insanichess_model.dart';
 /// A player of the game.
 ///
 /// This class contains all the necessary data for a player / user.
-class InsanichessPlayer implements InsanichessModel {
+class InsanichessPlayer implements InsanichessDatabaseModel {
   /// The id of the player.
   final String id;
 
@@ -36,6 +36,15 @@ class InsanichessPlayer implements InsanichessModel {
       InsanichessPlayerJsonKey.username: username,
     };
   }
+
+  /// Two players are equal if they have the same id.
+  @override
+  bool operator ==(Object? other) {
+    return other is! InsanichessPlayer ? false : other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 /// Keys used in `InsanichessPlayer` json representations.

@@ -5,7 +5,7 @@ import '../../util/enum/challenge_status.dart';
 import '../insanichess_model.dart';
 
 /// Represents an issued challenge for a game.
-class InsanichessChallenge implements InsanichessModel {
+class InsanichessChallenge implements InsanichessDatabaseModel {
   /// The player's username who created this challenge.
   final String? createdBy;
 

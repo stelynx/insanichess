@@ -8,7 +8,8 @@ import '../user/player.dart';
 ///
 /// Apart from basic game rules, this class adds information that is usable both
 /// to client and server in order to be able to play a game of Insanichess.
-class InsanichessGame extends insanichess.Game implements InsanichessModel {
+class InsanichessGame extends insanichess.Game
+    implements InsanichessDatabaseModel {
   /// The id of the game.
   final String id;
 

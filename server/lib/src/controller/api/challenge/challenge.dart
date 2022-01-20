@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -154,7 +155,7 @@ class ChallengeController {
   /// 200.
   ///
   /// Accepts the challenge, creates a game with id of the challenge and returns
-  /// empty body.
+  /// empty body. It also creates the broadcast stream of events.
   Future<void> handleAcceptChallenge(
     HttpRequest request, {
     required String challengeId,
@@ -224,6 +225,18 @@ class ChallengeController {
     memory.openChallenges[challengeId] =
         challenge.updateStatus(ChallengeStatus.accepted);
     memory.gamesInProgress[challengeId] = game;
+
+    memory.gameBroadcastStreamControllers[challengeId] =
+        StreamController<InsanichessGameEvent>.broadcast();
+    memory.gameBroadcastConnectedSockets[challengeId] = <WebSocket>[];
+
+    // This streams should not be broadcast because they will be forwarded to
+    // only one socket.
+    memory.gameWhiteStreamControllers[challengeId] =
+        StreamController<InsanichessGameEvent>();
+    memory.gameBlackStreamControllers[challengeId] =
+        StreamController<InsanichessGameEvent>();
+
     return respondWithOk(request);
   }
 

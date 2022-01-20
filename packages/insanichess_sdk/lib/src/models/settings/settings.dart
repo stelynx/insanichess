@@ -2,7 +2,7 @@ import '../insanichess_model.dart';
 import 'game/otb.dart';
 
 /// Model for all settings for the app.
-class InsanichessSettings implements InsanichessModel {
+class InsanichessSettings implements InsanichessDatabaseModel {
   /// OTB settings.
   final InsanichessOtbSettings otb;
 

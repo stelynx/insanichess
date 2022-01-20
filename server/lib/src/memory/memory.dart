@@ -38,19 +38,27 @@ class Memory {
   final Map<String, List<WebSocket>> gameBroadcastConnectedSockets =
       <String, List<WebSocket>>{};
 
-  /// List of currently opened stream subscriptions for [gameBroadcastStreams].
-  ///
-  /// A map from temporary game ids to the list of stream subscriptions that are
-  /// currently active for the corresponding game id.
-  final Map<String, List<StreamSubscription<InsanichessGameEvent>>>
-      gameBroadcastStreamSubscriptions =
-      <String, List<StreamSubscription<InsanichessGameEvent>>>{};
-
   /// List of currently opened websockets for listening events issued by white.
   final Map<String, WebSocket> gameSocketsWhite = <String, WebSocket>{};
 
   /// List of currently opened websockets for listening events issued by black.
   final Map<String, WebSocket> gameSocketsBlack = <String, WebSocket>{};
+
+  /// List of stream controllers for games currently in progress that send
+  /// events to white player's socket.
+  ///
+  /// A map from temporary game ids to the corresponding event streams.
+  final Map<String, StreamController<InsanichessGameEvent>>
+      gameWhiteStreamControllers =
+      <String, StreamController<InsanichessGameEvent>>{};
+
+  /// List of stream controllers for games currently in progress that send
+  /// events to black player's socket.
+  ///
+  /// A map from temporary game ids to the corresponding event streams.
+  final Map<String, StreamController<InsanichessGameEvent>>
+      gameBlackStreamControllers =
+      <String, StreamController<InsanichessGameEvent>>{};
 
   /// List of currently opened stream subscriptions for listening events issued
   /// on corresponding socket by white.

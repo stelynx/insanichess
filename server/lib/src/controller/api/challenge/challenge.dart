@@ -230,6 +230,13 @@ class ChallengeController {
         StreamController<InsanichessGameEvent>.broadcast();
     memory.gameBroadcastConnectedSockets[challengeId] = <WebSocket>[];
 
+    // This streams should not be broadcast because they will be forwarded to
+    // only one socket.
+    memory.gameWhiteStreamControllers[challengeId] =
+        StreamController<InsanichessGameEvent>();
+    memory.gameBlackStreamControllers[challengeId] =
+        StreamController<InsanichessGameEvent>();
+
     return respondWithOk(request);
   }
 

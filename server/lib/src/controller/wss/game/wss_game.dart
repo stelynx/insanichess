@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:insanichess/insanichess.dart' as insanichess;
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../../../memory/memory.dart';
@@ -89,8 +90,16 @@ class WssGameController {
     }
 
     final WebSocket socket = await WebSocketTransformer.upgrade(request);
-    memory.gameSocketStreamSubscriptionsWhite[gameId] =
-        socket.listen((event) {});
+    memory.gameSocketStreamSubscriptionsWhite[gameId] = socket.listen(
+      (event) => _respondToEventOnPlayerSocket(
+        event,
+        insanichess.PieceColor.white,
+        gameId: gameId,
+      ),
+    );
+    socket.addStream(memory.gameWhiteStreamControllers[gameId]!.stream
+        .map<String>(
+            (InsanichessGameEvent event) => jsonEncode(event.toJson())));
     memory.gameSocketsWhite[gameId] = socket;
   }
 
@@ -134,8 +143,45 @@ class WssGameController {
     }
 
     final WebSocket socket = await WebSocketTransformer.upgrade(request);
-    memory.gameSocketStreamSubscriptionsBlack[gameId] =
-        socket.listen((event) {});
+    memory.gameSocketStreamSubscriptionsBlack[gameId] = socket.listen(
+      (event) => _respondToEventOnPlayerSocket(
+          event, insanichess.PieceColor.black,
+          gameId: gameId),
+    );
+    socket.addStream(memory.gameBlackStreamControllers[gameId]!.stream
+        .map<String>(
+            (InsanichessGameEvent event) => jsonEncode(event.toJson())));
     memory.gameSocketsBlack[gameId] = socket;
+  }
+
+  // Helpers
+
+  /// Handles events sent by [player].
+  ///
+  /// This method updates the game state, and if the update was successful it
+  /// forwards the event to broadcast stream and opponent's socket.
+  ///
+  /// Event that is not valid in current game state is ignored.
+  void _respondToEventOnPlayerSocket(
+    dynamic event,
+    insanichess.PieceColor player, {
+    required String gameId,
+  }) {
+    if (event is! String ||
+        !memory.gameBroadcastStreamControllers.containsKey(gameId)) return;
+
+    final InsanichessGameEvent gameEvent;
+    try {
+      gameEvent = InsanichessGameEvent.fromJson(jsonDecode(event));
+    } catch (_) {
+      return;
+    }
+
+    memory.gameBroadcastStreamControllers[gameId]!.add(gameEvent);
+    if (player == insanichess.PieceColor.white) {
+      memory.gameBlackStreamControllers[gameId]!.add(gameEvent);
+    } else {
+      memory.gameWhiteStreamControllers[gameId]!.add(gameEvent);
+    }
   }
 }

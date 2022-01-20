@@ -1,3 +1,7 @@
+## 0.5.11
+
+- Add `InsanichessGameEvent` that supports communication between clients and server.
+
 ## 0.5.10
 
 - Add `ChallengeStatus` that represent the current status of `InsanichessChallenge`.

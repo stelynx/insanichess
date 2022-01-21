@@ -1,3 +1,7 @@
+## 0.6.0
+
+- Add `InsanichessLiveGameSettings` and update `InsanichessSettings` accordingly.
+
 ## 0.5.11
 
 - Add `InsanichessGameEvent` that supports communication between clients and server.

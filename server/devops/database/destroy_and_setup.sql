@@ -34,6 +34,9 @@ CREATE TABLE ic_user_settings (
   otb_allow_undo BOOLEAN DEFAULT TRUE NOT NULL,
   otb_promote_queen BOOLEAN DEFAULT FALSE NOT NULL,
   otb_auto_zoom_out INT DEFAULT 0 NOT NULL,
+  live_allow_undo BOOLEAN DEFAULT TRUE NOT NULL,
+  live_promote_queen BOOLEAN DEFAULT FALSE NOT NULL,
+  live_auto_zoom_out INT DEFAULT 0 NOT NULL,
   CONSTRAINT ic_settings_user FOREIGN KEY (ic_user) REFERENCES ic_users(id) ON DELETE CASCADE
 ) WITH ( OIDS = FALSE );
 ALTER TABLE ic_user_settings OWNER TO insanichess_admin;

@@ -144,6 +144,40 @@ class SettingsController {
           continue;
         }
 
+        if (key == InsanichessSettingsJsonKey.live) {
+          for (final String otbKey in body[key].keys) {
+            String? columnName;
+            dynamic columnValue = body[key][otbKey];
+            switch (otbKey) {
+              case InsanichessGameSettingsJsonKey.allowUndo:
+                columnName = 'live_allow_undo';
+                break;
+              case InsanichessGameSettingsJsonKey.alwaysPromoteToQueen:
+                columnName = 'live_promote_queen';
+                break;
+              case InsanichessGameSettingsJsonKey.autoZoomOutOnMove:
+                columnName = 'live_auto_zoom_out';
+                break;
+              default:
+                break;
+            }
+
+            if (columnName == null) continue;
+
+            final Either<DatabaseFailure, void> updateResult =
+                await _databaseService.updateSettingsValue(
+              columnName,
+              columnValue,
+              userId: userIdIfValid,
+            );
+            if (updateResult.isError()) {
+              return respondWithInternalServerError(request);
+            }
+          }
+
+          continue;
+        }
+
         final dynamic columnValue = body[key];
         dynamic columnName;
         switch (key) {

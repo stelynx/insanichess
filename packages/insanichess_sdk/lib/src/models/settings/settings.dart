@@ -1,10 +1,14 @@
 import '../insanichess_model.dart';
+import 'game/live.dart';
 import 'game/otb.dart';
 
 /// Model for all settings for the app.
 class InsanichessSettings implements InsanichessDatabaseModel {
   /// OTB settings.
   final InsanichessOtbSettings otb;
+
+  /// Live game settings.
+  final InsanichessLiveGameSettings live;
 
   /// Should zoom-out button be on the left side of screen.
   final bool showZoomOutButtonOnLeft;
@@ -15,6 +19,7 @@ class InsanichessSettings implements InsanichessDatabaseModel {
   /// Creates new `InsanichessSettings` object.
   const InsanichessSettings({
     required this.otb,
+    required this.live,
     required this.showZoomOutButtonOnLeft,
     required this.showLegalMoves,
   });
@@ -22,6 +27,7 @@ class InsanichessSettings implements InsanichessDatabaseModel {
   /// Creates new `InsanichessSettings` object with default values.
   const InsanichessSettings.defaults()
       : otb = const InsanichessOtbSettings.defaults(),
+        live = const InsanichessLiveGameSettings.defaults(),
         showZoomOutButtonOnLeft = true,
         showLegalMoves = true;
 
@@ -29,6 +35,8 @@ class InsanichessSettings implements InsanichessDatabaseModel {
   InsanichessSettings.fromJson(Map<String, dynamic> json)
       : otb = InsanichessOtbSettings.fromJson(
             json[InsanichessSettingsJsonKey.otb]),
+        live = InsanichessLiveGameSettings.fromJson(
+            json[InsanichessSettingsJsonKey.live]),
         showZoomOutButtonOnLeft =
             json[InsanichessSettingsJsonKey.showZoomOutButtonOnLeft],
         showLegalMoves = json[InsanichessSettingsJsonKey.showLegalMoves];
@@ -37,11 +45,13 @@ class InsanichessSettings implements InsanichessDatabaseModel {
   /// values with those given in arguments.
   InsanichessSettings copyWith({
     InsanichessOtbSettings? otb,
+    InsanichessLiveGameSettings? live,
     bool? showZoomOutButtonOnLeft,
     bool? showLegalMoves,
   }) {
     return InsanichessSettings(
       otb: otb ?? this.otb,
+      live: live ?? this.live,
       showZoomOutButtonOnLeft:
           showZoomOutButtonOnLeft ?? this.showZoomOutButtonOnLeft,
       showLegalMoves: showLegalMoves ?? this.showLegalMoves,
@@ -53,6 +63,7 @@ class InsanichessSettings implements InsanichessDatabaseModel {
   Map<String, Object?> toJson() {
     return <String, dynamic>{
       InsanichessSettingsJsonKey.otb: otb.toJson(),
+      InsanichessSettingsJsonKey.live: live.toJson(),
       InsanichessSettingsJsonKey.showZoomOutButtonOnLeft:
           showZoomOutButtonOnLeft,
       InsanichessSettingsJsonKey.showLegalMoves: showLegalMoves,
@@ -64,6 +75,9 @@ class InsanichessSettings implements InsanichessDatabaseModel {
 abstract class InsanichessSettingsJsonKey {
   /// Key for `InsanichessSettings.otb`.
   static const String otb = 'otb';
+
+  /// Key for `InsanichessSettings.live`.
+  static const String live = 'live';
 
   /// Key for `InsanichessSettings.showZoomOutButtonOnLeft`.
   static const String showZoomOutButtonOnLeft = 'show_zoom_out_button_on_left';

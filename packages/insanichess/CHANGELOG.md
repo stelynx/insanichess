@@ -1,3 +1,7 @@
+## 0.3.3
+
+- Group `Game.whiteFlagged()` and `Game.blackFlagged()` into simpler `Game.flagged()`.
+
 ## 0.3.2
 
 - Fix a bug with wrong row parsing in `Square.fromICString()` and `Square.toICString()`.

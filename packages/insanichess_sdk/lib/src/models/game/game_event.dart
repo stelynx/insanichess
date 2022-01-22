@@ -42,6 +42,8 @@ abstract class InsanichessGameEvent implements InsanichessModel {
             json[InsanichessGameEventJsonKey.movePlayed],
           ),
         );
+      case GameEventType.disbanded:
+        return const DisbandedGameEvent();
       case GameEventType.drawOffered:
         return const DrawOfferedGameEvent();
       case GameEventType.drawOfferCancelled:
@@ -52,6 +54,10 @@ abstract class InsanichessGameEvent implements InsanichessModel {
         );
       case GameEventType.resigned:
         return const ResignedGameEvent();
+      case GameEventType.flagged:
+        return FlaggedGameEvent(
+          player: json[InsanichessGameEventJsonKey.color],
+        );
       case GameEventType.undoRequested:
         return const UndoRequestedGameEvent();
       case GameEventType.undoCancelled:
@@ -81,7 +87,25 @@ class MovePlayedGameEvent extends InsanichessGameEvent {
   Map<String, Object?> toJson() {
     return <String, Object?>{
       InsanichessGameEventJsonKey.type: type.toJson(),
-      InsanichessGameEventJsonKey.movePlayed: move.toICString()
+      InsanichessGameEventJsonKey.movePlayed: move.toICString(),
+    };
+  }
+}
+
+/// Event that signals that white player did not make a move in the initial time
+/// period.
+///
+/// This event is only triggered by server to notify listeners on sockets that a
+/// game has been disbanded.
+class DisbandedGameEvent extends InsanichessGameEvent {
+  /// Creates new [DisbandedGameEvent] object.
+  const DisbandedGameEvent() : super(GameEventType.disbanded);
+
+  /// Converts this object into json representation.
+  @override
+  Map<String, Object?> toJson() {
+    return <String, Object?>{
+      InsanichessGameEventJsonKey.type: type.toJson(),
     };
   }
 }
@@ -169,6 +193,36 @@ class ResignedGameEvent extends InsanichessGameEvent {
   }
 }
 
+/// Event that can contains data on who flagged.
+///
+/// This event can only be issued by the server and should not be used by client
+/// applications.
+///
+/// This event is always broadcasted because subscribers need to know that the
+/// game ended and a [player] was flagged.
+class FlaggedGameEvent extends InsanichessGameEvent {
+  /// The color of the [player] that ran out of time.
+  ///
+  /// This property can also be deduced from current game state, however due to
+  /// simplicity we keep it here as well.
+  final insanichess.PieceColor player;
+
+  /// Creates new [FlaggedGameEvent] with the color of the [player]. This event
+  /// is always broadcasted because subscribers of the broadcast stream must
+  /// know that a game has ended and who ran out of time.
+  const FlaggedGameEvent({required this.player})
+      : super(GameEventType.flagged, isBroadcasted: true);
+
+  /// Converts this object to json representation.
+  @override
+  Map<String, Object?> toJson() {
+    return <String, Object?>{
+      InsanichessGameEventJsonKey.type: type.toJson(),
+      InsanichessGameEventJsonKey.color: player.toJson(),
+    };
+  }
+}
+
 /// Event that a user requested an undo. The event does not contain data of who
 /// issued the request, because this is an internal event and is processed only
 /// on server side.
@@ -234,9 +288,11 @@ abstract class InsanichessGameEventJsonKey {
   /// Key for [MovePlayedGameEvent.move].
   static const String movePlayed = 'move';
 
-  /// Key for [DrawOfferedGameEvent.player], and [ResignedGameEvent.player].
+  /// Key for [DrawOfferedGameEvent.player], [FlaggedGameEvent.player], and
+  /// [ResignedGameEvent.player].
   static const String color = 'color';
 
-  /// Key for [UndoRespondedGameEvent.accept], and [DrawOfferResponded.accept].
+  /// Key for [UndoRespondedGameEvent.accept], and
+  /// [DrawOfferRespondedGameEvent.accept].
   static const String accept = 'accept';
 }

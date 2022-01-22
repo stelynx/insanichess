@@ -1,3 +1,8 @@
+## 0.6.3
+
+- Add game events `disbanded` and `flagged`.
+- Bump required `insanichess` version to `0.3.3`.
+
 ## 0.6.2
 
 - Bump required `insanichess` version to `0.3.2`.

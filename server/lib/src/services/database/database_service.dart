@@ -463,9 +463,31 @@ class DatabaseService {
       'saving game',
     );
 
+    String movesString;
+    if (game.movesPlayed.isEmpty) {
+      movesString = 'ARRAY[]::text[]';
+    } else {
+      movesString = "'{";
+      for (final insanichess.PlayedMove move in game.movesPlayed) {
+        movesString += '"${move.toICString()}", ';
+      }
+      movesString = movesString.substring(0, movesString.length - 2) + "}'";
+    }
+
+    String timesString;
+    if (game.timesSpentPerMove.isEmpty) {
+      timesString = 'ARRAY[]::integer[]';
+    } else {
+      timesString = "'{";
+      for (final Duration timeSpent in game.timesSpentPerMove) {
+        timesString += '${timeSpent.inMilliseconds}, ';
+      }
+      timesString = timesString.substring(0, timesString.length - 2) + "}'";
+    }
+
     try {
       await _connection!.query(
-          "INSERT INTO ic_games (player_white, player_black, time_control_initial, time_control_increment, times_per_move, game_status, moves) VALUES ('${game.whitePlayer.id}', '${game.blackPlayer.id}', ${game.timeControl.initialTime.inSeconds}, ${game.timeControl.incrementPerMove.inSeconds}, ARRAY[]::integer${game.timesSpentPerMove.map<int>((Duration d) => d.inMilliseconds).toList()}, ${game.status.toJson()}, ARRAY[]::integer${game.movesPlayed.map<String>((insanichess.PlayedMove m) => m.toICString()).toList()});");
+          "INSERT INTO ic_games (player_white, player_black, time_control_initial, time_control_increment, times_per_move, game_status, moves) VALUES ('${game.whitePlayer.id}', '${game.blackPlayer.id}', ${game.timeControl.initialTime.inSeconds}, ${game.timeControl.incrementPerMove.inSeconds}, $timesString, ${game.status.toJson()}, $movesString);");
     } catch (e) {
       _logger.error('DatabaseService.saveGame', e);
       return error(const DatabaseFailure());

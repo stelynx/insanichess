@@ -11,4 +11,8 @@ abstract class Config {
   /// Secret key for JWT signing and verification.
   static final jwtSecretKet =
       SecretKey(Platform.environment['INSANICHESS_JWT_SECRET_KEY']!);
+
+  /// In how many seconds white has to perform a move before the game is
+  /// disbanded.
+  static const int secondsWhiteForFirstMove = 30;
 }

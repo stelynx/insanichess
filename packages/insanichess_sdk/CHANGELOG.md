@@ -1,3 +1,13 @@
+## 0.6.2
+
+- Bump required `insanichess` version to `0.3.2`.
+
+## 0.6.1
+
+- Add `InsanichessLiveGame` model that extends `InsanichessGame` with properties required only while the game is active.
+- Add logic that handles playing the game without support for timeout.
+- Bump required `insanichess` version to `0.3.1`.
+
 ## 0.6.0
 
 - Add `InsanichessLiveGameSettings` and update `InsanichessSettings` accordingly.

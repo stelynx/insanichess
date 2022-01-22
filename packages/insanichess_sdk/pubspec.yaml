@@ -1,16 +1,16 @@
 name: insanichess_sdk
 description: Insanichess SDK meant to be used by client and server applications
-version: 0.6.0
+version: 0.6.2
 homepage: https://github.com/stelynx/insanichess
-repository: https://github.com/stelynx/insanichess/tree/master/packages/insanichess_engine
+repository: https://github.com/stelynx/insanichess/tree/master/packages/insanichess_sdk
 
 environment:
   sdk: ">=2.14.4 <3.0.0"
 
 dependencies:
-  insanichess: ^0.3.0
+  insanichess: ^0.3.2
   # insanichess:
-  # path: ../insanichess
+  #   path: ../insanichess
 
 dev_dependencies:
   lints: ^1.0.0

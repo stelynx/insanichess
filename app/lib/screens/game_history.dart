@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:insanichess/insanichess.dart' as insanichess;
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../bloc/game_history/game_history_bloc.dart';
@@ -56,9 +55,9 @@ class _GameHistoryScreen extends StatelessWidget {
                       title: Text(game.id),
                       trailing: const CupertinoListTileChevron(),
                       additionalInfo: Text(
-                        game.status == insanichess.GameStatus.whiteWon
+                        game.whiteWon
                             ? '1 - 0'
-                            : game.status == insanichess.GameStatus.blackWon
+                            : game.blackWon
                                 ? '0 - 1'
                                 : '½ - ½',
                       ),

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
-import '../../bloc/bloc/waiting_challenge_accept_bloc.dart';
+import '../../bloc/waiting_challenge_accept/waiting_challenge_accept_bloc.dart';
 import '../../router/router.dart';
 import '../../services/backend_service.dart';
 import '../../util/functions/to_display_string.dart';

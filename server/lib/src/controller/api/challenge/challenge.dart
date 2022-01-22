@@ -215,11 +215,22 @@ class ChallengeController {
       playerBlack = challengeCreatorOrFailure.value!;
     }
 
-    final InsanichessGame game = InsanichessGame(
+    // Determine if undo's are allowed for this game.
+    final Either<DatabaseFailure, bool> whiteAllowsUndo =
+        await _databaseService.playerAllowsUndoInLiveGame(playerWhite.id);
+    final Either<DatabaseFailure, bool> blackAllowsUndo =
+        await _databaseService.playerAllowsUndoInLiveGame(playerBlack.id);
+    final bool undoAllowed = !whiteAllowsUndo.isError() &&
+        !blackAllowsUndo.isError() &&
+        whiteAllowsUndo.value &&
+        blackAllowsUndo.value;
+
+    final InsanichessLiveGame game = InsanichessLiveGame(
       id: challengeId,
       whitePlayer: playerWhite,
       blackPlayer: playerBlack,
       timeControl: challenge.timeControl,
+      undoAllowed: undoAllowed,
     );
 
     memory.openChallenges[challengeId] =

@@ -1,4 +1,5 @@
 import 'package:dbcrypt/dbcrypt.dart';
+import 'package:insanichess/insanichess.dart' as insanichess;
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:postgres/postgres.dart';
 
@@ -401,6 +402,7 @@ class DatabaseService {
     return value(settings);
   }
 
+  /// Updates setting [columnName] with [columnValue] for user with [userId].
   Future<Either<DatabaseFailure, void>> updateSettingsValue(
     String columnName,
     dynamic columnValue, {
@@ -421,6 +423,51 @@ class DatabaseService {
       }
     } catch (e) {
       _logger.error('DatabaseService.updateSettingsValue', e);
+      return error(const DatabaseFailure());
+    }
+
+    return value(null);
+  }
+
+  /// Fetches "allow undo" setting for live games of user with id [playerId].
+  ///
+  /// This method assumes settings are present and returns [DatabaseFailure] in
+  /// case of any king of error.
+  Future<Either<DatabaseFailure, bool>> playerAllowsUndoInLiveGame(
+    String playerId,
+  ) async {
+    _logger.debug(
+      'DatabaseService.userAllowsUndoInLiveGame',
+      'checking if player with id = "$playerId" allows undo',
+    );
+
+    try {
+      final PostgreSQLResult userResult = await _connection!.query(
+          "SELECT ic_user FROM ic_players WHERE id = '$playerId' LIMIT 1;");
+      final String userId = userResult.first.toColumnMap()['ic_user'];
+      final PostgreSQLResult result = await _connection!.query(
+          "SELECT live_allow_undo FROM ic_user_settings WHERE ic_user = '$userId' LIMIT 1;");
+      return value(result.first.toColumnMap()['live_allow_undo']);
+    } catch (e) {
+      _logger.error('DatabaseService.userAllowsUndoInLiveGame', e);
+      return error(const DatabaseFailure());
+    }
+  }
+
+  /// Saves a [game] in the database.
+  ///
+  /// The id from the game is ignored and is automatically set by the database.
+  Future<Either<DatabaseFailure, void>> saveGame(InsanichessGame game) async {
+    _logger.debug(
+      'DatabaseService.saveGame',
+      'saving game',
+    );
+
+    try {
+      await _connection!.query(
+          "INSERT INTO ic_games (player_white, player_black, time_control_initial, time_control_increment, times_per_move, game_status, moves) VALUES ('${game.whitePlayer.id}', '${game.blackPlayer.id}', ${game.timeControl.initialTime.inSeconds}, ${game.timeControl.incrementPerMove.inSeconds}, ARRAY[]::integer${game.timesSpentPerMove.map<int>((Duration d) => d.inMilliseconds).toList()}, ${game.status.toJson()}, ARRAY[]::integer${game.movesPlayed.map<String>((insanichess.PlayedMove m) => m.toICString()).toList()});");
+    } catch (e) {
+      _logger.error('DatabaseService.saveGame', e);
       return error(const DatabaseFailure());
     }
 

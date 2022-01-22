@@ -55,8 +55,9 @@ class Game {
   ///
   /// Returns the `PlayedMove` if game is not over, otherwise `null`. It also
   /// sets the current `GameStatus` to `GameStatus.playing` and if the `King`
-  /// was captured, it sets it to either `GameStatus.whiteWon` or
-  /// `GameStatus.blackWon`, depending on what color is the captured `King`.
+  /// was captured, it sets it to either `GameStatus.whiteCheckmated` or
+  /// `GameStatus.blackCheckmated`, depending on what color is the captured
+  /// `King`.
   PlayedMove? move(Move m) {
     if (isGameOver ||
         board.at(m.from.row, m.from.col)?.color != playerOnTurn ||
@@ -68,8 +69,8 @@ class Game {
     _gameStatus = GameStatus.playing;
     if (move.pieceOnLandingSquare is King) {
       _gameStatus = move.pieceOnLandingSquare is BlackKing
-          ? GameStatus.whiteWon
-          : GameStatus.blackWon;
+          ? GameStatus.whiteCheckmated
+          : GameStatus.blackCheckmated;
     }
     _gameHistory.add(move);
     _calculateLegalMoves();
@@ -123,8 +124,20 @@ class Game {
     _gameHistory.forward();
   }
 
-  /// Sets the current status to draw.
+  /// Sets the current status to [GameStatus.draw].
   void draw() => _gameStatus = GameStatus.draw;
+
+  /// Sets the current status to [GameStatus.whiteResigned].
+  void whiteResigned() => _gameStatus = GameStatus.whiteResigned;
+
+  /// Sets the current status to [GameStatus.blackResigned].
+  void blackResigned() => _gameStatus = GameStatus.blackResigned;
+
+  /// Sets the current status to [GameStatus.whiteFlagged].
+  void whiteFlagged() => _gameStatus = GameStatus.whiteFlagged;
+
+  /// Sets the current status to [GameStatus.blackFlagged].
+  void blackFlagged() => _gameStatus = GameStatus.blackFlagged;
 
   /// Returns the current status of the game.
   GameStatus get status => _gameStatus;
@@ -132,11 +145,20 @@ class Game {
   /// Returns `true` if the game is currently in progress.
   bool get inProgress => _gameStatus == GameStatus.playing;
 
+  /// Returns `true` if the game was won by white.
+  bool get whiteWon =>
+      _gameStatus == GameStatus.whiteCheckmated ||
+      _gameStatus == GameStatus.blackFlagged ||
+      _gameStatus == GameStatus.blackResigned;
+
+  /// Returns `true` if the game was won by black.
+  bool get blackWon =>
+      _gameStatus == GameStatus.blackCheckmated ||
+      _gameStatus == GameStatus.whiteFlagged ||
+      _gameStatus == GameStatus.whiteResigned;
+
   /// Returns whether the game is over or not.
-  bool get isGameOver =>
-      _gameStatus == GameStatus.draw ||
-      _gameStatus == GameStatus.blackWon ||
-      _gameStatus == GameStatus.whiteWon;
+  bool get isGameOver => _gameStatus == GameStatus.draw || blackWon || whiteWon;
 
   /// Is there is a move that can be undone?
   bool get canUndo => _gameHistory.length > 0;

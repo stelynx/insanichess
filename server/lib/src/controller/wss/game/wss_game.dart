@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:insanichess/insanichess.dart' as insanichess;
 import 'package:insanichess_sdk/insanichess_sdk.dart';
+import 'package:pausable_timer/pausable_timer.dart';
 
 import '../../../memory/memory.dart';
 import '../../../services/database/database_service.dart';
@@ -198,6 +199,33 @@ class WssGameController {
     try {
       final InsanichessGameEvent? processedGameEvent;
       switch (gameEvent.type) {
+        case GameEventType.movePlayed:
+          // Check that a player who sent this event is the same as the player
+          // that is currently on turn. This is enough, because the game logic
+          // will handle the rest. This will need to change once we add premoves.
+          // We also pause the timer for flagging while checking if move is
+          // legal. In case it is not, we resume the timer. If the move is
+          // legal, then the timer is re-set right before sending the move event
+          // to the opponent.
+          final MovePlayedGameEvent movePlayedGameEvent =
+              gameEvent as MovePlayedGameEvent;
+          if (player == memory.gamesInProgress[gameId]!.playerOnTurn) {
+            memory.gameTimerPlayerFlagged[gameId]!.pause();
+            final insanichess.PlayedMove? move =
+                memory.gamesInProgress[gameId]!.move(movePlayedGameEvent.move);
+            if (move == null) {
+              memory.gameTimerPlayerFlagged[gameId]!.start();
+              processedGameEvent = null;
+              break;
+            }
+            memory.gamesInProgress[gameId]!.playerOfferedDraw = null;
+            memory.gamesInProgress[gameId]!.playerRequestedUndo = null;
+            processedGameEvent = movePlayedGameEvent;
+          } else {
+            processedGameEvent = null;
+          }
+          break;
+
         case GameEventType.drawOffered:
           // If both players issued the draw offer, propagate this request into
           // draw offer accept.
@@ -241,15 +269,6 @@ class WssGameController {
             processedGameEvent = null;
           }
           memory.gamesInProgress[gameId]!.playerOfferedDraw = null;
-          break;
-
-        case GameEventType.resigned:
-          if (player == insanichess.PieceColor.white) {
-            memory.gamesInProgress[gameId]!.whiteResigned();
-          } else {
-            memory.gamesInProgress[gameId]!.blackResigned();
-          }
-          processedGameEvent = ResignedGameEvent(player: player);
           break;
 
         case GameEventType.undoRequested:
@@ -307,38 +326,60 @@ class WssGameController {
           }
           break;
 
-        case GameEventType.movePlayed:
-          // Check that a player who sent this event is the same as the player
-          // that is currently on turn. This is enough, because the game logic
-          // will handle the rest. This will need to change once we add premoves.
-          final MovePlayedGameEvent movePlayedGameEvent =
-              gameEvent as MovePlayedGameEvent;
-          if (player == memory.gamesInProgress[gameId]!.playerOnTurn) {
-            final insanichess.PlayedMove? move =
-                memory.gamesInProgress[gameId]!.move(movePlayedGameEvent.move);
-            if (move == null) {
-              processedGameEvent = null;
-              break;
-            }
-            memory.gamesInProgress[gameId]!.playerOfferedDraw = null;
-            memory.gamesInProgress[gameId]!.playerRequestedUndo = null;
-            processedGameEvent = movePlayedGameEvent;
+        case GameEventType.resigned:
+          if (player == insanichess.PieceColor.white) {
+            memory.gamesInProgress[gameId]!.whiteResigned();
           } else {
-            processedGameEvent = null;
+            memory.gamesInProgress[gameId]!.blackResigned();
           }
+          processedGameEvent = ResignedGameEvent(player: player);
+          break;
+
+        case GameEventType.disbanded:
+          // Server can never receive this event, however clients will need to
+          // be able to react to this event (this part will be moved to SDK in
+          // future), therefore we just pass this event through doing nothing,
+          // instead of setting it to `null`.
+          processedGameEvent = gameEvent;
+          break;
+
+        case GameEventType.flagged:
+          // Server can never receive this event, however clients will need to
+          // be able to react to this event (this part will be moved to SDK in
+          // future), therefore we just pass this event through doing nothing,
+          // instead of setting it to `null`.
+          processedGameEvent = gameEvent;
           break;
       }
 
       // If the event had no effect on game, ignore it.
       if (processedGameEvent == null) return;
 
-      // First, send the processed game event on the opponent's socket.
+      // First, set the flagging timer and send the processed game event on the
+      // opponent's socket ...
       if (player == insanichess.PieceColor.white) {
+        if (processedGameEvent is MovePlayedGameEvent) {
+          memory.gameTimerPlayerFlagged[gameId]!.cancel();
+          memory.gameTimerPlayerFlagged[gameId] = PausableTimer(
+            memory.gamesInProgress[gameId]!.remainingTimeBlack,
+            () => _onPlayerFlagged(gameId),
+          );
+          memory.gameTimerPlayerFlagged[gameId]!.start();
+        }
         memory.gameBlackStreamControllers[gameId]!.add(processedGameEvent);
       } else {
+        if (processedGameEvent is MovePlayedGameEvent) {
+          memory.gameTimerPlayerFlagged[gameId]!.cancel();
+          memory.gameTimerPlayerFlagged[gameId] = PausableTimer(
+            memory.gamesInProgress[gameId]!.remainingTimeWhite,
+            () => _onPlayerFlagged(gameId),
+          );
+          memory.gameTimerPlayerFlagged[gameId]!.start();
+        }
         memory.gameWhiteStreamControllers[gameId]!.add(processedGameEvent);
       }
 
+      // ... then broadcast the event if it needs to be broadcasted.
       if (processedGameEvent.isBroadcasted) {
         memory.gameBroadcastStreamControllers[gameId]!.add(processedGameEvent);
       }
@@ -347,56 +388,34 @@ class WssGameController {
     }
 
     if (memory.gamesInProgress[gameId]!.isGameOver) {
-      _completeGame(gameId);
+      _onGameEnded(gameId);
     }
   }
 
   /// Completes the game by closing all open stream controllers, cancelling
   /// subscriptions and closing sockets. The game is also written to the
-  /// database.
-  Future<void> _completeGame(gameId) async {
-    // Cancel and delete subscriptions to players' sockets.
-    await memory.gameSocketStreamSubscriptionsWhite[gameId]?.cancel();
-    await memory.gameSocketStreamSubscriptionsBlack[gameId]?.cancel();
-    memory.gameSocketStreamSubscriptionsWhite.remove(gameId);
-    memory.gameSocketStreamSubscriptionsBlack.remove(gameId);
-
-    // Close and delete stream controllers for player events.
-    if (memory.gameWhiteStreamControllers[gameId]!.hasListener) {
-      await memory.gameWhiteStreamControllers[gameId]!.sink.close();
-      await memory.gameWhiteStreamControllers[gameId]?.close();
-    }
-    if (memory.gameBlackStreamControllers[gameId]!.hasListener) {
-      await memory.gameBlackStreamControllers[gameId]!.sink.close();
-      await memory.gameBlackStreamControllers[gameId]?.close();
-    }
-    memory.gameWhiteStreamControllers.remove(gameId);
-    memory.gameBlackStreamControllers.remove(gameId);
-
-    // Close and delete players sockets.
-    await memory.gameSocketsWhite[gameId]?.close(WebSocketStatus.normalClosure);
-    await memory.gameSocketsBlack[gameId]?.close(WebSocketStatus.normalClosure);
-    memory.gameSocketsWhite.remove(gameId);
-    memory.gameSocketsBlack.remove(gameId);
-
-    // Close and delete broadcast stream controller.
-    await memory.gameBroadcastStreamControllers[gameId]!.sink.close();
-    await memory.gameBroadcastStreamControllers[gameId]!.close();
-    memory.gameBroadcastStreamControllers.remove(gameId);
-
-    // Close and delete sockets connected to broadcast stream.
-    for (final WebSocket socket
-        in memory.gameBroadcastConnectedSockets[gameId]!) {
-      try {
-        await socket.close(WebSocketStatus.normalClosure);
-      } catch (e) {
-        print(e);
-      }
-    }
-    memory.gameBroadcastConnectedSockets.remove(gameId);
-
-    // Write game to database and delete it from memory even in case of failure.
+  /// database if status is not disbanded.
+  Future<void> _onGameEnded(String gameId) async {
+    // Write game to database and perform cleanup even if saving failed.
     await _databaseService.saveGame(memory.gamesInProgress[gameId]!);
-    memory.gamesInProgress.remove(gameId);
+
+    await memory.cleanUpAfterGame(gameId);
+  }
+
+  /// Updates game state that a player f
+  Future<void> _onPlayerFlagged(String gameId) async {
+    // This should never happen but let's keep it here just in case.
+    if (!memory.gamesInProgress[gameId]!.inProgress) return;
+
+    memory.gamesInProgress[gameId]!.flagged();
+
+    // Notify listeners about the flagging.
+    final FlaggedGameEvent flaggedGameEvent =
+        FlaggedGameEvent(player: memory.gamesInProgress[gameId]!.playerOnTurn);
+    memory.gameWhiteStreamControllers[gameId]!.add(flaggedGameEvent);
+    memory.gameBlackStreamControllers[gameId]!.add(flaggedGameEvent);
+    memory.gameBroadcastStreamControllers[gameId]!.add(flaggedGameEvent);
+
+    await _onGameEnded(gameId);
   }
 }

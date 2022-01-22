@@ -4,8 +4,10 @@ import 'dart:math';
 
 import 'package:insanichess/insanichess.dart' as insanichess;
 import 'package:insanichess_sdk/insanichess_sdk.dart';
+import 'package:pausable_timer/pausable_timer.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../config/config.dart';
 import '../../../memory/memory.dart';
 import '../../../services/database/database_service.dart';
 import '../../../util/either.dart';
@@ -55,7 +57,6 @@ class ChallengeController {
     }
 
     if (challenge.status != ChallengeStatus.initiated) {
-      print('here');
       return respondWithBadRequest(request);
     }
 
@@ -155,7 +156,8 @@ class ChallengeController {
   /// 200.
   ///
   /// Accepts the challenge, creates a game with id of the challenge and returns
-  /// empty body. It also creates the broadcast stream of events.
+  /// empty body. It also creates the broadcast stream of events and starts the
+  /// timer in which white player must make his first move.
   Future<void> handleAcceptChallenge(
     HttpRequest request, {
     required String challengeId,
@@ -248,7 +250,13 @@ class ChallengeController {
     memory.gameBlackStreamControllers[challengeId] =
         StreamController<InsanichessGameEvent>();
 
-    return respondWithOk(request);
+    respondWithOk(request);
+
+    memory.gameTimerPlayerFlagged[challengeId] = PausableTimer(
+      const Duration(seconds: Config.secondsWhiteForFirstMove),
+      () => _disbandGame(challengeId),
+    );
+    memory.gameTimerPlayerFlagged[challengeId]!.start();
   }
 
   /// Handler for declining challenge with [challengeId].
@@ -301,6 +309,21 @@ class ChallengeController {
   }
 
   // Helpers
+
+  /// Notifies stream listeners that the game has been disbanded and performs
+  /// cleanup after finished game.
+  Future<void> _disbandGame(String gameId) async {
+    // This should never happen but let's keep it here just in case.
+    if (memory.gamesInProgress[gameId]!.status !=
+        insanichess.GameStatus.notStarted) return;
+
+    memory.gameWhiteStreamControllers[gameId]!.add(const DisbandedGameEvent());
+    memory.gameBlackStreamControllers[gameId]!.add(const DisbandedGameEvent());
+    memory.gameBroadcastStreamControllers[gameId]!
+        .add(const DisbandedGameEvent());
+
+    await memory.cleanUpAfterGame(gameId);
+  }
 
   /// Helper for private game creation
   Future<void> _handleCreatePrivateGame(

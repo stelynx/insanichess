@@ -133,11 +133,11 @@ class Game {
   /// Sets the current status to [GameStatus.blackResigned].
   void blackResigned() => _gameStatus = GameStatus.blackResigned;
 
-  /// Sets the current status to [GameStatus.whiteFlagged].
-  void whiteFlagged() => _gameStatus = GameStatus.whiteFlagged;
-
-  /// Sets the current status to [GameStatus.blackFlagged].
-  void blackFlagged() => _gameStatus = GameStatus.blackFlagged;
+  /// Sets the current status to [GameStatus.whiteFlagged] or
+  /// [GameStatus.blackFlagged], depending on who the [playerOnTurn] is.
+  void flagged() => _gameStatus = playerOnTurn == PieceColor.white
+      ? GameStatus.whiteFlagged
+      : GameStatus.blackFlagged;
 
   /// Returns the current status of the game.
   GameStatus get status => _gameStatus;

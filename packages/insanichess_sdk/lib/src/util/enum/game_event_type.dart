@@ -1,6 +1,10 @@
 /// The type of the game event. This is used to indicate what kind of data is in
 /// the request / response and to be able to efficiently parse the data.
 enum GameEventType {
+  /// Event that server creates if white player did not move at the start of the
+  /// game.
+  disbanded,
+
   /// Event represents a move played.
   movePlayed,
 
@@ -13,8 +17,11 @@ enum GameEventType {
   /// Event represents a player's response to the draw offer.
   drawOfferResponded,
 
-  /// Event signaling a user resigned.
+  /// Event signaling a player resigned.
   resigned,
+
+  /// Event signaling that a player ran out of time.
+  flagged,
 
   /// Event represents that a player requested an undo.
   undoRequested,
@@ -29,6 +36,8 @@ enum GameEventType {
 extension GameEventTypeExtension on GameEventType {
   String toJson() {
     switch (this) {
+      case GameEventType.disbanded:
+        return 'disbanded';
       case GameEventType.movePlayed:
         return 'move';
       case GameEventType.drawOffered:
@@ -39,6 +48,8 @@ extension GameEventTypeExtension on GameEventType {
         return 'draw_response';
       case GameEventType.resigned:
         return 'resign';
+      case GameEventType.flagged:
+        return 'flag';
       case GameEventType.undoRequested:
         return 'undo_req';
       case GameEventType.undoCancelled:

@@ -13,11 +13,11 @@ class Square {
 
   /// Constructs new `Square` that corresponds to ICString representation [s].
   Square.fromICString(String s)
-      : row = int.parse(s.substring(1)),
+      : row = int.parse(s.substring(1)) - 1,
         col = 'abcdefghijklmnopqrst'.indexOf(s[0]);
 
   /// Returns `String` representaion of current square.
-  String toICString() => '${'abcdefghijklmnopqrst'[col]}$row';
+  String toICString() => '${'abcdefghijklmnopqrst'[col]}${row + 1}';
 
   @override
   bool operator ==(Object? other) {

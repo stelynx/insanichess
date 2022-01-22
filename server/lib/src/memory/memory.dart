@@ -16,12 +16,12 @@ class Memory {
 
   /// List of games currently in progress.
   ///
-  /// A map from temporary ids to corresponding games. `InsanichessGame` also
+  /// A map from temporary ids to corresponding games. [InsanichessLiveGame]
   /// contains the id, however this implementation is purely for convenience and
   /// better performance when querying by id. Also, `InsanichessGame.id` is the
   /// id in database, not temporary id.
-  final Map<String, InsanichessGame> gamesInProgress =
-      <String, InsanichessGame>{};
+  final Map<String, InsanichessLiveGame> gamesInProgress =
+      <String, InsanichessLiveGame>{};
 
   /// List of stream controllers for games currently in progress that broadcast
   /// game events.

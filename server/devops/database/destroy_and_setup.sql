@@ -51,7 +51,7 @@ CREATE TABLE ic_games (
   game_status INT NOT NULL,
   moves TEXT[] NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
-  CONSTRAINT ic_game_user_white FOREIGN KEY (player_white) REFERENCES ic_users(id),
-  CONSTRAINT ic_game_user_black FOREIGN KEY (player_black) REFERENCES ic_users(id)
+  CONSTRAINT ic_game_player_white FOREIGN KEY (player_white) REFERENCES ic_players(id),
+  CONSTRAINT ic_game_player_black FOREIGN KEY (player_black) REFERENCES ic_players(id)
 ) WITH ( OIDS = FALSE );
 ALTER TABLE ic_games OWNER TO insanichess_admin;

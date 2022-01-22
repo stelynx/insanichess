@@ -9,6 +9,7 @@ library insanichess_sdk;
 export 'src/models/game/challenge.dart';
 export 'src/models/game/game.dart';
 export 'src/models/game/game_event.dart';
+export 'src/models/game/live_game.dart';
 export 'src/models/settings/game/game.dart';
 export 'src/models/settings/game/live.dart';
 export 'src/models/settings/game/otb.dart';

@@ -7,6 +7,12 @@ enum GameEventType {
   /// Event represents a draw offer.
   drawOffered,
 
+  /// Event represents that a draw offer has been cancelled.
+  drawOfferCancelled,
+
+  /// Event represents a player's response to the draw offer.
+  drawOfferResponded,
+
   /// Event signaling a user resigned.
   resigned,
 
@@ -17,7 +23,7 @@ enum GameEventType {
   undoCancelled,
 
   /// Event represents a player's response to the undo request.
-  undoResponse,
+  undoRequestResponded,
 }
 
 extension GameEventTypeExtension on GameEventType {
@@ -27,13 +33,17 @@ extension GameEventTypeExtension on GameEventType {
         return 'move';
       case GameEventType.drawOffered:
         return 'draw_offer';
+      case GameEventType.drawOfferCancelled:
+        return 'draw_cancel';
+      case GameEventType.drawOfferResponded:
+        return 'draw_response';
       case GameEventType.resigned:
         return 'resign';
       case GameEventType.undoRequested:
         return 'undo_req';
       case GameEventType.undoCancelled:
         return 'undo_cancel';
-      case GameEventType.undoResponse:
+      case GameEventType.undoRequestResponded:
         return 'undo_res';
     }
   }

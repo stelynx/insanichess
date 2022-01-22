@@ -1,6 +1,7 @@
 import 'package:insanichess_server/insanichess_server.dart';
 
 Future<void> main() async {
+  print('here');
   Logger();
 
   final DbConfig dbConfig = DbConfig.fromEnvironment();

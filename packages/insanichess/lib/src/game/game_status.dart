@@ -10,9 +10,21 @@ enum GameStatus {
   /// concept of stalemate, this is the only option for this status.
   draw,
 
-  /// Black has taken white's king and the game is over.
-  blackWon,
-
   /// White has taken black's king and the game is over.
-  whiteWon,
+  whiteCheckmated,
+
+  /// Black has taken white's king and the game is over.
+  blackCheckmated,
+
+  /// White has lost on time and the game is over.
+  whiteFlagged,
+
+  /// Black has lost on time and the game is over.
+  blackFlagged,
+
+  /// White has resigned and the game is over.
+  whiteResigned,
+
+  /// Black has resigned and the game is over.
+  blackResigned,
 }

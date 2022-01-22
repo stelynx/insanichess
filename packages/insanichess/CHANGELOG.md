@@ -1,3 +1,11 @@
+## 0.3.2
+
+- Fix a bug with wrong row parsing in `Square.fromICString()` and `Square.toICString()`.
+
+## 0.3.1
+
+- Add support for distinguishing how a game has ended.
+
 ## 0.3.0
 
 - Remove flutter from dependencies.

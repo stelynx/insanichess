@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
-import '../screens/game.dart';
+import '../screens/game/live_game.dart';
+import '../screens/game/otb_game.dart';
 import '../screens/game_history.dart';
 import '../screens/home.dart';
 import '../screens/online_play/online_play.dart';
@@ -28,24 +29,39 @@ abstract class ICRouter {
   }
 
   /// Pops the route and updates [routeHistory].
-  static void popUntil(BuildContext context, bool Function() until) {
+  static void popUntil(
+    BuildContext context,
+    bool Function() until, [
+    int? popJust,
+  ]) {
+    if (popJust != null) {
+      for (int i = 0; i < popJust; i++) {
+        _routeHistory.removeLast();
+      }
+    }
+
     while (!until()) {
-      _routeHistory.removeLast();
+      if (popJust == null) {
+        _routeHistory.removeLast();
+      }
       Navigator.of(context).pop();
     }
   }
 
   /// Pops the current route and adds new route on to [routeHistory].
-  static void popAndPushNamed(
+  static Future<T?> popAndPushNamed<T extends Object?, TO extends Object?>(
     BuildContext context,
     String name, {
     Object? arguments,
-  }) {
-    return popAndPushNamed(context, name, arguments: arguments);
+  }) async {
+    _routeHistory.removeLast();
+    _routeHistory.add(name);
+    return await Navigator.of(context)
+        .popAndPushNamed<T, TO>(name, arguments: arguments);
   }
 
   /// Pushes the named route with [name] and [args] and updates [routeHistory].
-  static Future<T?> pushNamed<T>(
+  static Future<T?> pushNamed<T extends Object?>(
     BuildContext context,
     String name, {
     Object? arguments,
@@ -94,10 +110,16 @@ abstract class ICRouter {
             args: settings.arguments as WaitingChallengeAcceptScreenArgs,
           ),
         );
-      case ICRoute.game:
+      case ICRoute.gameOtb:
         return CupertinoPageRoute(
-          builder: (context) => GameScreen(
-            args: settings.arguments as GameScreenArgs,
+          builder: (context) => OtbGameScreen(
+            args: settings.arguments as OtbGameScreenArgs,
+          ),
+        );
+      case ICRoute.gameLive:
+        return CupertinoPageRoute(
+          builder: (context) => LiveGameScreen(
+            args: settings.arguments as LiveGameScreenArgs,
           ),
         );
       case ICRoute.gameHistory:

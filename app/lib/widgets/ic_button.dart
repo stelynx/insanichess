@@ -38,16 +38,23 @@ class ICTrailingButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onPressed;
 
+  /// Gives this button "toggled" effect.
+  final bool isPressed;
+
   const ICTrailingButton({
     Key? key,
     required this.icon,
     this.onPressed,
+    this.isPressed = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CupertinoButton(
       padding: EdgeInsets.zero,
+      color: isPressed
+          ? CupertinoTheme.of(context).primaryColor.withOpacity(0.3)
+          : null,
       child: Semantics(
         container: true,
         excludeSemantics: true,
@@ -57,14 +64,7 @@ class ICTrailingButton extends StatelessWidget {
           style: CupertinoTheme.of(context).textTheme.navActionTextStyle,
           child: ConstrainedBox(
             constraints: const BoxConstraints(minWidth: 50),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                const Padding(padding: EdgeInsetsDirectional.only(start: 6.0)),
-                Icon(icon),
-              ],
-            ),
+            child: Icon(icon),
           ),
         ),
       ),
@@ -148,9 +148,11 @@ class ICGameControlButton extends ICTrailingButton {
     Key? key,
     required IconData icon,
     VoidCallback? onPressed,
+    bool isPressed = false,
   }) : super(
           key: key,
           icon: icon,
           onPressed: onPressed,
+          isPressed: isPressed,
         );
 }

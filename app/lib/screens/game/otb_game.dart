@@ -2,48 +2,47 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
-import '../bloc/game/game_bloc.dart';
-import '../bloc/global/global_bloc.dart';
-import '../router/router.dart';
-import '../services/local_storage_service.dart';
-import '../widgets/ic_board.dart';
-import '../widgets/ic_button.dart';
+import '../../bloc/game/otb_game_bloc.dart';
+import '../../bloc/global/global_bloc.dart';
+import '../../router/router.dart';
+import '../../services/local_storage_service.dart';
+import '../../widgets/ic_board.dart';
+import '../../widgets/ic_button.dart';
 
-class GameScreenArgs {
+class OtbGameScreenArgs {
   final InsanichessGame? gameBeingShown;
 
-  const GameScreenArgs({required this.gameBeingShown});
+  const OtbGameScreenArgs({required this.gameBeingShown});
 }
 
-class GameScreen extends StatelessWidget {
-  final GameScreenArgs args;
+class OtbGameScreen extends StatelessWidget {
+  final OtbGameScreenArgs args;
 
-  const GameScreen({Key? key, required this.args}) : super(key: key);
+  const OtbGameScreen({Key? key, required this.args}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<GameBloc>(
-      create: (BuildContext context) => GameBloc(
+    return BlocProvider<OtbGameBloc>(
+      create: (BuildContext context) => OtbGameBloc(
         localStorageService: LocalStorageService.instance,
         gameBeingShown: args.gameBeingShown,
-        isOtb: true,
         settings: GlobalBloc.instance.state.settings!,
       ),
-      child: const _GameScreen(),
+      child: const _OtbGameScreen(),
     );
   }
 }
 
-class _GameScreen extends StatelessWidget {
-  const _GameScreen({Key? key}) : super(key: key);
+class _OtbGameScreen extends StatelessWidget {
+  const _OtbGameScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final GameBloc bloc = BlocProvider.of<GameBloc>(context);
+    final OtbGameBloc bloc = BlocProvider.of<OtbGameBloc>(context);
 
-    return BlocConsumer<GameBloc, GameState>(
-      listener: (BuildContext context, GameState state) {},
-      builder: (BuildContext context, GameState state) {
+    return BlocConsumer<OtbGameBloc, OtbGameState>(
+      listener: (BuildContext context, OtbGameState state) {},
+      builder: (BuildContext context, OtbGameState state) {
         return CupertinoPageScaffold(
           navigationBar: CupertinoNavigationBar(
             border: const Border(),
@@ -70,7 +69,7 @@ class _GameScreen extends StatelessWidget {
                           isDestructiveAction: true,
                           onPressed: () {
                             int i = 0;
-                            ICRouter.popUntil(context, () => i++ == 2);
+                            ICRouter.popUntil(context, () => i++ == 2, 1);
                           },
                           child: const Text('Quit'),
                         ),

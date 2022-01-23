@@ -6,7 +6,8 @@ abstract class ICRoute {
   static const String home = '/home';
   static const String onlinePlay = '/onlinePlay';
   static const String waitingChallengeAccept = '/waitingChallengeAccept';
-  static const String game = '/game';
+  static const String gameOtb = '/gameOtb';
+  static const String gameLive = '/gameLive';
   static const String gameHistory = '/gameHistory';
   static const String rules = '/rules';
   static const String settings = '/settings';

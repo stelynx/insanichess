@@ -1,3 +1,6 @@
 abstract class Config {
-  static const String backendUrl = 'http://localhost:4040';
+  static const String backendHost = 'localhost';
+  static const int backendPort = 4040;
+  static const String backendApiScheme = 'http';
+  static const String backendWssScheme = 'ws';
 }

@@ -1,7 +1,7 @@
-part of 'game_bloc.dart';
+part of 'otb_game_bloc.dart';
 
 @immutable
-class GameState {
+class OtbGameState {
   final InsanichessGame game;
   final bool enableZoomButton;
   final bool isWhiteBottom;
@@ -13,7 +13,7 @@ class GameState {
   final bool allowUndo;
   final AutoZoomOutOnMoveBehaviour autoZoomOutOnMove;
 
-  const GameState({
+  const OtbGameState({
     required this.game,
     required this.enableZoomButton,
     required this.isWhiteBottom,
@@ -26,7 +26,7 @@ class GameState {
     required this.autoZoomOutOnMove,
   });
 
-  const GameState.initial({
+  const OtbGameState.initial({
     required this.game,
     required this.isWhiteBottom,
     required this.rotateOnMove,
@@ -38,7 +38,7 @@ class GameState {
     required this.autoZoomOutOnMove,
   }) : enableZoomButton = false;
 
-  GameState copyWith({
+  OtbGameState copyWith({
     InsanichessGame? game,
     bool? enableZoomButton,
     bool? isWhiteBottom,
@@ -50,7 +50,7 @@ class GameState {
     bool? allowUndo,
     AutoZoomOutOnMoveBehaviour? autoZoomOutOnMove,
   }) {
-    return GameState(
+    return OtbGameState(
       game: game ?? this.game,
       enableZoomButton: enableZoomButton ?? this.enableZoomButton,
       isWhiteBottom: isWhiteBottom ?? this.isWhiteBottom,

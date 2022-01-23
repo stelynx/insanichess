@@ -143,14 +143,14 @@ packages:
       path: "../packages/insanichess"
       relative: true
     source: path
-    version: "0.3.1"
+    version: "0.3.4"
   insanichess_sdk:
     dependency: "direct main"
     description:
       path: "../packages/insanichess_sdk"
       relative: true
     source: path
-    version: "0.6.1"
+    version: "0.6.3"
   lints:
     dependency: transitive
     description:

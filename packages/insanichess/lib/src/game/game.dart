@@ -134,10 +134,16 @@ class Game {
   void blackResigned() => _gameStatus = GameStatus.blackResigned;
 
   /// Sets the current status to [GameStatus.whiteFlagged] or
-  /// [GameStatus.blackFlagged], depending on who the [playerOnTurn] is.
-  void flagged() => _gameStatus = playerOnTurn == PieceColor.white
-      ? GameStatus.whiteFlagged
-      : GameStatus.blackFlagged;
+  /// [GameStatus.blackFlagged], depending on who the [player] is.
+  ///
+  /// If [player] is left `null`, the current [playerOnTurn] is marked as
+  /// flagged. This is valuable for the clients to actually set the value they
+  /// received in the game event from server instead of relying on their
+  /// internal value that might not be the same as the one on server.
+  void flagged([PieceColor? player]) =>
+      _gameStatus = (player ?? playerOnTurn) == PieceColor.white
+          ? GameStatus.whiteFlagged
+          : GameStatus.blackFlagged;
 
   /// Returns the current status of the game.
   GameStatus get status => _gameStatus;

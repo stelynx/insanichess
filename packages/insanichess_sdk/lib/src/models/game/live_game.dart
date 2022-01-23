@@ -83,42 +83,46 @@ class InsanichessLiveGame extends InsanichessGame {
     };
   }
 
-  /// Performs a move on the board.
-  ///
-  /// This method overrides the [InsanichessGame.move]. It adds support for time
-  /// tracking.
+  /// Undoes the move on the [board], removes last element of
+  /// [timesSpentPerMove] and updated either [remainingTimeWhite] or
+  /// [remainingTimeBlack] accordingly.
   @override
-  insanichess.PlayedMove? move(insanichess.Move m) {
-    final DateTime timeOfMove = DateTime.now();
+  insanichess.PlayedMove? undo() {
+    insanichess.PlayedMove? undoneMove = super.undo();
 
-    // This needs to be remembered because calling `super.move(m)` will change
-    // player on turn.
-    final insanichess.PieceColor playerMakingMove = playerOnTurn;
-
-    final insanichess.PlayedMove? playedMove = super.move(m);
-    if (playedMove == null) return null;
-
-    final Duration moveDuration;
-    if (timeOfLastMove == null) {
-      // This only happens when white player makes his first move.
-      moveDuration = Duration.zero;
-    } else {
-      moveDuration = timeOfMove.difference(timeOfLastMove!);
+    if (undoneMove != null) {
+      final Duration lastMoveDuration = timesSpentPerMove.removeLast();
+      if (playerOnTurn == insanichess.PieceColor.white) {
+        remainingTimeWhite = remainingTimeWhite +
+            lastMoveDuration -
+            timeControl.incrementPerMove;
+      } else {
+        remainingTimeBlack = remainingTimeBlack +
+            lastMoveDuration -
+            timeControl.incrementPerMove;
+      }
     }
-    timesSpentPerMove.add(moveDuration);
 
-    // Deduct time spent for move and add increment.
-    if (playerMakingMove == insanichess.PieceColor.white) {
+    return undoneMove;
+  }
+
+  /// Deducts [timeSpentForMove] from remaining time of the [player] and adds
+  /// [timeControl.incrementPerMove] to it.
+  ///
+  /// Additionally, the [timesSpentPerMove] and [timeOfLastMove] are also
+  /// updated.
+  void updateTime(Duration timeSpentForMove, insanichess.PieceColor player) {
+    timesSpentPerMove.add(timeSpentForMove);
+
+    if (player == insanichess.PieceColor.white) {
       remainingTimeWhite =
-          remainingTimeWhite - moveDuration + timeControl.incrementPerMove;
+          remainingTimeWhite - timeSpentForMove + timeControl.incrementPerMove;
     } else {
       remainingTimeBlack =
-          remainingTimeBlack - moveDuration + timeControl.incrementPerMove;
+          remainingTimeBlack - timeSpentForMove + timeControl.incrementPerMove;
     }
 
-    // Set to `DateTime.now()` to ignore time spent for processing.
     timeOfLastMove = DateTime.now();
-    return playedMove;
   }
 }
 

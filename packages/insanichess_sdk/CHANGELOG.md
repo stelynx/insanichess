@@ -1,3 +1,13 @@
+## 0.6.4
+
+- Add endpoint for retrieving live game data.
+- Add player and time spent for move to `MovePlayedGameEvent` so clients can sync their clocks.
+- `InsanichessLiveGame` no longer overrides the `move` method.
+- `InsanichessLiveGame` overrides `undo` method and restores back time spent for the undone move.
+- `InsanichesSLiveGame` now has `updateTime` method that can update the time after a move.
+- Added `pieceColorFromJson` function that parses `insanichess.PieceColor` from json representation.
+- Bump required `insanichess` version to `0.3.3`.
+
 ## 0.6.3
 
 - Add game events `disbanded` and `flagged`.

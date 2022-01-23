@@ -69,7 +69,7 @@ class InsanichessGame extends insanichess.Game
         timeControl = InsanichessTimeControl.fromJson(
             json[InsanichessGameJsonKey.timeControl]),
         timesSpentPerMove = json[InsanichessGameJsonKey.timesSpentPerMove]
-            .map((e) => Duration(milliseconds: e))
+            .map<Duration>((e) => Duration(milliseconds: e))
             .toList(),
         remainingTimeWhite =
             Duration(seconds: json[InsanichessGameJsonKey.remainingTimeWhite]),

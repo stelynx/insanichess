@@ -7,22 +7,21 @@ import 'package:meta/meta.dart';
 
 import '../../services/local_storage_service.dart';
 
-part 'game_event.dart';
-part 'game_state.dart';
+part 'otb_game_event.dart';
+part 'otb_game_state.dart';
 
-class GameBloc extends Bloc<_GameEvent, GameState> {
+class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
   final LocalStorageService _localStorageService;
   final InsanichessGame? _gameBeingShown;
 
-  GameBloc({
+  OtbGameBloc({
     required LocalStorageService localStorageService,
     required InsanichessGame? gameBeingShown,
-    required bool isOtb,
     required InsanichessSettings settings,
   })  : _localStorageService = localStorageService,
         _gameBeingShown = gameBeingShown,
         _resetZoomStreamController = StreamController<void>.broadcast(),
-        super(GameState.initial(
+        super(OtbGameState.initial(
           game: gameBeingShown ??
               InsanichessGame(
                 id: '${DateTime.now().millisecondsSinceEpoch}',
@@ -31,15 +30,13 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
                 timeControl: const InsanichessTimeControl.blitz(),
               ),
           isWhiteBottom: true,
-          rotateOnMove: isOtb ? settings.otb.rotateChessboard : false,
-          mirrorTopPieces: isOtb ? settings.otb.mirrorTopPieces : false,
+          rotateOnMove: settings.otb.rotateChessboard,
+          mirrorTopPieces: settings.otb.mirrorTopPieces,
           showZoomOutButtonOnLeft: settings.showZoomOutButtonOnLeft,
           showLegalMoves: settings.showLegalMoves,
-          autoPromoteToQueen: isOtb ? settings.otb.alwaysPromoteToQueen : false,
-          allowUndo: isOtb ? settings.otb.allowUndo : false,
-          autoZoomOutOnMove: isOtb
-              ? settings.otb.autoZoomOutOnMove
-              : AutoZoomOutOnMoveBehaviour.always,
+          autoPromoteToQueen: settings.otb.alwaysPromoteToQueen,
+          allowUndo: settings.otb.allowUndo,
+          autoZoomOutOnMove: settings.otb.autoZoomOutOnMove,
         )) {
     on<_Move>(_onMove);
     on<_ZoomChanged>(_onZoomChanged);
@@ -78,7 +75,7 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
 
   // Handlers
 
-  FutureOr<void> _onMove(_Move event, Emitter<GameState> emit) async {
+  FutureOr<void> _onMove(_Move event, Emitter<OtbGameState> emit) async {
     final insanichess.PlayedMove? playedMove = state.game.move(event.move);
 
     if (playedMove == null) return;
@@ -97,7 +94,7 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
 
   FutureOr<void> _onZoomChanged(
     _ZoomChanged event,
-    Emitter<GameState> emit,
+    Emitter<OtbGameState> emit,
   ) async {
     emit(state.copyWith(
       enableZoomButton: event.value > 1.0,
@@ -106,30 +103,31 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
 
   FutureOr<void> _onResetZoom(
     _ResetZoom event,
-    Emitter<GameState> emit,
+    Emitter<OtbGameState> emit,
   ) async {
     _resetZoomStreamController.add(null);
     emit(state.copyWith(enableZoomButton: false));
   }
 
-  FutureOr<void> _onUndo(_Undo event, Emitter<GameState> emit) async {
+  FutureOr<void> _onUndo(_Undo event, Emitter<OtbGameState> emit) async {
     state.game.undo();
     emit(state.copyWith());
   }
 
-  FutureOr<void> _onForward(_Forward event, Emitter<GameState> emit) async {
+  FutureOr<void> _onForward(_Forward event, Emitter<OtbGameState> emit) async {
     state.game.forward();
     emit(state.copyWith());
   }
 
-  FutureOr<void> _onBackward(_Backward event, Emitter<GameState> emit) async {
+  FutureOr<void> _onBackward(
+      _Backward event, Emitter<OtbGameState> emit) async {
     state.game.backward();
     emit(state.copyWith());
   }
 
   FutureOr<void> _onAgreeToDraw(
     _AgreeToDraw event,
-    Emitter<GameState> emit,
+    Emitter<OtbGameState> emit,
   ) async {
     state.game.draw();
     emit(state.copyWith());
@@ -139,9 +137,9 @@ class GameBloc extends Bloc<_GameEvent, GameState> {
 
   FutureOr<void> _onStartNewGame(
     _StartNewGame event,
-    Emitter<GameState> emit,
+    Emitter<OtbGameState> emit,
   ) async {
-    emit(GameState.initial(
+    emit(OtbGameState.initial(
       game: InsanichessGame(
         id: '${DateTime.now().millisecondsSinceEpoch}',
         whitePlayer: const InsanichessPlayer.testWhite(),

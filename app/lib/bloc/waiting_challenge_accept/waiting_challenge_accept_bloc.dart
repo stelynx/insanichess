@@ -88,9 +88,11 @@ class WaitingChallengeAcceptBloc
       case ChallengeStatus.created:
         break;
       case ChallengeStatus.accepted:
+        _challengeDataRefreshTimer.cancel();
         emit(state.copyWith(gameId: _challengeId));
         break;
       case ChallengeStatus.declined:
+        _challengeDataRefreshTimer.cancel();
         emit(state.copyWith(challengeDeclined: true));
         break;
       case ChallengeStatus.initiated:

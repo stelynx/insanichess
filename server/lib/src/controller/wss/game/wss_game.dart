@@ -184,6 +184,10 @@ class WssGameController {
     insanichess.PieceColor player, {
     required String gameId,
   }) {
+    // This is used in case the received event is a move event. We initialize it
+    // here to not take into account the processing.
+    final DateTime timeOfMove = DateTime.now();
+
     if (memory.gamesInProgress[gameId]?.isGameOver ?? true) return;
 
     if (event is! String ||
@@ -210,7 +214,15 @@ class WssGameController {
           final MovePlayedGameEvent movePlayedGameEvent =
               gameEvent as MovePlayedGameEvent;
           if (player == memory.gamesInProgress[gameId]!.playerOnTurn) {
+            // Pause the timer while processing.
             memory.gameTimerPlayerFlagged[gameId]!.pause();
+
+            // This needs to be remembered because calling `game.move(m)` will
+            // change player on turn.
+            final insanichess.PieceColor playerMakingMove =
+                memory.gamesInProgress[gameId]!.playerOnTurn;
+
+            // Make a move.
             final insanichess.PlayedMove? move =
                 memory.gamesInProgress[gameId]!.move(movePlayedGameEvent.move);
             if (move == null) {
@@ -218,9 +230,31 @@ class WssGameController {
               processedGameEvent = null;
               break;
             }
+
+            final Duration moveDuration;
+            if (memory.gamesInProgress[gameId]!.timeOfLastMove == null) {
+              // This only happens when white player makes his first move.
+              moveDuration = Duration.zero;
+            } else {
+              moveDuration = timeOfMove
+                  .difference(memory.gamesInProgress[gameId]!.timeOfLastMove!);
+            }
+
+            // Update time related values.
+            memory.gamesInProgress[gameId]!.updateTime(
+              moveDuration,
+              playerMakingMove,
+            );
+
+            // "Decline" undo and draw requests.
             memory.gamesInProgress[gameId]!.playerOfferedDraw = null;
             memory.gamesInProgress[gameId]!.playerRequestedUndo = null;
-            processedGameEvent = movePlayedGameEvent;
+
+            processedGameEvent = MovePlayedGameEvent(
+              move: gameEvent.move,
+              timeSpent: moveDuration,
+              player: playerMakingMove,
+            );
           } else {
             processedGameEvent = null;
           }
@@ -356,8 +390,10 @@ class WssGameController {
       if (processedGameEvent == null) return;
 
       // First, set the flagging timer and send the processed game event on the
-      // opponent's socket ...
+      // players' sockets ...
       if (player == insanichess.PieceColor.white) {
+        memory.gameBlackStreamControllers[gameId]!.add(processedGameEvent);
+
         if (processedGameEvent is MovePlayedGameEvent) {
           memory.gameTimerPlayerFlagged[gameId]!.cancel();
           memory.gameTimerPlayerFlagged[gameId] = PausableTimer(
@@ -365,9 +401,11 @@ class WssGameController {
             () => _onPlayerFlagged(gameId),
           );
           memory.gameTimerPlayerFlagged[gameId]!.start();
+          memory.gameWhiteStreamControllers[gameId]!.add(processedGameEvent);
         }
-        memory.gameBlackStreamControllers[gameId]!.add(processedGameEvent);
       } else {
+        memory.gameWhiteStreamControllers[gameId]!.add(processedGameEvent);
+
         if (processedGameEvent is MovePlayedGameEvent) {
           memory.gameTimerPlayerFlagged[gameId]!.cancel();
           memory.gameTimerPlayerFlagged[gameId] = PausableTimer(
@@ -375,9 +413,10 @@ class WssGameController {
             () => _onPlayerFlagged(gameId),
           );
           memory.gameTimerPlayerFlagged[gameId]!.start();
+          memory.gameBlackStreamControllers[gameId]!.add(processedGameEvent);
         }
-        memory.gameWhiteStreamControllers[gameId]!.add(processedGameEvent);
       }
+      // Sent back to both clients so they can sync their clocks.
 
       // ... then broadcast the event if it needs to be broadcasted.
       if (processedGameEvent.isBroadcasted) {

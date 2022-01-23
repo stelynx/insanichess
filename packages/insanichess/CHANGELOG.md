@@ -1,3 +1,7 @@
+## 0.3.4
+
+- `Game.flagged()` not takes optional parameter for who ran out of time. (This is used by client applications.)
+
 ## 0.3.3
 
 - Group `Game.whiteFlagged()` and `Game.blackFlagged()` into simpler `Game.flagged()`.

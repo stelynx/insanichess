@@ -1,5 +1,10 @@
 import '../../config/config.dart';
 
-Uri uriForPath(List<String> path) {
-  return Uri.parse('${Config.backendUrl}/${path.join('/')}');
+Uri uriForPath(List<String> path, {bool isWss = false}) {
+  return Uri(
+    scheme: isWss ? Config.backendWssScheme : Config.backendApiScheme,
+    host: Config.backendHost,
+    port: Config.backendPort,
+    pathSegments: path,
+  );
 }

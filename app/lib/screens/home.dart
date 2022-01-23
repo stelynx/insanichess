@@ -10,7 +10,7 @@ import '../router/routes.dart';
 import '../style/images.dart';
 import '../widgets/ic_button.dart';
 import '../widgets/ic_drawer.dart';
-import 'game.dart';
+import 'game/otb_game.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -81,9 +81,9 @@ class _HomeScreen extends StatelessWidget {
                           text: 'Play OTB',
                           onPressed: () => ICRouter.pushNamed(
                             context,
-                            ICRoute.game,
+                            ICRoute.gameOtb,
                             arguments:
-                                const GameScreenArgs(gameBeingShown: null),
+                                const OtbGameScreenArgs(gameBeingShown: null),
                           ),
                         ),
                       ],

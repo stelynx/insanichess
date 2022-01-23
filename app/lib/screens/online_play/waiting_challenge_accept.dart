@@ -4,10 +4,12 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../../bloc/waiting_challenge_accept/waiting_challenge_accept_bloc.dart';
 import '../../router/router.dart';
+import '../../router/routes.dart';
 import '../../services/backend_service.dart';
 import '../../util/functions/to_display_string.dart';
 import '../../widgets/ic_button.dart';
 import '../../widgets/ic_countdown.dart';
+import '../game/live_game.dart';
 
 class WaitingChallengeAcceptScreenArgs {
   final String challengeId;
@@ -57,12 +59,16 @@ class _WaitingChallengeAcceptScreen extends StatelessWidget {
           ICRouter.pop<bool>(context, false);
           return;
         }
-        if (state.gameId != null) {
-          // we shall start a game here
-          return;
-        }
         if (state.challengeDeclined) {
           ICRouter.pop<bool>(context, true);
+        }
+        if (state.gameId != null) {
+          ICRouter.popAndPushNamed(
+            context,
+            ICRoute.gameLive,
+            arguments: LiveGameScreenArgs(liveGameId: state.gameId!),
+          );
+          return;
         }
       },
       builder: (BuildContext context, WaitingChallengeAcceptState state) {

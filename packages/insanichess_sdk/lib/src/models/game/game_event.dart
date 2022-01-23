@@ -41,6 +41,13 @@ abstract class InsanichessGameEvent implements InsanichessModel {
           move: insanichess.Move.fromICString(
             json[InsanichessGameEventJsonKey.movePlayed],
           ),
+          timeSpent: json[InsanichessGameEventJsonKey.timeSpent] == null
+              ? null
+              : Duration(
+                  milliseconds: json[InsanichessGameEventJsonKey.timeSpent]),
+          player: json[InsanichessGameEventJsonKey.color] == null
+              ? null
+              : pieceColorFromJson(json[InsanichessGameEventJsonKey.color]),
         );
       case GameEventType.disbanded:
         return const DisbandedGameEvent();
@@ -53,10 +60,14 @@ abstract class InsanichessGameEvent implements InsanichessModel {
           accept: json[InsanichessGameEventJsonKey.accept],
         );
       case GameEventType.resigned:
-        return const ResignedGameEvent();
+        return ResignedGameEvent(
+          player: json[InsanichessGameEventJsonKey.color] == null
+              ? null
+              : pieceColorFromJson(json[InsanichessGameEventJsonKey.color]),
+        );
       case GameEventType.flagged:
         return FlaggedGameEvent(
-          player: json[InsanichessGameEventJsonKey.color],
+          player: pieceColorFromJson(json[InsanichessGameEventJsonKey.color]),
         );
       case GameEventType.undoRequested:
         return const UndoRequestedGameEvent();
@@ -70,17 +81,33 @@ abstract class InsanichessGameEvent implements InsanichessModel {
   }
 }
 
-/// Event that contains data about move that has been played.
+/// Event that contains data about the [move] that has been played.
+///
+/// Additionally, server sets [timeSpent] in order for clients to synchronise
+/// their clocks. In case these values are set by the client, they are simply
+/// ignored.
 ///
 /// This event is always broadcasted because subscribers of the broadcast stream
-/// must know that a move has been played.
+/// must know that a move has been played. This event is also sent back to the
+/// same player that sent it initially so that he can sync his clock.
 class MovePlayedGameEvent extends InsanichessGameEvent {
   /// The [move] that wants to be played or has been played.
   final insanichess.Move move;
 
-  /// Creates new `MovePlayedGameEvent` with [move].
-  const MovePlayedGameEvent({required this.move})
-      : super(GameEventType.movePlayed, isBroadcasted: true);
+  /// The time the player has spent for the [move].
+  final Duration? timeSpent;
+
+  /// The color of the player that made the move.
+  final insanichess.PieceColor? player;
+
+  /// Creates new `MovePlayedGameEvent` with [move] and optional [timeSpent] for
+  /// this move. The server always sets [timeSpent] but if client sets it, it is
+  /// simply ignored by the server.
+  const MovePlayedGameEvent({
+    required this.move,
+    this.timeSpent,
+    this.player,
+  }) : super(GameEventType.movePlayed, isBroadcasted: true);
 
   /// Converts this object to json representation.
   @override
@@ -88,6 +115,9 @@ class MovePlayedGameEvent extends InsanichessGameEvent {
     return <String, Object?>{
       InsanichessGameEventJsonKey.type: type.toJson(),
       InsanichessGameEventJsonKey.movePlayed: move.toICString(),
+      if (timeSpent != null)
+        InsanichessGameEventJsonKey.timeSpent: timeSpent!.inMilliseconds,
+      if (player != null) InsanichessGameEventJsonKey.color: player!.toJson(),
     };
   }
 }
@@ -288,8 +318,11 @@ abstract class InsanichessGameEventJsonKey {
   /// Key for [MovePlayedGameEvent.move].
   static const String movePlayed = 'move';
 
-  /// Key for [DrawOfferedGameEvent.player], [FlaggedGameEvent.player], and
-  /// [ResignedGameEvent.player].
+  /// Key for [MovePlayedGameEvent.timeSpent].
+  static const String timeSpent = 'time';
+
+  /// Key for [DrawOfferedGameEvent.player], [FlaggedGameEvent.player],
+  /// [ResignedGameEvent.player], and [MovePlayedGameEvent.player].
   static const String color = 'color';
 
   /// Key for [UndoRespondedGameEvent.accept], and

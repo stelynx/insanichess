@@ -155,4 +155,27 @@ class BackendService {
         return error(BackendFailure.fromStatusCode(response.statusCode));
     }
   }
+
+  Future<Either<BackendFailure, InsanichessLiveGame>> getLiveGameDetails(
+    String liveGameId,
+  ) async {
+    final http.Response response = await http.get(
+      uriForPath([
+        ICServerRoute.api,
+        ICServerRoute.apiGame,
+        ICServerRoute.apiGameLive,
+        liveGameId,
+      ]),
+      headers: <String, String>{
+        HttpHeaders.authorizationHeader: authHeaderValue(),
+      },
+    );
+
+    switch (response.statusCode) {
+      case HttpStatus.ok:
+        return value(InsanichessLiveGame.fromJson(jsonDecode(response.body)));
+      default:
+        return error(BackendFailure.fromStatusCode(response.statusCode));
+    }
+  }
 }

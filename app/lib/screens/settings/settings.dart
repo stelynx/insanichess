@@ -63,7 +63,7 @@ class _SettingsScreen extends StatelessWidget {
                       trailing: const CupertinoListTileChevron(),
                       onTap: () {
                         bloc.hideFailure();
-                        return ICRouter.pushNamed(
+                        ICRouter.pushNamed(
                           context,
                           ICRoute.settingsOtb,
                           arguments: OtbSettingsScreenArgs(settingsBloc: bloc),

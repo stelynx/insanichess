@@ -10,7 +10,7 @@ import '../widgets/ic_button.dart';
 import '../widgets/ic_drawer.dart';
 import '../widgets/util/cupertino_list_section.dart';
 import '../widgets/util/cupertino_list_tile.dart';
-import 'game.dart';
+import 'game/otb_game.dart';
 
 class GameHistoryScreen extends StatelessWidget {
   const GameHistoryScreen({Key? key}) : super(key: key);
@@ -63,8 +63,8 @@ class _GameHistoryScreen extends StatelessWidget {
                       ),
                       onTap: () => ICRouter.pushNamed(
                         context,
-                        ICRoute.game,
-                        arguments: GameScreenArgs(gameBeingShown: game),
+                        ICRoute.gameOtb,
+                        arguments: OtbGameScreenArgs(gameBeingShown: game),
                       ),
                     ),
                   )

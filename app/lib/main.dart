@@ -7,6 +7,7 @@ import 'router/routes.dart';
 import 'services/auth_service.dart';
 import 'services/backend_service.dart';
 import 'services/local_storage_service.dart';
+import 'services/wss_service.dart';
 import 'style/theme.dart';
 import 'util/logger.dart';
 
@@ -17,6 +18,7 @@ void main() {
 
   AuthService();
   BackendService();
+  WssService();
   LocalStorageService();
 
   runApp(const InsanichessApp());

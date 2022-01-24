@@ -8,8 +8,10 @@ import '../../router/router.dart';
 import '../../services/backend_service.dart';
 import '../../services/wss_service.dart';
 import '../../style/constants.dart';
+import '../../util/extensions/duration.dart';
 import '../../widgets/ic_board.dart';
 import '../../widgets/ic_button.dart';
+import '../../widgets/ic_game_history_tape.dart';
 
 class LiveGameScreenArgs {
   final String liveGameId;
@@ -196,6 +198,9 @@ class _LiveGameScreen extends StatelessWidget {
           );
         }
 
+        final bool isWhiteBottom =
+            state.myColor == insanichess.PieceColor.white;
+
         return CupertinoPageScaffold(
           navigationBar: CupertinoNavigationBar(
             border: const Border(),
@@ -251,10 +256,52 @@ class _LiveGameScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                ICGameHistoryTape(
+                  moves: state.game!.movesPlayed,
+                  movesFromFuture: state.game!.movesFromFuture,
+                ),
+                const Spacer(),
+                Text(
+                  (isWhiteBottom
+                          ? (state.game!.playerOnTurn ==
+                                  insanichess.PieceColor.white
+                              ? state.game!.remainingTimeBlack
+                              : state.game!.remainingTimeBlack -
+                                  state.currentMoveDuration)
+                          : state.game!.status ==
+                                  insanichess.GameStatus.notStarted
+                              ? (const Duration(seconds: 30) -
+                                  state.currentMoveDuration)
+                              : (state.game!.playerOnTurn ==
+                                      insanichess.PieceColor.black
+                                  ? state.game!.remainingTimeWhite
+                                  : state.game!.remainingTimeWhite -
+                                      state.currentMoveDuration))
+                      .toClockString(),
+                  style: CupertinoTheme.of(context)
+                      .textTheme
+                      .textStyle
+                      .copyWith(
+                        fontSize: 24,
+                        color: CupertinoTheme.of(context)
+                            .primaryColor
+                            .withOpacity(
+                              (!isWhiteBottom &&
+                                          state.game!.playerOnTurn ==
+                                              insanichess.PieceColor.white) ||
+                                      (isWhiteBottom &&
+                                          state.game!.playerOnTurn ==
+                                              insanichess.PieceColor.black)
+                                  ? 1
+                                  : 0.5,
+                            ),
+                      ),
+                ),
+                const Spacer(),
                 ICBoard(
                   game: state.game!,
                   onMove: bloc.move,
-                  isWhiteBottom: state.myColor == insanichess.PieceColor.white,
+                  isWhiteBottom: isWhiteBottom,
                   mirrorTopPieces: false,
                   showLegalMoves: state.showLegalMoves,
                   autoPromoteToQueen: state.autoPromoteToQueen,
@@ -390,8 +437,8 @@ class _LiveGameScreen extends StatelessWidget {
                                         child: const Text('Yes'),
                                         isDefaultAction: true,
                                         onPressed: () {
-                                          bloc.resign();
                                           () => Navigator.of(context).pop();
+                                          bloc.resign();
                                         },
                                       )
                                     ],
@@ -439,6 +486,44 @@ class _LiveGameScreen extends StatelessWidget {
                     ],
                   ],
                 ),
+                const Spacer(),
+                Text(
+                  (!isWhiteBottom
+                          ? (state.game!.playerOnTurn ==
+                                  insanichess.PieceColor.white
+                              ? state.game!.remainingTimeBlack
+                              : state.game!.remainingTimeBlack -
+                                  state.currentMoveDuration)
+                          : state.game!.status ==
+                                  insanichess.GameStatus.notStarted
+                              ? (const Duration(seconds: 30) -
+                                  state.currentMoveDuration)
+                              : (state.game!.playerOnTurn ==
+                                      insanichess.PieceColor.black
+                                  ? state.game!.remainingTimeWhite
+                                  : state.game!.remainingTimeWhite -
+                                      state.currentMoveDuration))
+                      .toClockString(),
+                  style: CupertinoTheme.of(context)
+                      .textTheme
+                      .textStyle
+                      .copyWith(
+                        fontSize: 24,
+                        color: CupertinoTheme.of(context)
+                            .primaryColor
+                            .withOpacity(
+                              (isWhiteBottom &&
+                                          state.game!.playerOnTurn ==
+                                              insanichess.PieceColor.white) ||
+                                      (!isWhiteBottom &&
+                                          state.game!.playerOnTurn ==
+                                              insanichess.PieceColor.black)
+                                  ? 1
+                                  : 0.5,
+                            ),
+                      ),
+                ),
+                const Spacer(),
               ],
             ),
           ),

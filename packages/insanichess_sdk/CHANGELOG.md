@@ -1,3 +1,7 @@
+## 0.6.6
+
+- Fix a bug with parsing remainging times of players.
+
 ## 0.6.5
 
 - Add routes for accepting and declining challenge.

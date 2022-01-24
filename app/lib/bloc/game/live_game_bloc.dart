@@ -14,6 +14,8 @@ import '../global/global_bloc.dart';
 part 'live_game_event.dart';
 part 'live_game_state.dart';
 
+const Duration _kTimerDuration = Duration(milliseconds: 10);
+
 class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
   final String liveGameId;
 
@@ -25,6 +27,8 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
 
   final StreamController<void> _resetZoomStreamController;
   Stream<void> get resetZoomStream => _resetZoomStreamController.stream;
+
+  late Timer _timer;
 
   LiveGameBloc({
     required this.liveGameId,
@@ -44,6 +48,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
           autoZoomOutOnMove: globalBloc.state.settings!.live.autoZoomOutOnMove,
         )) {
     on<_Initialize>(_onInitialize);
+    on<_TimerTick>(_onTimerTick);
     on<_GameEventReceived>(_onGameEventReceived);
     on<_Move>(_onMove);
     on<_RequestUndo>(_onRequestUndo);
@@ -58,6 +63,8 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
     on<_Forward>(_onForward);
     on<_Backward>(_onBackward);
 
+    _timer = Timer.periodic(_kTimerDuration, (_) => add(const _TimerTick()));
+
     add(_Initialize(liveGameId: liveGameId));
   }
 
@@ -65,6 +72,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
   Future<void> close() async {
     await _gameEventStreamSubscription?.cancel();
     await _resetZoomStreamController.close();
+    _timer.cancel();
     return super.close();
   }
 
@@ -145,12 +153,23 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
     emit(state.copyWith(game: liveGameOrFailure.value, myColor: myColor));
   }
 
+  FutureOr<void> _onTimerTick(
+    _TimerTick event,
+    Emitter<LiveGameState> emit,
+  ) async {
+    emit(state.copyWith(
+      currentMoveDuration: state.currentMoveDuration + _kTimerDuration,
+    ));
+  }
+
   FutureOr<void> _onGameEventReceived(
     _GameEventReceived event,
     Emitter<LiveGameState> emit,
   ) async {
     switch (event.gameEvent.type) {
       case GameEventType.movePlayed:
+        _timer.cancel();
+
         final MovePlayedGameEvent movePlayedGameEvent =
             event.gameEvent as MovePlayedGameEvent;
 
@@ -168,7 +187,11 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
         state.game!.playerOfferedDraw = null;
         state.game!.playerRequestedUndo = null;
 
-        emit(state.copyWith());
+        emit(state.copyWith(currentMoveDuration: Duration.zero));
+        if (!state.game!.isGameOver) {
+          _timer =
+              Timer.periodic(_kTimerDuration, (_) => add(const _TimerTick()));
+        }
         break;
 
       case GameEventType.drawOffered:
@@ -187,6 +210,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
         // This event is sent from the server and it contains the information
         // whether the opponent accepted the draw offer or not.
         if ((event.gameEvent as DrawOfferRespondedGameEvent).accept) {
+          _timer.cancel();
           state.game!.draw();
         }
         // Do not set `state.game!.playerOfferedDraw = null;` here because if a
@@ -211,7 +235,10 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
         // This event is sent from the server and it contains the information
         // whether the opponent accepted undo request or not.
         if ((event.gameEvent as UndoRespondedGameEvent).accept) {
+          _timer.cancel();
           state.game!.undo();
+          _timer =
+              Timer.periodic(_kTimerDuration, (_) => add(const _TimerTick()));
         }
         // Do not call `state.game!.playerRequestedUndo = null;` here because if
         // a undo request has been issued on this move and declined, we don't
@@ -220,6 +247,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
         break;
 
       case GameEventType.resigned:
+        _timer.cancel();
         // This event is sent from the server and it notifies the client that
         // opponent resigned.
         if (state.myColor == insanichess.PieceColor.black) {
@@ -231,10 +259,12 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
         break;
 
       case GameEventType.disbanded:
+        _timer.cancel();
         emit(state.copyWith(gameDisbanded: true));
         break;
 
       case GameEventType.flagged:
+        _timer.cancel();
         state.game!.flagged((event.gameEvent as FlaggedGameEvent).player);
         emit(state.copyWith());
         break;
@@ -287,6 +317,12 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
     if (nullOrFailure.isError()) return;
 
     state.game!.playerRequestedUndo = null;
+    if (event.accept) {
+      _timer.cancel();
+      state.game!.undo();
+      _timer = Timer.periodic(_kTimerDuration, (_) => add(const _TimerTick()));
+    }
+
     emit(state.copyWith());
   }
 
@@ -328,6 +364,11 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
     if (nullOrFailure.isError()) return;
 
     state.game!.playerOfferedDraw = null;
+    if (event.accept == true) {
+      _timer.cancel();
+      state.game!.draw();
+    }
+
     emit(state.copyWith());
   }
 
@@ -340,6 +381,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
 
     if (nullOrFailure.isError()) return;
 
+    _timer.cancel();
     if (state.myColor == insanichess.PieceColor.white) {
       state.game!.whiteResigned();
     } else {

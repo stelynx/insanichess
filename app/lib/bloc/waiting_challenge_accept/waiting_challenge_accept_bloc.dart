@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/services.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:meta/meta.dart';
 
@@ -18,8 +19,6 @@ class WaitingChallengeAcceptBloc
 
   final BackendService _backendService;
 
-  late Timer _challengeDataRefreshTimer;
-
   WaitingChallengeAcceptBloc({
     required this.challenge,
     required String challengeId,
@@ -30,24 +29,15 @@ class WaitingChallengeAcceptBloc
     on<_ChallengeExpired>(_onChallengeExpired);
     on<_CancelChallenge>(_onCancelChallenge);
     on<_FetchChallengeData>(_onFetchChallengeData);
-
-    // For now we do not need a stream here. Might add it later.
-    _challengeDataRefreshTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (_) => add(const _FetchChallengeData()),
-    );
-  }
-
-  @override
-  Future<void> close() {
-    _challengeDataRefreshTimer.cancel();
-    return super.close();
+    on<_CopyIdToClipboard>(_onCopyIdToClipboard);
   }
 
   // Public API
 
   void challengeExpired() => add(const _ChallengeExpired());
   void cancelChallenge() => add(const _CancelChallenge());
+  void fetchData() => add(const _FetchChallengeData());
+  void copyIdToClipboard() => add(const _CopyIdToClipboard());
 
   // Handlers
 
@@ -88,11 +78,9 @@ class WaitingChallengeAcceptBloc
       case ChallengeStatus.created:
         break;
       case ChallengeStatus.accepted:
-        _challengeDataRefreshTimer.cancel();
         emit(state.copyWith(gameId: _challengeId));
         break;
       case ChallengeStatus.declined:
-        _challengeDataRefreshTimer.cancel();
         emit(state.copyWith(challengeDeclined: true));
         break;
       case ChallengeStatus.initiated:
@@ -100,5 +88,15 @@ class WaitingChallengeAcceptBloc
         // collect the challenge.
         emit(state.copyWith(challengeCancelled: true));
     }
+  }
+
+  FutureOr<void> _onCopyIdToClipboard(
+    _CopyIdToClipboard event,
+    Emitter<WaitingChallengeAcceptState> emit,
+  ) async {
+    await Clipboard.setData(ClipboardData(text: _challengeId));
+    emit(state.copyWith(idCopiedToClipboard: true));
+    await Future.delayed(const Duration(seconds: 3));
+    emit(state.copyWith(idCopiedToClipboard: false));
   }
 }

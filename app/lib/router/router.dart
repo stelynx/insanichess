@@ -4,6 +4,7 @@ import '../screens/game/live_game.dart';
 import '../screens/game/otb_game.dart';
 import '../screens/game_history.dart';
 import '../screens/home.dart';
+import '../screens/online_play/join_game_with_id.dart';
 import '../screens/online_play/online_play.dart';
 import '../screens/online_play/waiting_challenge_accept.dart';
 import '../screens/player_registration.dart';
@@ -103,6 +104,10 @@ abstract class ICRouter {
           pageBuilder: (context, _, __) => const OnlinePlayScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) =>
               FadeTransition(opacity: animation, child: child),
+        );
+      case ICRoute.onlinePlayWithId:
+        return CupertinoPageRoute<bool>(
+          builder: (context) => const JoinGameWithIdScreen(),
         );
       case ICRoute.waitingChallengeAccept:
         return CupertinoPageRoute<bool>(

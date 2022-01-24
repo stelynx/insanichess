@@ -7,6 +7,7 @@ import '../../bloc/global/global_bloc.dart';
 import '../../router/router.dart';
 import '../../services/backend_service.dart';
 import '../../services/wss_service.dart';
+import '../../style/constants.dart';
 import '../../widgets/ic_board.dart';
 import '../../widgets/ic_button.dart';
 
@@ -41,6 +42,8 @@ class _LiveGameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final LiveGameBloc bloc = BlocProvider.of<LiveGameBloc>(context);
+
+    final double logoSize = getLogoSize(context);
 
     return BlocConsumer<LiveGameBloc, LiveGameState>(
       listener: (BuildContext context, LiveGameState state) {
@@ -164,6 +167,7 @@ class _LiveGameScreen extends StatelessWidget {
 
           showCupertinoDialog(
             context: context,
+            barrierDismissible: true,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
                 title: Text(title),
@@ -181,7 +185,7 @@ class _LiveGameScreen extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   const CupertinoActivityIndicator(),
-                  const SizedBox(height: 20),
+                  SizedBox(height: logoSize / 20),
                   Text(
                     'Connecting to game\n${bloc.liveGameId}',
                     textAlign: TextAlign.center,
@@ -219,6 +223,7 @@ class _LiveGameScreen extends StatelessWidget {
                           onPressed: () {
                             int i = 0;
                             ICRouter.popUntil(context, () => i++ == 2, 1);
+                            bloc.resign();
                           },
                           child: const Text('Resign'),
                         ),
@@ -256,7 +261,7 @@ class _LiveGameScreen extends StatelessWidget {
                   resetZoomStream: bloc.resetZoomStream,
                   onZoomChanged: bloc.zoomChanged,
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: logoSize / 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[

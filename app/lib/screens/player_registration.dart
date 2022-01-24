@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,6 +7,7 @@ import '../bloc/player_registration/player_registration_bloc.dart';
 import '../router/router.dart';
 import '../router/routes.dart';
 import '../services/backend_service.dart';
+import '../style/constants.dart';
 import '../style/images.dart';
 import '../util/failures/backend_failure.dart';
 import '../util/failures/validation_failure.dart';
@@ -38,6 +37,8 @@ class _PlayerRegistrationScreen extends StatelessWidget {
     final PlayerRegistrationBloc bloc =
         BlocProvider.of<PlayerRegistrationBloc>(context);
 
+    final double logoSize = getLogoSize(context);
+
     return BlocConsumer<PlayerRegistrationBloc, PlayerRegistrationState>(
       listener: (BuildContext context, PlayerRegistrationState state) {
         if (state.isRegistrationSuccessful ?? false) {
@@ -46,9 +47,6 @@ class _PlayerRegistrationScreen extends StatelessWidget {
         }
       },
       builder: (BuildContext context, PlayerRegistrationState state) {
-        final double logoSize =
-            min(400.0, MediaQuery.of(context).size.width / 3 * 2);
-
         final String? errorMessage;
         if (state.failure == null) {
           errorMessage = null;

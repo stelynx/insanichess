@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import '../bloc/home/home_bloc.dart';
 import '../router/router.dart';
 import '../router/routes.dart';
+import '../style/constants.dart';
 import '../style/images.dart';
 import '../widgets/ic_button.dart';
 import '../widgets/ic_drawer.dart';
@@ -34,8 +35,7 @@ class _HomeScreen extends StatelessWidget {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (BuildContext context, HomeState state) {},
       builder: (BuildContext context, HomeState state) {
-        final double logoSize =
-            min(400.0, MediaQuery.of(context).size.width / 3 * 2);
+        final double logoSize = getLogoSize(context);
 
         return ICDrawer(
           key: bloc.drawerKey,

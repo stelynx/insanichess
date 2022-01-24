@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,6 +7,7 @@ import '../bloc/splash_screen/splash_screen_bloc.dart';
 import '../router/router.dart';
 import '../services/backend_service.dart';
 import '../services/local_storage_service.dart';
+import '../style/constants.dart';
 import '../style/images.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -40,9 +39,8 @@ class _SplashScreen extends StatelessWidget {
         }
       },
       builder: (BuildContext context, SplashScreenState state) {
-        final double logoSize =
-            min(400.0, MediaQuery.of(context).size.width / 3 * 2) +
-                state.deltaLogoSize;
+        final double logoSize = getLogoSize(context) + state.deltaLogoSize;
+
         return CupertinoPageScaffold(
           child: SafeArea(
             child: Padding(

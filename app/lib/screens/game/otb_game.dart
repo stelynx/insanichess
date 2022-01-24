@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:insanichess/insanichess.dart' as insanichess;
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../../bloc/game/otb_game_bloc.dart';
@@ -8,6 +9,7 @@ import '../../router/router.dart';
 import '../../services/local_storage_service.dart';
 import '../../widgets/ic_board.dart';
 import '../../widgets/ic_button.dart';
+import '../../widgets/ic_game_history_tape.dart';
 
 class OtbGameScreenArgs {
   final InsanichessGame? gameBeingShown;
@@ -85,6 +87,11 @@ class _OtbGameScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                ICGameHistoryTape(
+                  moves: state.game.movesPlayed,
+                  movesFromFuture: state.game.movesFromFuture,
+                ),
+                const Spacer(),
                 ICBoard(
                   game: state.game,
                   onMove: bloc.move,
@@ -125,7 +132,7 @@ class _OtbGameScreen extends StatelessWidget {
                         const SizedBox(width: 10.0),
                       ],
                       ICGameControlButton(
-                        icon: CupertinoIcons.flag_fill,
+                        icon: CupertinoIcons.square_lefthalf_fill,
                         onPressed: !state.game.inProgress
                             ? null
                             : () => showCupertinoDialog(
@@ -148,6 +155,43 @@ class _OtbGameScreen extends StatelessWidget {
                                           onPressed: () {
                                             bloc.agreeToDraw();
                                             () => ICRouter.pop(context);
+                                          },
+                                        )
+                                      ],
+                                    );
+                                  },
+                                ),
+                      ),
+                      const SizedBox(width: 10.0),
+                      ICGameControlButton(
+                        icon: CupertinoIcons.flag_fill,
+                        onPressed: !state.game.inProgress
+                            ? null
+                            : () => showCupertinoDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return CupertinoAlertDialog(
+                                      title: Text(
+                                        state.game.playerOnTurn ==
+                                                insanichess.PieceColor.white
+                                            ? 'White resigns?'
+                                            : 'Black resigns?',
+                                      ),
+                                      content: const Text(
+                                        'Are you sure you want to resign? The action cannot be undone.',
+                                      ),
+                                      actions: <CupertinoDialogAction>[
+                                        CupertinoDialogAction(
+                                          child: const Text('No'),
+                                          // Ok to call navigator here.
+                                          onPressed: Navigator.of(context).pop,
+                                        ),
+                                        CupertinoDialogAction(
+                                          child: const Text('Yes'),
+                                          isDefaultAction: true,
+                                          onPressed: () {
+                                            () => Navigator.of(context).pop();
+                                            bloc.resign();
                                           },
                                         )
                                       ],
@@ -195,6 +239,7 @@ class _OtbGameScreen extends StatelessWidget {
                     ],
                   ],
                 ),
+                const Spacer(),
               ],
             ),
           ),

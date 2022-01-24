@@ -6,6 +6,7 @@ import '../../bloc/waiting_challenge_accept/waiting_challenge_accept_bloc.dart';
 import '../../router/router.dart';
 import '../../router/routes.dart';
 import '../../services/backend_service.dart';
+import '../../style/colors.dart';
 import '../../util/functions/to_display_string.dart';
 import '../../widgets/ic_button.dart';
 import '../../widgets/ic_countdown.dart';
@@ -79,13 +80,14 @@ class _WaitingChallengeAcceptScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  const SizedBox(height: 50),
+                  const Spacer(),
+                  const SizedBox(height: 80),
                   const Spacer(),
                   ICCountdown(
                     expiresIn: const Duration(minutes: 1),
                     onExpired: bloc.challengeExpired,
-                    // periodicFetchDuration: const Duration(seconds: 1),
-                    // periodicFetchCallback: () {},
+                    periodicFetchDuration: const Duration(seconds: 1),
+                    periodicFetchCallback: bloc.fetchData,
                   ),
                   const SizedBox(height: 24),
                   const Text('Awaiting opponent'),
@@ -94,6 +96,35 @@ class _WaitingChallengeAcceptScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     'Color: ${preferredColorToDisplayString(bloc.challenge.preferColor)}',
+                  ),
+                  const Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      if (state.idCopiedToClipboard)
+                        Icon(
+                          CupertinoIcons.check_mark,
+                          color: CupertinoTheme.of(context)
+                              .scaffoldBackgroundColor,
+                          size: CupertinoTheme.of(context)
+                              .textTheme
+                              .textStyle
+                              .fontSize,
+                        ),
+                      ICTextButton(
+                        text: 'Copy ID to clipboard',
+                        onPressed: bloc.copyIdToClipboard,
+                      ),
+                      if (state.idCopiedToClipboard)
+                        Icon(
+                          CupertinoIcons.check_mark,
+                          color: ICColor.confirm,
+                          size: CupertinoTheme.of(context)
+                              .textTheme
+                              .textStyle
+                              .fontSize,
+                        ),
+                    ],
                   ),
                   const Spacer(),
                   ICSecondaryButton(

@@ -21,6 +21,7 @@ class ICTextField extends StatelessWidget {
       placeholder: placeholder,
       keyboardType: keyboardType,
       obscureText: obscureText,
+      toolbarOptions: const ToolbarOptions(paste: true, selectAll: true),
       padding: const EdgeInsetsDirectional.fromSTEB(14.0, 12.0, 14.0, 12.0),
     );
   }

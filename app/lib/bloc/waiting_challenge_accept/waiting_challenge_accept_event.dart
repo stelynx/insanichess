@@ -16,3 +16,7 @@ class _CancelChallenge extends _WaitingChallengeAcceptEvent {
 class _FetchChallengeData extends _WaitingChallengeAcceptEvent {
   const _FetchChallengeData();
 }
+
+class _CopyIdToClipboard extends _WaitingChallengeAcceptEvent {
+  const _CopyIdToClipboard();
+}

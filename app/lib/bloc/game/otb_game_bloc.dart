@@ -10,21 +10,24 @@ import '../../services/local_storage_service.dart';
 part 'otb_game_event.dart';
 part 'otb_game_state.dart';
 
+const Duration _kTimerDuration = Duration(milliseconds: 10);
+
 class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
   final LocalStorageService _localStorageService;
-  final InsanichessGame? _gameBeingShown;
+
+  Timer? _timer;
 
   OtbGameBloc({
     required LocalStorageService localStorageService,
     required InsanichessGame? gameBeingShown,
     required InsanichessSettings settings,
   })  : _localStorageService = localStorageService,
-        _gameBeingShown = gameBeingShown,
         _resetZoomStreamController = StreamController<void>.broadcast(),
         super(OtbGameState.initial(
           game: gameBeingShown ??
-              InsanichessGame(
+              InsanichessLiveGame(
                 id: '${DateTime.now().millisecondsSinceEpoch}',
+                undoAllowed: true,
                 whitePlayer: const InsanichessPlayer.testWhite(),
                 blackPlayer: const InsanichessPlayer.testBlack(),
                 timeControl: const InsanichessTimeControl.blitz(),
@@ -39,6 +42,7 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
           autoZoomOutOnMove: settings.otb.autoZoomOutOnMove,
         )) {
     on<_Move>(_onMove);
+    on<_TimerTick>(_onTimerTick);
     on<_ZoomChanged>(_onZoomChanged);
     on<_ResetZoom>(_onResetZoom);
     on<_Undo>(_onUndo);
@@ -47,11 +51,16 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
     on<_AgreeToDraw>(_onAgreeToDraw);
     on<_Resign>(_onResign);
     on<_StartNewGame>(_onStartNewGame);
+
+    if (gameBeingShown == null) {
+      _timer = Timer.periodic(_kTimerDuration, (_) => add(const _TimerTick()));
+    }
   }
 
   @override
   Future<void> close() async {
     await _resetZoomStreamController.close();
+    _timer?.cancel();
     return super.close();
   }
 
@@ -70,7 +79,7 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
   void resign() => add(const _Resign());
   void newGame() => add(const _StartNewGame());
 
-  bool isLiveGame() => _gameBeingShown == null;
+  bool isLiveGame() => state.game is InsanichessLiveGame;
   bool canUndo() => state.game.canUndo;
   bool canGoBackward() => state.game.canGoBackward;
   bool canGoForward() => state.game.canGoForward;
@@ -92,6 +101,15 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
     if (state.game.isGameOver) {
       await _localStorageService.saveGame(state.game);
     }
+  }
+
+  FutureOr<void> _onTimerTick(
+    _TimerTick event,
+    Emitter<OtbGameState> emit,
+  ) async {
+    emit(state.copyWith(
+      currentMoveDuration: state.currentMoveDuration + _kTimerDuration,
+    ));
   }
 
   FutureOr<void> _onZoomChanged(

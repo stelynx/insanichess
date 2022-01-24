@@ -7,6 +7,7 @@ import '../../bloc/game/otb_game_bloc.dart';
 import '../../bloc/global/global_bloc.dart';
 import '../../router/router.dart';
 import '../../services/local_storage_service.dart';
+import '../../util/extensions/duration.dart';
 import '../../widgets/ic_board.dart';
 import '../../widgets/ic_button.dart';
 import '../../widgets/ic_game_history_tape.dart';
@@ -90,6 +91,43 @@ class _OtbGameScreen extends StatelessWidget {
                 ICGameHistoryTape(
                   moves: state.game.movesPlayed,
                   movesFromFuture: state.game.movesFromFuture,
+                ),
+                const Spacer(),
+                Text(
+                  (state.isWhiteBottom
+                          ? (state.game.playerOnTurn ==
+                                  insanichess.PieceColor.white
+                              ? state.game.remainingTimeBlack
+                              : state.game.remainingTimeBlack -
+                                  state.currentMoveDuration)
+                          : state.game.status ==
+                                  insanichess.GameStatus.notStarted
+                              ? (const Duration(seconds: 30) -
+                                  state.currentMoveDuration)
+                              : (state.game.playerOnTurn ==
+                                      insanichess.PieceColor.black
+                                  ? state.game.remainingTimeWhite
+                                  : state.game.remainingTimeWhite -
+                                      state.currentMoveDuration))
+                      .toClockString(),
+                  style: CupertinoTheme.of(context)
+                      .textTheme
+                      .textStyle
+                      .copyWith(
+                        fontSize: 24,
+                        color: CupertinoTheme.of(context)
+                            .primaryColor
+                            .withOpacity(
+                              (!state.isWhiteBottom &&
+                                          state.game.playerOnTurn ==
+                                              insanichess.PieceColor.white) ||
+                                      (state.isWhiteBottom &&
+                                          state.game.playerOnTurn ==
+                                              insanichess.PieceColor.black)
+                                  ? 1
+                                  : 0.5,
+                            ),
+                      ),
                 ),
                 const Spacer(),
                 ICBoard(
@@ -238,6 +276,43 @@ class _OtbGameScreen extends StatelessWidget {
                       ),
                     ],
                   ],
+                ),
+                const Spacer(),
+                Text(
+                  (!state.isWhiteBottom
+                          ? (state.game.playerOnTurn ==
+                                  insanichess.PieceColor.white
+                              ? state.game.remainingTimeBlack
+                              : state.game.remainingTimeBlack -
+                                  state.currentMoveDuration)
+                          : state.game.status ==
+                                  insanichess.GameStatus.notStarted
+                              ? (const Duration(seconds: 30) -
+                                  state.currentMoveDuration)
+                              : (state.game.playerOnTurn ==
+                                      insanichess.PieceColor.black
+                                  ? state.game.remainingTimeWhite
+                                  : state.game.remainingTimeWhite -
+                                      state.currentMoveDuration))
+                      .toClockString(),
+                  style: CupertinoTheme.of(context)
+                      .textTheme
+                      .textStyle
+                      .copyWith(
+                        fontSize: 24,
+                        color: CupertinoTheme.of(context)
+                            .primaryColor
+                            .withOpacity(
+                              (state.isWhiteBottom &&
+                                          state.game.playerOnTurn ==
+                                              insanichess.PieceColor.white) ||
+                                      (!state.isWhiteBottom &&
+                                          state.game.playerOnTurn ==
+                                              insanichess.PieceColor.black)
+                                  ? 1
+                                  : 0.5,
+                            ),
+                      ),
                 ),
                 const Spacer(),
               ],

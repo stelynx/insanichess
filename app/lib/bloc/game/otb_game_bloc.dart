@@ -45,6 +45,7 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
     on<_Forward>(_onForward);
     on<_Backward>(_onBackward);
     on<_AgreeToDraw>(_onAgreeToDraw);
+    on<_Resign>(_onResign);
     on<_StartNewGame>(_onStartNewGame);
   }
 
@@ -66,6 +67,7 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
   void forward() => add(const _Forward());
   void backward() => add(const _Backward());
   void agreeToDraw() => add(const _AgreeToDraw());
+  void resign() => add(const _Resign());
   void newGame() => add(const _StartNewGame());
 
   bool isLiveGame() => _gameBeingShown == null;
@@ -130,6 +132,21 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
     Emitter<OtbGameState> emit,
   ) async {
     state.game.draw();
+    emit(state.copyWith());
+    _resetZoomStreamController.add(null);
+    await _localStorageService.saveGame(state.game);
+  }
+
+  FutureOr<void> _onResign(
+    _Resign event,
+    Emitter<OtbGameState> emit,
+  ) async {
+    if (state.game.playerOnTurn == insanichess.PieceColor.white) {
+      state.game.whiteResigned();
+    } else {
+      state.game.blackResigned();
+    }
+
     emit(state.copyWith());
     _resetZoomStreamController.add(null);
     await _localStorageService.saveGame(state.game);

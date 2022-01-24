@@ -37,6 +37,10 @@ class _AgreeToDraw extends _OtbGameEvent {
   const _AgreeToDraw();
 }
 
+class _Resign extends _OtbGameEvent {
+  const _Resign();
+}
+
 class _StartNewGame extends _OtbGameEvent {
   const _StartNewGame();
 }

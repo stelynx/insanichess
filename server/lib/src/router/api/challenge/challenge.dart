@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:insanichess_sdk/insanichess_sdk.dart';
+
 import '../../../controller/api/challenge/challenge.dart';
 import '../../../services/database/database_service.dart';
 import '../../../util/functions/default_responses.dart';
@@ -51,14 +53,14 @@ class ChallengeRouter implements RouterInterface {
     // /api/challenge/<id>/{accept|decline}
     if (pathSegments.length == 4) {
       if (request.method == 'GET') {
-        if (pathSegments[3] == 'accept') {
+        if (pathSegments[3] == ICServerRoute.apiChallengeAccept) {
           return await _challengeController.handleAcceptChallenge(
             request,
             challengeId: pathSegments[2],
           );
         }
 
-        if (pathSegments[3] == 'decline') {
+        if (pathSegments[3] == ICServerRoute.apiChallengeDecline) {
           return await _challengeController.handleDeclineChallenge(
             request,
             challengeId: pathSegments[2],

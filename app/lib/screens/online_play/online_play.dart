@@ -12,6 +12,7 @@ import '../../router/routes.dart';
 import '../../services/backend_service.dart';
 import '../../services/local_storage_service.dart';
 import '../../style/colors.dart';
+import '../../style/constants.dart';
 import '../../util/functions/to_display_string.dart';
 import '../../widgets/ic_button.dart';
 import '../../widgets/ic_drawer.dart';
@@ -68,8 +69,7 @@ class _OnlinePlayScreen extends StatelessWidget {
         }
       },
       builder: (BuildContext context, OnlinePlayState state) {
-        final double logoSize =
-            min(400.0, MediaQuery.of(context).size.width / 3 * 2);
+        final double logoSize = getLogoSize(context);
 
         Widget child = ICDrawer(
           key: bloc.drawerKey,
@@ -156,11 +156,20 @@ class _OnlinePlayScreen extends StatelessWidget {
                             SizedBox(height: logoSize / 10),
                             if (state.isLoading)
                               const CupertinoActivityIndicator()
-                            else
+                            else ...[
                               ICPrimaryButton(
                                 text: 'Create a challenge',
                                 onPressed: bloc.createChallenge,
                               ),
+                              SizedBox(height: logoSize / 40),
+                              ICSecondaryButton(
+                                text: 'Join game by ID',
+                                onPressed: () => ICRouter.pushNamed(
+                                  context,
+                                  ICRoute.onlinePlayWithId,
+                                ),
+                              ),
+                            ],
                             if (state.backendFailure != null) ...[
                               SizedBox(height: logoSize / 10),
                               Text(

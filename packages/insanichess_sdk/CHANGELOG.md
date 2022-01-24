@@ -1,3 +1,7 @@
+## 0.6.5
+
+- Add routes for accepting and declining challenge.
+
 ## 0.6.4
 
 - Add endpoint for retrieving live game data.

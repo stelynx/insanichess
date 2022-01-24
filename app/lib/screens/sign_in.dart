@@ -11,6 +11,7 @@ import '../router/routes.dart';
 import '../services/auth_service.dart';
 import '../services/backend_service.dart';
 import '../services/local_storage_service.dart';
+import '../style/constants.dart';
 import '../style/images.dart';
 import '../util/failures/backend_failure.dart';
 import '../util/failures/validation_failure.dart';
@@ -53,8 +54,7 @@ class _SignInScreen extends StatelessWidget {
         }
       },
       builder: (BuildContext context, SignInState state) {
-        final double logoSize =
-            min(400.0, MediaQuery.of(context).size.width / 3 * 2);
+        final double logoSize = getLogoSize(context);
 
         final String? errorMessage;
         if (state.failure == null) {

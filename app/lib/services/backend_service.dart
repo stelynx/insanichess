@@ -178,4 +178,27 @@ class BackendService {
         return error(BackendFailure.fromStatusCode(response.statusCode));
     }
   }
+
+  Future<Either<BackendFailure, void>> acceptChallenge(
+    String challengeId,
+  ) async {
+    final http.Response response = await http.get(
+      uriForPath([
+        ICServerRoute.api,
+        ICServerRoute.apiChallenge,
+        challengeId,
+        ICServerRoute.apiChallengeAccept,
+      ]),
+      headers: <String, String>{
+        HttpHeaders.authorizationHeader: authHeaderValue(),
+      },
+    );
+
+    switch (response.statusCode) {
+      case HttpStatus.ok:
+        return value(null);
+      default:
+        return error(BackendFailure.fromStatusCode(response.statusCode));
+    }
+  }
 }

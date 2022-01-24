@@ -5,6 +5,8 @@ class LiveGameState {
   final InsanichessLiveGame? game;
   final insanichess.PieceColor? myColor;
 
+  final Duration currentMoveDuration;
+
   final bool gameDisbanded;
 
   /// If a draw offer has been responded and declined, the `playerOfferedDraw`
@@ -29,6 +31,7 @@ class LiveGameState {
   const LiveGameState({
     required this.game,
     required this.myColor,
+    required this.currentMoveDuration,
     required this.gameDisbanded,
     required this.drawOfferResponded,
     required this.undoRequestResponded,
@@ -47,6 +50,7 @@ class LiveGameState {
     required this.autoZoomOutOnMove,
   })  : game = null,
         myColor = null,
+        currentMoveDuration = Duration.zero,
         gameDisbanded = false,
         drawOfferResponded = null,
         undoRequestResponded = null,
@@ -56,6 +60,7 @@ class LiveGameState {
   LiveGameState copyWith({
     InsanichessLiveGame? game,
     insanichess.PieceColor? myColor,
+    Duration? currentMoveDuration,
     bool? gameDisbanded,
     bool? drawOfferResponded,
     bool? undoRequestResponded,
@@ -65,6 +70,7 @@ class LiveGameState {
     return LiveGameState(
       game: game ?? this.game,
       myColor: myColor ?? this.myColor,
+      currentMoveDuration: currentMoveDuration ?? this.currentMoveDuration,
       gameDisbanded: gameDisbanded ?? this.gameDisbanded,
       drawOfferResponded: drawOfferResponded,
       undoRequestResponded: undoRequestResponded,

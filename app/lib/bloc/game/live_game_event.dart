@@ -11,6 +11,10 @@ class _Initialize extends _LiveGameEvent {
   const _Initialize({required this.liveGameId});
 }
 
+class _TimerTick extends _LiveGameEvent {
+  const _TimerTick();
+}
+
 class _GameEventReceived extends _LiveGameEvent {
   final InsanichessGameEvent gameEvent;
 

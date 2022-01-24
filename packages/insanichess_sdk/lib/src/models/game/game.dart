@@ -71,10 +71,10 @@ class InsanichessGame extends insanichess.Game
         timesSpentPerMove = json[InsanichessGameJsonKey.timesSpentPerMove]
             .map<Duration>((e) => Duration(milliseconds: e))
             .toList(),
-        remainingTimeWhite =
-            Duration(seconds: json[InsanichessGameJsonKey.remainingTimeWhite]),
-        remainingTimeBlack =
-            Duration(seconds: json[InsanichessGameJsonKey.remainingTimeBlack]);
+        remainingTimeWhite = Duration(
+            milliseconds: json[InsanichessGameJsonKey.remainingTimeWhite]),
+        remainingTimeBlack = Duration(
+            milliseconds: json[InsanichessGameJsonKey.remainingTimeBlack]);
 
   /// Returns new `InsanichessGame` object from ICString representation [s].
   factory InsanichessGame.fromICString(String s) {

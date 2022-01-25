@@ -22,8 +22,8 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
 
   final GlobalKey<ICDrawerState> drawerKey = GlobalKey<ICDrawerState>();
 
-  final List<InsanichessTimeControl> availableTimeControls =
-      const <InsanichessTimeControl>[
+  static const List<InsanichessTimeControl> availableTimeControls =
+      <InsanichessTimeControl>[
     InsanichessTimeControl(
       initialTime: Duration(minutes: 1),
       incrementPerMove: Duration.zero,

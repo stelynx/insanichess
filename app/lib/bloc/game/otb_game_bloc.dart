@@ -20,8 +20,11 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
   OtbGameBloc({
     required LocalStorageService localStorageService,
     required InsanichessGame? gameBeingShown,
+    required InsanichessTimeControl? timeControl,
     required InsanichessSettings settings,
-  })  : _localStorageService = localStorageService,
+  })  : assert((gameBeingShown == null && timeControl != null) ||
+            (gameBeingShown != null && timeControl == null)),
+        _localStorageService = localStorageService,
         _resetZoomStreamController = StreamController<void>.broadcast(),
         super(OtbGameState.initial(
           game: gameBeingShown ??
@@ -30,7 +33,7 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
                 undoAllowed: true,
                 whitePlayer: const InsanichessPlayer.testWhite(),
                 blackPlayer: const InsanichessPlayer.testBlack(),
-                timeControl: const InsanichessTimeControl.blitz(),
+                timeControl: timeControl!,
               ),
           isWhiteBottom: true,
           rotateOnMove: settings.otb.rotateChessboard,

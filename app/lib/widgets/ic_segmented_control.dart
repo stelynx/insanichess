@@ -5,7 +5,7 @@ import '../style/constants.dart';
 const double _kHeight = 40;
 
 class ICSegmentedControl<T> extends StatelessWidget {
-  final T value;
+  final T? value;
   final List<T> items;
   final List<String> labels;
   final ValueChanged<T> onChanged;
@@ -66,7 +66,10 @@ class ICSegmentedControl<T> extends StatelessWidget {
       ),
       child: maxItemsInRow == null
           ? Row(children: children)
-          : Column(children: children),
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: children,
+            ),
     );
   }
 }

@@ -16,8 +16,13 @@ import '../../widgets/ic_game_history_tape.dart';
 
 class OtbGameScreenArgs {
   final InsanichessGame? gameBeingShown;
+  final InsanichessTimeControl? timeControl;
 
-  const OtbGameScreenArgs({required this.gameBeingShown});
+  const OtbGameScreenArgs({
+    required this.gameBeingShown,
+    required this.timeControl,
+  }) : assert((gameBeingShown == null && timeControl != null) ||
+            (gameBeingShown != null && timeControl == null));
 }
 
 class OtbGameScreen extends StatelessWidget {
@@ -31,6 +36,7 @@ class OtbGameScreen extends StatelessWidget {
       create: (BuildContext context) => OtbGameBloc(
         localStorageService: LocalStorageService.instance,
         gameBeingShown: args.gameBeingShown,
+        timeControl: args.timeControl,
         settings: GlobalBloc.instance.state.settings!,
       ),
       child: const _OtbGameScreen(),
@@ -46,7 +52,7 @@ class _OtbGameScreen extends StatelessWidget {
     final OtbGameBloc bloc = BlocProvider.of<OtbGameBloc>(context);
 
     final double iconSize =
-        min(24, (MediaQuery.of(context).size.width - 7 * 6) / 6);
+        min(24, (MediaQuery.of(context).size.width - 8 * 6) / 7);
 
     return BlocConsumer<OtbGameBloc, OtbGameState>(
       listener: (BuildContext context, OtbGameState state) {},

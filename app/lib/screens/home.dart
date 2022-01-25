@@ -3,14 +3,18 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../bloc/home/home_bloc.dart';
+import '../bloc/online_play/online_play_bloc.dart';
 import '../router/router.dart';
 import '../router/routes.dart';
 import '../style/constants.dart';
 import '../style/images.dart';
+import '../util/functions/to_display_string.dart';
 import '../widgets/ic_button.dart';
 import '../widgets/ic_drawer.dart';
+import '../widgets/ic_segmented_control.dart';
 import 'game/otb_game.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -79,11 +83,62 @@ class _HomeScreen extends StatelessWidget {
                         SizedBox(height: logoSize / 40),
                         ICSecondaryButton(
                           text: 'Play OTB',
-                          onPressed: () => ICRouter.pushNamed(
-                            context,
-                            ICRoute.gameOtb,
-                            arguments:
-                                const OtbGameScreenArgs(gameBeingShown: null),
+                          onPressed: () => showCupertinoDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (BuildContext context) {
+                              return Center(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: CupertinoTheme.of(context)
+                                        .scaffoldBackgroundColor,
+                                    borderRadius: kBorderRadius,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 12.0,
+                                        ),
+                                        child: Text('Choose time control'),
+                                      ),
+                                      ICSegmentedControl<
+                                          InsanichessTimeControl>(
+                                        value: null,
+                                        items: OnlinePlayBloc
+                                            .availableTimeControls,
+                                        labels: OnlinePlayBloc
+                                            .availableTimeControls
+                                            .map<String>((InsanichessTimeControl
+                                                    tc) =>
+                                                timeControlToDisplayStringShort(
+                                                    tc))
+                                            .toList(),
+                                        onChanged: (InsanichessTimeControl tc) {
+                                          Navigator.of(context).pop();
+                                          ICRouter.pushNamed(
+                                            context,
+                                            ICRoute.gameOtb,
+                                            arguments: OtbGameScreenArgs(
+                                              gameBeingShown: null,
+                                              timeControl: tc,
+                                            ),
+                                          );
+                                        },
+                                        width: min(
+                                          400,
+                                          MediaQuery.of(context).size.width -
+                                              32,
+                                        ),
+                                        maxItemsInRow: 3,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],

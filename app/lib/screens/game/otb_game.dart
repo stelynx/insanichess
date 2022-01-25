@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insanichess/insanichess.dart' as insanichess;
@@ -42,6 +44,9 @@ class _OtbGameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final OtbGameBloc bloc = BlocProvider.of<OtbGameBloc>(context);
+
+    final double iconSize =
+        min(24, (MediaQuery.of(context).size.width - 7 * 6) / 6);
 
     return BlocConsumer<OtbGameBloc, OtbGameState>(
       listener: (BuildContext context, OtbGameState state) {},
@@ -100,15 +105,11 @@ class _OtbGameScreen extends StatelessWidget {
                               ? state.game.remainingTimeBlack
                               : state.game.remainingTimeBlack -
                                   state.currentMoveDuration)
-                          : state.game.status ==
-                                  insanichess.GameStatus.notStarted
-                              ? (const Duration(seconds: 30) -
-                                  state.currentMoveDuration)
-                              : (state.game.playerOnTurn ==
-                                      insanichess.PieceColor.black
-                                  ? state.game.remainingTimeWhite
-                                  : state.game.remainingTimeWhite -
-                                      state.currentMoveDuration))
+                          : (state.game.playerOnTurn ==
+                                  insanichess.PieceColor.black
+                              ? state.game.remainingTimeWhite
+                              : state.game.remainingTimeWhite -
+                                  state.currentMoveDuration))
                       .toClockString(),
                   style: CupertinoTheme.of(context)
                       .textTheme
@@ -146,31 +147,36 @@ class _OtbGameScreen extends StatelessWidget {
                     if (state.showZoomOutButtonOnLeft) ...[
                       ICGameControlButton(
                         icon: CupertinoIcons.zoom_out,
+                        size: iconSize,
                         onPressed:
                             state.enableZoomButton ? bloc.resetZoom : null,
                       ),
-                      const SizedBox(width: 10.0),
+                      const SizedBox(width: 6.0),
                     ],
                     ICGameControlButton(
                       icon: CupertinoIcons.back,
+                      size: iconSize,
                       onPressed: bloc.canGoBackward() ? bloc.backward : null,
                     ),
-                    const SizedBox(width: 10.0),
+                    const SizedBox(width: 6.0),
                     ICGameControlButton(
                       icon: CupertinoIcons.forward,
+                      size: iconSize,
                       onPressed: bloc.canGoForward() ? bloc.forward : null,
                     ),
                     if (bloc.isLiveGame()) ...[
-                      const SizedBox(width: 10.0),
+                      const SizedBox(width: 6.0),
                       if (state.allowUndo) ...[
                         ICGameControlButton(
                           icon: CupertinoIcons.restart,
+                          size: iconSize,
                           onPressed: bloc.canUndo() ? bloc.undo : null,
                         ),
-                        const SizedBox(width: 10.0),
+                        const SizedBox(width: 6.0),
                       ],
                       ICGameControlButton(
                         icon: CupertinoIcons.square_lefthalf_fill,
+                        size: iconSize,
                         onPressed: !state.game.inProgress
                             ? null
                             : () => showCupertinoDialog(
@@ -200,9 +206,10 @@ class _OtbGameScreen extends StatelessWidget {
                                   },
                                 ),
                       ),
-                      const SizedBox(width: 10.0),
+                      const SizedBox(width: 6.0),
                       ICGameControlButton(
                         icon: CupertinoIcons.flag_fill,
+                        size: iconSize,
                         onPressed: !state.game.inProgress
                             ? null
                             : () => showCupertinoDialog(
@@ -237,9 +244,10 @@ class _OtbGameScreen extends StatelessWidget {
                                   },
                                 ),
                       ),
-                      const SizedBox(width: 10.0),
+                      const SizedBox(width: 6.0),
                       ICGameControlButton(
                         icon: CupertinoIcons.add,
+                        size: iconSize,
                         onPressed: () => showCupertinoDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -268,9 +276,10 @@ class _OtbGameScreen extends StatelessWidget {
                       ),
                     ],
                     if (!state.showZoomOutButtonOnLeft) ...[
-                      const SizedBox(width: 10.0),
+                      const SizedBox(width: 6.0),
                       ICGameControlButton(
                         icon: CupertinoIcons.zoom_out,
+                        size: iconSize,
                         onPressed:
                             state.enableZoomButton ? bloc.resetZoom : null,
                       ),
@@ -285,15 +294,11 @@ class _OtbGameScreen extends StatelessWidget {
                               ? state.game.remainingTimeBlack
                               : state.game.remainingTimeBlack -
                                   state.currentMoveDuration)
-                          : state.game.status ==
-                                  insanichess.GameStatus.notStarted
-                              ? (const Duration(seconds: 30) -
-                                  state.currentMoveDuration)
-                              : (state.game.playerOnTurn ==
-                                      insanichess.PieceColor.black
-                                  ? state.game.remainingTimeWhite
-                                  : state.game.remainingTimeWhite -
-                                      state.currentMoveDuration))
+                          : (state.game.playerOnTurn ==
+                                  insanichess.PieceColor.black
+                              ? state.game.remainingTimeWhite
+                              : state.game.remainingTimeWhite -
+                                  state.currentMoveDuration))
                       .toClockString(),
                   style: CupertinoTheme.of(context)
                       .textTheme

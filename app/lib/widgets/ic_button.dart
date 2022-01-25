@@ -37,6 +37,7 @@ class ICButton extends StatelessWidget {
 class ICGameControlButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onPressed;
+  final double size;
 
   /// Gives this button "toggled" effect.
   final bool isPressed;
@@ -45,6 +46,7 @@ class ICGameControlButton extends StatelessWidget {
     Key? key,
     required this.icon,
     this.onPressed,
+    required this.size,
     this.isPressed = false,
   }) : super(key: key);
 
@@ -62,9 +64,12 @@ class ICGameControlButton extends StatelessWidget {
         button: true,
         child: DefaultTextStyle(
           style: CupertinoTheme.of(context).textTheme.navActionTextStyle,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 50),
-            child: Icon(icon),
+          child: Padding(
+            padding: const EdgeInsets.all(3),
+            child: Icon(
+              icon,
+              size: size - 6,
+            ),
           ),
         ),
       ),

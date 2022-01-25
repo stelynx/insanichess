@@ -64,7 +64,10 @@ class _GameHistoryScreen extends StatelessWidget {
                       onTap: () => ICRouter.pushNamed(
                         context,
                         ICRoute.gameOtb,
-                        arguments: OtbGameScreenArgs(gameBeingShown: game),
+                        arguments: OtbGameScreenArgs(
+                          gameBeingShown: game,
+                          timeControl: null,
+                        ),
                       ),
                     ),
                   )

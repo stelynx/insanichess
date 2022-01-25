@@ -10,24 +10,30 @@ import '../../services/local_storage_service.dart';
 part 'otb_game_event.dart';
 part 'otb_game_state.dart';
 
+const Duration _kTimerDuration = Duration(milliseconds: 10);
+
 class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
   final LocalStorageService _localStorageService;
-  final InsanichessGame? _gameBeingShown;
+
+  Timer? _timer;
 
   OtbGameBloc({
     required LocalStorageService localStorageService,
     required InsanichessGame? gameBeingShown,
+    required InsanichessTimeControl? timeControl,
     required InsanichessSettings settings,
-  })  : _localStorageService = localStorageService,
-        _gameBeingShown = gameBeingShown,
+  })  : assert((gameBeingShown == null && timeControl != null) ||
+            (gameBeingShown != null && timeControl == null)),
+        _localStorageService = localStorageService,
         _resetZoomStreamController = StreamController<void>.broadcast(),
         super(OtbGameState.initial(
           game: gameBeingShown ??
-              InsanichessGame(
+              InsanichessLiveGame(
                 id: '${DateTime.now().millisecondsSinceEpoch}',
+                undoAllowed: true,
                 whitePlayer: const InsanichessPlayer.testWhite(),
                 blackPlayer: const InsanichessPlayer.testBlack(),
-                timeControl: const InsanichessTimeControl.blitz(),
+                timeControl: timeControl!,
               ),
           isWhiteBottom: true,
           rotateOnMove: settings.otb.rotateChessboard,
@@ -39,6 +45,7 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
           autoZoomOutOnMove: settings.otb.autoZoomOutOnMove,
         )) {
     on<_Move>(_onMove);
+    on<_TimerTick>(_onTimerTick);
     on<_ZoomChanged>(_onZoomChanged);
     on<_ResetZoom>(_onResetZoom);
     on<_Undo>(_onUndo);
@@ -52,6 +59,7 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
   @override
   Future<void> close() async {
     await _resetZoomStreamController.close();
+    _timer?.cancel();
     return super.close();
   }
 
@@ -70,7 +78,7 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
   void resign() => add(const _Resign());
   void newGame() => add(const _StartNewGame());
 
-  bool isLiveGame() => _gameBeingShown == null;
+  bool isLiveGame() => state.game is InsanichessLiveGame;
   bool canUndo() => state.game.canUndo;
   bool canGoBackward() => state.game.canGoBackward;
   bool canGoForward() => state.game.canGoForward;
@@ -78,11 +86,24 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
   // Handlers
 
   FutureOr<void> _onMove(_Move event, Emitter<OtbGameState> emit) async {
-    final insanichess.PlayedMove? playedMove = state.game.move(event.move);
+    final Duration timeSpentForMove = state.currentMoveDuration;
+    final insanichess.PieceColor playerOnTurn = state.game.playerOnTurn;
 
+    final insanichess.PlayedMove? playedMove = state.game.move(event.move);
     if (playedMove == null) return;
 
+    // Start clock after first move.
+    if (state.game.timesSpentPerMove.isEmpty) {
+      _timer = Timer.periodic(_kTimerDuration, (_) => add(const _TimerTick()));
+    }
+
+    (state.game as InsanichessLiveGame).updateTime(
+      timeSpentForMove,
+      playerOnTurn,
+    );
+
     emit(state.copyWith(
+      currentMoveDuration: Duration.zero,
       isWhiteBottom:
           state.rotateOnMove ? !state.isWhiteBottom : state.isWhiteBottom,
     ));
@@ -90,7 +111,32 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
       _resetZoomStreamController.add(null);
     }
     if (state.game.isGameOver) {
+      _timer?.cancel();
       await _localStorageService.saveGame(state.game);
+    }
+  }
+
+  FutureOr<void> _onTimerTick(
+    _TimerTick event,
+    Emitter<OtbGameState> emit,
+  ) async {
+    emit(state.copyWith(
+      currentMoveDuration: state.currentMoveDuration + _kTimerDuration,
+    ));
+    if (state.game.playerOnTurn == insanichess.PieceColor.white) {
+      if ((state.game.remainingTimeWhite - state.currentMoveDuration)
+          .isNegative) {
+        _timer?.cancel();
+        state.game.flagged(insanichess.PieceColor.white);
+        emit(state.copyWith());
+      }
+    } else {
+      if ((state.game.remainingTimeBlack - state.currentMoveDuration)
+          .isNegative) {
+        _timer?.cancel();
+        state.game.flagged(insanichess.PieceColor.black);
+        emit(state.copyWith());
+      }
     }
   }
 
@@ -132,6 +178,7 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
     Emitter<OtbGameState> emit,
   ) async {
     state.game.draw();
+    _timer?.cancel();
     emit(state.copyWith());
     _resetZoomStreamController.add(null);
     await _localStorageService.saveGame(state.game);
@@ -141,6 +188,7 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
     _Resign event,
     Emitter<OtbGameState> emit,
   ) async {
+    _timer?.cancel();
     if (state.game.playerOnTurn == insanichess.PieceColor.white) {
       state.game.whiteResigned();
     } else {
@@ -172,5 +220,6 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
       allowUndo: state.allowUndo,
       autoZoomOutOnMove: state.autoZoomOutOnMove,
     ));
+    _timer = Timer.periodic(_kTimerDuration, (_) => add(const _TimerTick()));
   }
 }

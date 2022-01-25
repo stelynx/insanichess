@@ -104,8 +104,8 @@ class _OnlinePlayScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 10.0),
                           child: ICSegmentedControl<InsanichessTimeControl>(
                             value: state.timeControl,
-                            items: bloc.availableTimeControls,
-                            labels: bloc.availableTimeControls
+                            items: OnlinePlayBloc.availableTimeControls,
+                            labels: OnlinePlayBloc.availableTimeControls
                                 .map<String>((InsanichessTimeControl tc) =>
                                     timeControlToDisplayStringShort(tc))
                                 .toList(),

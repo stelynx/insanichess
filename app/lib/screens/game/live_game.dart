@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insanichess/insanichess.dart' as insanichess;
@@ -201,6 +203,9 @@ class _LiveGameScreen extends StatelessWidget {
         final bool isWhiteBottom =
             state.myColor == insanichess.PieceColor.white;
 
+        final double iconSize =
+            min(24, (MediaQuery.of(context).size.width - 7 * 6) / 6);
+
         return CupertinoPageScaffold(
           navigationBar: CupertinoNavigationBar(
             border: const Border(),
@@ -317,21 +322,25 @@ class _LiveGameScreen extends StatelessWidget {
                         icon: CupertinoIcons.zoom_out,
                         onPressed:
                             state.enableZoomButton ? bloc.resetZoom : null,
+                        size: iconSize,
                       ),
-                      const SizedBox(width: 10.0),
+                      const SizedBox(width: 6.0),
                     ],
                     ICGameControlButton(
                       icon: CupertinoIcons.back,
                       onPressed: bloc.canGoBackward() ? bloc.backward : null,
+                      size: iconSize,
                     ),
-                    const SizedBox(width: 10.0),
+                    const SizedBox(width: 6.0),
                     ICGameControlButton(
                       icon: CupertinoIcons.forward,
                       onPressed: bloc.canGoForward() ? bloc.forward : null,
+                      size: iconSize,
                     ),
-                    const SizedBox(width: 10.0),
+                    const SizedBox(width: 6.0),
                     ICGameControlButton(
                       icon: CupertinoIcons.restart,
+                      size: iconSize,
                       isPressed: state.game!.playerRequestedUndo != null,
                       onPressed: !state.game!.inProgress ||
                               !bloc.canUndo() ||
@@ -371,9 +380,10 @@ class _LiveGameScreen extends StatelessWidget {
                                         },
                                       ),
                     ),
-                    const SizedBox(width: 10.0),
+                    const SizedBox(width: 6.0),
                     ICGameControlButton(
                       icon: CupertinoIcons.square_lefthalf_fill,
+                      size: iconSize,
                       isPressed: state.game!.playerOfferedDraw != null,
                       onPressed: !state.game!.inProgress ||
                               state.game!.playerOfferedDraw == state.myColor &&
@@ -414,9 +424,10 @@ class _LiveGameScreen extends StatelessWidget {
                                         },
                                       ),
                     ),
-                    const SizedBox(width: 10.0),
+                    const SizedBox(width: 6.0),
                     ICGameControlButton(
                       icon: CupertinoIcons.flag_fill,
+                      size: iconSize,
                       onPressed: !state.game!.inProgress
                           ? null
                           : () => showCupertinoDialog(
@@ -477,9 +488,10 @@ class _LiveGameScreen extends StatelessWidget {
                     // ),
 
                     if (!state.showZoomOutButtonOnLeft) ...[
-                      const SizedBox(width: 10.0),
+                      const SizedBox(width: 6.0),
                       ICGameControlButton(
                         icon: CupertinoIcons.zoom_out,
+                        size: iconSize,
                         onPressed:
                             state.enableZoomButton ? bloc.resetZoom : null,
                       ),

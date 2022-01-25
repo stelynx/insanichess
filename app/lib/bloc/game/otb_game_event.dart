@@ -11,6 +11,10 @@ class _Move extends _OtbGameEvent {
   const _Move(this.move);
 }
 
+class _TimerTick extends _OtbGameEvent {
+  const _TimerTick();
+}
+
 class _ZoomChanged extends _OtbGameEvent {
   final double value;
 

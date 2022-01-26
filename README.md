@@ -34,16 +34,21 @@ Do you have a friend that always beats you in chess? Now you have an option to b
 
 ## App Features
 
-- Insanichess currently supports only OTB (over-the-board) games.
-- All your games are saved locally so you can replay them later.
+- Play an **online** game with custom time control and ability to specify preferred piece color.
+- Finished games are stored in the database.
+- Play OTB (over-the-board) games. The games are stored locally and can be found in Game History.
+- Change settings for online and OTB games.
 
 ### Future Features
 
-Currently, a backend is being implemented (in pure Dart) which will provide support for the following:
+Currently, support for the following is being added to the Dart backend (sorted by priority):
 
-- Multiplayer games.
+- Web version.
+- Play with random opponent.
+- OTB games will be saved on a server instead of locally.
+- Profile editing and searching for other players.
+- Making friends.
 - Tournaments.
-- Games will be saved on a server instead of locally.
 - Game statistics.
 - Opening explorer.
 - Different chess pieces and board styles.
@@ -73,7 +78,7 @@ Insanichess repository consists of three major parts:
 - [packages](packages) contains three Dart packages: [`insanichess`](packages/insanichess) that
   holds implementation of game rules, [`insanichess_engine`](packages/insanichess_engine) that
   holds implementation of Insanichess evaluation engine, and [`insanichess_sdk`](packages/insanichess_sdk) that
-  holds extends `insanichess` package with functionality that both client and server applications need.
+  extends `insanichess` package with functionality that both client and server applications need.
 
 ## Contributing
 

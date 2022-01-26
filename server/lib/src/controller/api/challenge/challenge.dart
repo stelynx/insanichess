@@ -72,7 +72,7 @@ class ChallengeController {
       return await _handleCreatePrivateGame(request, challenge);
     }
 
-    throw UnimplementedError();
+    return respondWithBadRequest(request);
   }
 
   /// Handler for GET challenge.
@@ -340,7 +340,7 @@ class ChallengeController {
 
     memory.openChallenges[id] = challenge.updateStatus(ChallengeStatus.created);
     Future.delayed(
-      const Duration(minutes: 1),
+      const Duration(minutes: 2),
       () {
         memory.openChallenges.remove(id);
         print(memory.openChallenges);

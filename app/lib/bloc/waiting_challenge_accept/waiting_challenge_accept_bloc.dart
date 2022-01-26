@@ -67,6 +67,8 @@ class WaitingChallengeAcceptBloc
     _FetchChallengeData event,
     Emitter<WaitingChallengeAcceptState> emit,
   ) async {
+    if (state.challengeCancelled) return;
+
     final Either<BackendFailure, InsanichessChallenge> challengeOrNull =
         await _backendService.getChallenge(_challengeId);
     if (challengeOrNull.isError()) {

@@ -84,7 +84,7 @@ class _WaitingChallengeAcceptScreen extends StatelessWidget {
                   const SizedBox(height: 80),
                   const Spacer(),
                   ICCountdown(
-                    expiresIn: const Duration(minutes: 1),
+                    expiresIn: const Duration(minutes: 2),
                     onExpired: bloc.challengeExpired,
                     periodicFetchDuration: const Duration(seconds: 1),
                     periodicFetchCallback: bloc.fetchData,

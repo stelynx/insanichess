@@ -61,6 +61,11 @@ class DatabaseService {
     }
   }
 
+  Future<void> addLog(String level, String location, String message) async {
+    await _connection!.query(
+        "INSERT INTO ic_logs (log_level, log_location, log_message) VALUES ($level, $location, $message);");
+  }
+
   /// Checks if user with [email] and [password] exists. If [password] is `null`
   /// only email is checked.
   ///

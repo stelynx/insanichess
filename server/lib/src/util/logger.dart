@@ -1,3 +1,6 @@
+import '../../insanichess_server.dart';
+import '../config/config.dart';
+
 class Logger {
   static Logger? _instance;
   static Logger get instance => _instance!;
@@ -14,7 +17,9 @@ class Logger {
   }
 
   void debug(String caller, Object? message) {
-    return _log(_LogLevel.debug, caller, message);
+    if (Config.isDebug) {
+      return _log(_LogLevel.debug, caller, message);
+    }
   }
 
   void info(String caller, Object? message) {
@@ -26,8 +31,11 @@ class Logger {
   }
 
   void _log(_LogLevel level, String caller, Object? message) {
-    // ignore: avoid_print
-    print('[${level.str}] $caller : $message');
+    if (Config.isDebug) {
+      // ignore: avoid_print
+      print('[${level.str}] $caller : $message');
+    }
+    DatabaseService.instance.addLog(level.str, caller, '$message');
   }
 }
 

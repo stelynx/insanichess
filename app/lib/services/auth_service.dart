@@ -6,33 +6,35 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../util/either.dart';
 import '../util/failures/backend_failure.dart';
-import '../util/functions/uri_for_path.dart';
+import 'http_service.dart';
 
 class AuthService {
   static AuthService? _instance;
   static AuthService get instance => _instance!;
 
-  const AuthService._();
+  AuthService._({required HttpService httpService}) : _http = httpService;
 
-  factory AuthService() {
+  factory AuthService({required HttpService httpService}) {
     if (_instance != null) {
       throw StateError('AuthService already created');
     }
 
-    _instance = const AuthService._();
+    _instance = AuthService._(httpService: httpService);
     return _instance!;
   }
+
+  final HttpService _http;
 
   Future<Either<BackendFailure, InsanichessUser>> loginWithEmailAndPassword(
     String email,
     String password,
   ) async {
-    final http.Response response = await http.post(
-      uriForPath([
+    final http.Response? response = await _http.post(
+      [
         ICServerRoute.api,
         ICServerRoute.apiAuth,
         ICServerRoute.apiAuthLogin,
-      ]),
+      ],
       headers: <String, String>{
         HttpHeaders.contentTypeHeader: ContentType.json.value,
       },
@@ -41,6 +43,7 @@ class AuthService {
         InsanichessUserJsonKey.password: password,
       }),
     );
+    if (response == null) return error(const UnknownBackendFailure());
 
     switch (response.statusCode) {
       case HttpStatus.ok:
@@ -60,12 +63,12 @@ class AuthService {
     String email,
     String password,
   ) async {
-    final http.Response response = await http.post(
-      uriForPath([
+    final http.Response? response = await _http.post(
+      [
         ICServerRoute.api,
         ICServerRoute.apiAuth,
         ICServerRoute.apiAuthRegister,
-      ]),
+      ],
       headers: <String, String>{
         HttpHeaders.contentTypeHeader: ContentType.json.value,
       },
@@ -74,6 +77,7 @@ class AuthService {
         InsanichessUserJsonKey.password: password,
       }),
     );
+    if (response == null) return error(const UnknownBackendFailure());
 
     switch (response.statusCode) {
       case HttpStatus.created:

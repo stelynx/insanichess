@@ -125,17 +125,20 @@ class OtbGameBloc extends Bloc<_OtbGameEvent, OtbGameState> {
     ));
     if (state.game.playerOnTurn == insanichess.PieceColor.white) {
       if ((state.game.remainingTimeWhite - state.currentMoveDuration)
-          .isNegative) {
+              .inMilliseconds ==
+          0) {
         _timer?.cancel();
         state.game.flagged(insanichess.PieceColor.white);
         emit(state.copyWith());
       }
     } else {
       if ((state.game.remainingTimeBlack - state.currentMoveDuration)
-          .isNegative) {
+              .inMilliseconds ==
+          0) {
         _timer?.cancel();
         state.game.flagged(insanichess.PieceColor.black);
         emit(state.copyWith());
+        await _localStorageService.saveGame(state.game);
       }
     }
   }

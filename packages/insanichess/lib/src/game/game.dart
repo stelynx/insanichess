@@ -167,7 +167,7 @@ class Game {
   bool get isGameOver => _gameStatus == GameStatus.draw || blackWon || whiteWon;
 
   /// Is there is a move that can be undone?
-  bool get canUndo => _gameHistory.length > 0;
+  bool get canUndo => _gameHistory.length > 0 && !isGameOver;
 
   /// Is there a future move?
   bool get canGoForward => _gameHistory.futureMoves.isNotEmpty;

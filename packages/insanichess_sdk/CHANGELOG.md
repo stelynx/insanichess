@@ -1,3 +1,7 @@
+## 0.6.7
+
+- Bump required `insanichess` version to `0.3.5`.
+
 ## 0.6.6
 
 - Fix a bug with parsing remainging times of players.
@@ -14,7 +18,7 @@
 - `InsanichessLiveGame` overrides `undo` method and restores back time spent for the undone move.
 - `InsanichesSLiveGame` now has `updateTime` method that can update the time after a move.
 - Added `pieceColorFromJson` function that parses `insanichess.PieceColor` from json representation.
-- Bump required `insanichess` version to `0.3.3`.
+- Bump required `insanichess` version to `0.3.4`.
 
 ## 0.6.3
 

@@ -1,3 +1,7 @@
+## 0.3.5
+
+- Fix a bug when a move can be undone after the OTB game is over.
+
 ## 0.3.4
 
 - `Game.flagged()` not takes optional parameter for who ran out of time. (This is used by client applications.)

@@ -55,3 +55,12 @@ CREATE TABLE ic_games (
   CONSTRAINT ic_game_player_black FOREIGN KEY (player_black) REFERENCES ic_players(id)
 ) WITH ( OIDS = FALSE );
 ALTER TABLE ic_games OWNER TO insanichess_admin;
+
+CREATE TABLE ic_logs (
+  id SERIAL PRIMARY KEY,
+  log_level TEXT NOT NULL,
+  log_location TEXT NOT NULL,
+  log_message TEXT NOT NULL,
+  log_at TIMESTAMP DEFAULT NOW(),
+) WITH ( OIDS = FALSE );
+ALTER TABLE ic_logs OWNER TO insanichess_admin;

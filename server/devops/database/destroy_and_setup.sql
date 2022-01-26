@@ -61,6 +61,6 @@ CREATE TABLE ic_logs (
   log_level TEXT NOT NULL,
   log_location TEXT NOT NULL,
   log_message TEXT NOT NULL,
-  log_at TIMESTAMP DEFAULT NOW(),
+  log_at TIMESTAMP DEFAULT NOW()
 ) WITH ( OIDS = FALSE );
 ALTER TABLE ic_logs OWNER TO insanichess_admin;

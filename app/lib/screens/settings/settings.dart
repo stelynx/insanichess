@@ -42,6 +42,9 @@ class _SettingsScreen extends StatelessWidget {
           key: bloc.drawerKey,
           scaffold: CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
+              leading: CupertinoNavigationBarBackButton(
+                onPressed: () => ICRouter.pop(context),
+              ),
               middle: const Text('Settings'),
               border: const Border(),
               trailing: ICTrailingButton(

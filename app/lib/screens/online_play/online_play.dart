@@ -77,6 +77,9 @@ class _OnlinePlayScreen extends StatelessWidget {
             navigationBar: CupertinoNavigationBar(
               middle: const Text('Play Online'),
               border: const Border(),
+              leading: CupertinoNavigationBarBackButton(
+                onPressed: () => ICRouter.pop(context),
+              ),
               trailing: ICTrailingButton(
                 icon: CupertinoIcons.line_horizontal_3,
                 // must not shortcut to: bloc.drawerKey.currentState?.open

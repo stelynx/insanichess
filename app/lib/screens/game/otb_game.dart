@@ -241,7 +241,7 @@ class _OtbGameScreen extends StatelessWidget {
                                           child: const Text('Yes'),
                                           isDefaultAction: true,
                                           onPressed: () {
-                                            () => Navigator.of(context).pop();
+                                            Navigator.of(context).pop();
                                             bloc.resign();
                                           },
                                         )

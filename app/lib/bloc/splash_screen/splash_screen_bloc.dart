@@ -61,6 +61,9 @@ class SplashScreenBloc extends Bloc<_SplashScreenEvent, SplashScreenState> {
       _initialize(),
       Future.delayed(const Duration(seconds: 2)),
     ]);
+
+    if (results.first == null) return;
+
     _timer.cancel();
     emit(state.copyWith(
       initialized: true,
@@ -80,7 +83,7 @@ class SplashScreenBloc extends Bloc<_SplashScreenEvent, SplashScreenState> {
 
   // Helpers
 
-  Future<String> _initialize() async {
+  Future<String?> _initialize() async {
     String? jwtToken = await _localStorageService.readJwtToken();
     if (jwtToken == null) {
       return ICRoute.signIn;
@@ -89,7 +92,11 @@ class SplashScreenBloc extends Bloc<_SplashScreenEvent, SplashScreenState> {
 
     final Either<BackendFailure, InsanichessPlayer?> playerOrFailure =
         await _backendService.getPlayerMyself();
-    if (playerOrFailure.isError()) return ICRoute.signIn;
+    if (playerOrFailure.isError()) {
+      return playerOrFailure.error is UnknownBackendFailure
+          ? null
+          : ICRoute.signIn;
+    }
     if (!playerOrFailure.hasValue()) return ICRoute.playerRegistration;
     _globalBloc.updatePlayerMyself(playerOrFailure.value!);
 

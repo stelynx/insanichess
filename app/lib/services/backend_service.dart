@@ -7,30 +7,34 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 import '../util/either.dart';
 import '../util/failures/backend_failure.dart';
 import '../util/functions/auth_header_value.dart';
-import '../util/functions/uri_for_path.dart';
+import 'http_service.dart';
 
 class BackendService {
   static BackendService? _instance;
   static BackendService get instance => _instance!;
 
-  const BackendService._();
+  const BackendService._({required HttpService httpService})
+      : _http = httpService;
 
-  factory BackendService() {
+  factory BackendService({required HttpService httpService}) {
     if (_instance != null) {
       throw StateError('BackendService already created');
     }
 
-    _instance = const BackendService._();
+    _instance = BackendService._(httpService: httpService);
     return _instance!;
   }
 
+  final HttpService _http;
+
   Future<Either<BackendFailure, InsanichessPlayer?>> getPlayerMyself() async {
-    final http.Response response = await http.get(
-      uriForPath([ICServerRoute.api, ICServerRoute.apiPlayer]),
+    final http.Response? response = await _http.get(
+      [ICServerRoute.api, ICServerRoute.apiPlayer],
       headers: <String, String>{
         HttpHeaders.authorizationHeader: authHeaderValue(),
       },
     );
+    if (response == null) return error(const UnknownBackendFailure());
 
     switch (response.statusCode) {
       case HttpStatus.ok:
@@ -43,8 +47,8 @@ class BackendService {
   Future<Either<BackendFailure, InsanichessPlayer>> createPlayer({
     required String username,
   }) async {
-    final http.Response response = await http.post(
-      uriForPath([ICServerRoute.api, ICServerRoute.apiPlayer]),
+    final http.Response? response = await _http.post(
+      [ICServerRoute.api, ICServerRoute.apiPlayer],
       headers: <String, String>{
         HttpHeaders.authorizationHeader: authHeaderValue(),
         HttpHeaders.contentTypeHeader: ContentType.json.value,
@@ -53,6 +57,7 @@ class BackendService {
         InsanichessPlayerJsonKey.username: username,
       }),
     );
+    if (response == null) return error(const UnknownBackendFailure());
 
     switch (response.statusCode) {
       case HttpStatus.created:
@@ -63,12 +68,13 @@ class BackendService {
   }
 
   Future<Either<BackendFailure, InsanichessSettings>> getSettings() async {
-    final http.Response response = await http.get(
-      uriForPath([ICServerRoute.api, ICServerRoute.apiSettings]),
+    final http.Response? response = await _http.get(
+      [ICServerRoute.api, ICServerRoute.apiSettings],
       headers: <String, String>{
         HttpHeaders.authorizationHeader: authHeaderValue(),
       },
     );
+    if (response == null) return error(const UnknownBackendFailure());
 
     switch (response.statusCode) {
       case HttpStatus.ok:
@@ -83,14 +89,15 @@ class BackendService {
   Future<Either<BackendFailure, void>> updateSetting(
     Map<String, dynamic> settingObject,
   ) async {
-    final http.Response response = await http.patch(
-      uriForPath([ICServerRoute.api, ICServerRoute.apiSettings]),
+    final http.Response? response = await _http.patch(
+      [ICServerRoute.api, ICServerRoute.apiSettings],
       headers: <String, String>{
         HttpHeaders.authorizationHeader: authHeaderValue(),
         HttpHeaders.contentTypeHeader: ContentType.json.value,
       },
       body: jsonEncode(settingObject),
     );
+    if (response == null) return error(const UnknownBackendFailure());
 
     switch (response.statusCode) {
       case HttpStatus.ok:
@@ -103,14 +110,15 @@ class BackendService {
   Future<Either<BackendFailure, String>> createChallenge(
     InsanichessChallenge challenge,
   ) async {
-    final http.Response response = await http.post(
-      uriForPath([ICServerRoute.api, ICServerRoute.apiChallenge]),
+    final http.Response? response = await _http.post(
+      [ICServerRoute.api, ICServerRoute.apiChallenge],
       headers: <String, String>{
         HttpHeaders.authorizationHeader: authHeaderValue(),
         HttpHeaders.contentTypeHeader: ContentType.json.value,
       },
       body: jsonEncode(challenge.toJson()),
     );
+    if (response == null) return error(const UnknownBackendFailure());
 
     switch (response.statusCode) {
       case HttpStatus.created:
@@ -123,12 +131,13 @@ class BackendService {
   Future<Either<BackendFailure, InsanichessChallenge>> getChallenge(
     String challengeId,
   ) async {
-    final http.Response response = await http.get(
-      uriForPath([ICServerRoute.api, ICServerRoute.apiChallenge, challengeId]),
+    final http.Response? response = await _http.get(
+      [ICServerRoute.api, ICServerRoute.apiChallenge, challengeId],
       headers: <String, String>{
         HttpHeaders.authorizationHeader: authHeaderValue(),
       },
     );
+    if (response == null) return error(const UnknownBackendFailure());
 
     switch (response.statusCode) {
       case HttpStatus.ok:
@@ -141,12 +150,13 @@ class BackendService {
   Future<Either<BackendFailure, void>> cancelChallenge(
     String challengeId,
   ) async {
-    final http.Response response = await http.delete(
-      uriForPath([ICServerRoute.api, ICServerRoute.apiChallenge, challengeId]),
+    final http.Response? response = await _http.delete(
+      [ICServerRoute.api, ICServerRoute.apiChallenge, challengeId],
       headers: <String, String>{
         HttpHeaders.authorizationHeader: authHeaderValue(),
       },
     );
+    if (response == null) return error(const UnknownBackendFailure());
 
     switch (response.statusCode) {
       case HttpStatus.ok:
@@ -159,17 +169,18 @@ class BackendService {
   Future<Either<BackendFailure, InsanichessLiveGame>> getLiveGameDetails(
     String liveGameId,
   ) async {
-    final http.Response response = await http.get(
-      uriForPath([
+    final http.Response? response = await _http.get(
+      [
         ICServerRoute.api,
         ICServerRoute.apiGame,
         ICServerRoute.apiGameLive,
         liveGameId,
-      ]),
+      ],
       headers: <String, String>{
         HttpHeaders.authorizationHeader: authHeaderValue(),
       },
     );
+    if (response == null) return error(const UnknownBackendFailure());
 
     switch (response.statusCode) {
       case HttpStatus.ok:
@@ -182,17 +193,18 @@ class BackendService {
   Future<Either<BackendFailure, void>> acceptChallenge(
     String challengeId,
   ) async {
-    final http.Response response = await http.get(
-      uriForPath([
+    final http.Response? response = await _http.get(
+      [
         ICServerRoute.api,
         ICServerRoute.apiChallenge,
         challengeId,
         ICServerRoute.apiChallengeAccept,
-      ]),
+      ],
       headers: <String, String>{
         HttpHeaders.authorizationHeader: authHeaderValue(),
       },
     );
+    if (response == null) return error(const UnknownBackendFailure());
 
     switch (response.statusCode) {
       case HttpStatus.ok:

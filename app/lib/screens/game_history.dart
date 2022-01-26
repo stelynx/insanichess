@@ -82,8 +82,11 @@ class _GameHistoryScreen extends StatelessWidget {
           key: bloc.drawerKey,
           scaffold: CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
-              middle: const Text('Game History'),
+              middle: const Text('OTB Game History'),
               border: const Border(),
+              leading: CupertinoNavigationBarBackButton(
+                onPressed: () => ICRouter.pop(context),
+              ),
               trailing: ICTrailingButton(
                 icon: CupertinoIcons.line_horizontal_3,
                 // must not shortcut to: bloc.drawerKey.currentState?.open

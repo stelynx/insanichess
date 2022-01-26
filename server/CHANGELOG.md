@@ -9,4 +9,5 @@ Initial version with support for:
 - accepting / declining challenge,
 - playing an online game using sockets,
 - getting settings, and
-- patching settings.
+- patching settings,
+- saving logs to database.

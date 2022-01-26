@@ -7,6 +7,7 @@ import '../../config/db.dart';
 import '../../util/either.dart';
 import '../../util/failures/database_failure.dart';
 import '../../util/functions/on_entity.dart';
+import '../../util/functions/prepare_arg_for_query.dart';
 import '../../util/logger.dart';
 
 /// Service for communication with database.
@@ -41,8 +42,6 @@ class DatabaseService {
 
   /// Initializes this service by connecting to database with [config].
   Future<bool> initialize({required DbConfig config}) async {
-    _logger.info('DatabaseService.initialize', 'initializing');
-
     _connection = PostgreSQLConnection(
       config.host,
       config.port,
@@ -63,7 +62,7 @@ class DatabaseService {
 
   Future<void> addLog(String level, String location, String message) async {
     await _connection!.query(
-        "INSERT INTO ic_logs (log_level, log_location, log_message) VALUES ($level, $location, $message);");
+        "INSERT INTO ic_logs (log_level, log_location, log_message) VALUES ('${prepareArgForQuery(level)}', '${prepareArgForQuery(location)}', '${prepareArgForQuery(message)}');");
   }
 
   /// Checks if user with [email] and [password] exists. If [password] is `null`
@@ -83,7 +82,7 @@ class DatabaseService {
     final PostgreSQLResult result;
     try {
       result = await _connection!.query(
-          "SELECT hashed_password FROM ic_users WHERE email = '$email' LIMIT 1;");
+          "SELECT hashed_password FROM ic_users WHERE email = '${prepareArgForQuery(email)}' LIMIT 1;");
     } catch (e) {
       _logger.error('DatabaseService.existsUserWithEmailAndPassword', e);
       return error(const DatabaseFailure());
@@ -118,7 +117,7 @@ class DatabaseService {
     final PostgreSQLResult result;
     try {
       result = await _connection!.query(
-        "SELECT * FROM ic_users WHERE email = '$email' LIMIT 1;",
+        "SELECT * FROM ic_users WHERE email = '${prepareArgForQuery(email)}' LIMIT 1;",
       );
     } catch (e) {
       _logger.error('DatabaseService.getUserWithEmail', e);
@@ -161,10 +160,10 @@ class DatabaseService {
     final PostgreSQLResult result;
     try {
       await _connection!.query(
-        "INSERT INTO ic_users (email, hashed_password) VALUES ('$email', '$hashedPassword');",
+        "INSERT INTO ic_users (email, hashed_password) VALUES ('${prepareArgForQuery(email)}', '$hashedPassword');",
       );
       result = await _connection!.query(
-        "SELECT * FROM ic_users WHERE email = '$email' LIMIT 1;",
+        "SELECT * FROM ic_users WHERE email = '${prepareArgForQuery(email)}' LIMIT 1;",
       );
     } catch (e) {
       _logger.error('DatabaseService.createUser', e);
@@ -192,7 +191,7 @@ class DatabaseService {
 
     try {
       await _connection!.query(
-        "UPDATE ic_users SET email = '${user.email}' WHERE id = '${user.id}';",
+        "UPDATE ic_users SET email = '${prepareArgForQuery(user.email)}' WHERE id = '${prepareArgForQuery(user.id)}';",
       );
     } catch (e) {
       _logger.error('DatabaseService.updateUser', e);
@@ -218,7 +217,7 @@ class DatabaseService {
     final PostgreSQLResult result;
     try {
       result = await _connection!.query(
-        "SELECT * FROM ic_players WHERE username = '$username' LIMIT 1;",
+        "SELECT * FROM ic_players WHERE username = '${prepareArgForQuery(username)}' LIMIT 1;",
       );
     } catch (e) {
       _logger.error('DatabaseService.getUserWithEmail', e);
@@ -252,7 +251,8 @@ class DatabaseService {
     );
 
     try {
-      await _connection!.query("DELETE FROM ic_users WHERE id = '${user.id}';");
+      await _connection!.query(
+          "DELETE FROM ic_users WHERE id = '${prepareArgForQuery(user.id)}';");
     } catch (e) {
       _logger.error('DatabaseService.deleteUser', e);
       return error(const DatabaseFailure());
@@ -276,7 +276,7 @@ class DatabaseService {
     final PostgreSQLResult result;
     try {
       result = await _connection!.query(
-        "SELECT * FROM ic_players WHERE ic_user = '$userId' LIMIT 1;",
+        "SELECT * FROM ic_players WHERE ic_user = '${prepareArgForQuery(userId)}' LIMIT 1;",
       );
     } catch (e) {
       _logger.error('DatabaseService.getUserWithUserId', e);
@@ -316,9 +316,9 @@ class DatabaseService {
     final PostgreSQLResult result;
     try {
       await _connection!.query(
-          "INSERT INTO ic_players (username, ic_user) VALUES ('$username', '$userId');");
+          "INSERT INTO ic_players (username, ic_user) VALUES ('${prepareArgForQuery(username)}', '${prepareArgForQuery(userId)}');");
       result = await _connection!.query(
-          "SELECT * FROM ic_players WHERE username = '$username' LIMIT 1;");
+          "SELECT * FROM ic_players WHERE username = '${prepareArgForQuery(username)}' LIMIT 1;");
     } catch (e) {
       _logger.error('DatabaseService.createPlayer', e);
       return error(const DatabaseFailure());
@@ -349,10 +349,10 @@ class DatabaseService {
 
     final PostgreSQLResult result;
     try {
-      await _connection!
-          .query("INSERT INTO ic_user_settings (ic_user) VALUES ('$userId');");
+      await _connection!.query(
+          "INSERT INTO ic_user_settings (ic_user) VALUES ('${prepareArgForQuery(userId)}');");
       result = await _connection!.query(
-          "SELECT * FROM ic_user_settings WHERE ic_user = '$userId' LIMIT 1");
+          "SELECT * FROM ic_user_settings WHERE ic_user = '${prepareArgForQuery(userId)}' LIMIT 1");
     } catch (e) {
       _logger.error('DatabaseService.createDefaultSettingsForUser', e);
       return error(const DatabaseFailure());
@@ -366,8 +366,8 @@ class DatabaseService {
     final Map<String, dynamic> data = result.first.toColumnMap();
     final InsanichessSettings? settings = settingsFromDatabase(data);
     if (settings == null) {
-      await _connection!
-          .query("DELETE FROM ic_user_settings WHERE id = '${data['id']}';");
+      await _connection!.query(
+          "DELETE FROM ic_user_settings WHERE id = '${prepareArgForQuery(data['id'])}';");
       return error(const DatabaseFailure());
     }
 
@@ -385,7 +385,7 @@ class DatabaseService {
     final PostgreSQLResult result;
     try {
       result = await _connection!.query(
-          "SELECT * FROM ic_user_settings WHERE ic_user = '$userId' LIMIT 1");
+          "SELECT * FROM ic_user_settings WHERE ic_user = '${prepareArgForQuery(userId)}' LIMIT 1");
     } catch (e) {
       _logger.error('DatabaseService.getSettingsForUserWithUserId', e);
       return error(const DatabaseFailure());
@@ -421,10 +421,10 @@ class DatabaseService {
     try {
       if (columnValue is String) {
         await _connection!.query(
-            "UPDATE ic_user_settings SET $columnName = '$columnValue' WHERE ic_user = '$userId';");
-      } else {
+            "UPDATE ic_user_settings SET ${prepareArgForQuery(columnName)} = '${prepareArgForQuery(columnValue)}' WHERE ic_user = '${prepareArgForQuery(userId)}';");
+      } else if (columnValue is bool || columnValue is int) {
         await _connection!.query(
-            "UPDATE ic_user_settings SET $columnName = $columnValue WHERE ic_user = '$userId';");
+            "UPDATE ic_user_settings SET ${prepareArgForQuery(columnName)} = $columnValue} WHERE ic_user = '${prepareArgForQuery(userId)}';");
       }
     } catch (e) {
       _logger.error('DatabaseService.updateSettingsValue', e);
@@ -448,10 +448,10 @@ class DatabaseService {
 
     try {
       final PostgreSQLResult userResult = await _connection!.query(
-          "SELECT ic_user FROM ic_players WHERE id = '$playerId' LIMIT 1;");
+          "SELECT ic_user FROM ic_players WHERE id = '${prepareArgForQuery(playerId)}' LIMIT 1;");
       final String userId = userResult.first.toColumnMap()['ic_user'];
       final PostgreSQLResult result = await _connection!.query(
-          "SELECT live_allow_undo FROM ic_user_settings WHERE ic_user = '$userId' LIMIT 1;");
+          "SELECT live_allow_undo FROM ic_user_settings WHERE ic_user = '${prepareArgForQuery(userId)}' LIMIT 1;");
       return value(result.first.toColumnMap()['live_allow_undo']);
     } catch (e) {
       _logger.error('DatabaseService.userAllowsUndoInLiveGame', e);
@@ -492,7 +492,7 @@ class DatabaseService {
 
     try {
       await _connection!.query(
-          "INSERT INTO ic_games (player_white, player_black, time_control_initial, time_control_increment, times_per_move, game_status, moves) VALUES ('${game.whitePlayer.id}', '${game.blackPlayer.id}', ${game.timeControl.initialTime.inSeconds}, ${game.timeControl.incrementPerMove.inSeconds}, $timesString, ${game.status.toJson()}, $movesString);");
+          "INSERT INTO ic_games (player_white, player_black, time_control_initial, time_control_increment, times_per_move, game_status, moves) VALUES ('${prepareArgForQuery(game.whitePlayer.id)}', '${prepareArgForQuery(game.blackPlayer.id)}', ${game.timeControl.initialTime.inSeconds}, ${game.timeControl.incrementPerMove.inSeconds}, $timesString, ${game.status.toJson()}, $movesString);");
     } catch (e) {
       _logger.error('DatabaseService.saveGame', e);
       return error(const DatabaseFailure());

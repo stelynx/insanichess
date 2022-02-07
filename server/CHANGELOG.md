@@ -1,3 +1,9 @@
+## 1.1.0
+
+The following has been added:
+
+- Matchmaking system.
+
 ## 1.0.0
 
 Initial version with support for:

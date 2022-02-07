@@ -30,6 +30,7 @@ class HttpService {
       return await http.get(uriForPath(pathSegments), headers: headers);
     } on SocketException catch (_) {
       _failedRequestStreamController.add(null);
+      return null;
     }
   }
 
@@ -43,6 +44,7 @@ class HttpService {
       );
     } on SocketException catch (_) {
       _failedRequestStreamController.add(null);
+      return null;
     }
   }
 
@@ -56,6 +58,7 @@ class HttpService {
       );
     } on SocketException catch (_) {
       _failedRequestStreamController.add(null);
+      return null;
     }
   }
 
@@ -68,6 +71,7 @@ class HttpService {
       );
     } on SocketException catch (_) {
       _failedRequestStreamController.add(null);
+      return null;
     }
   }
 }

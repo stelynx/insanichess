@@ -1,5 +1,1 @@
 include: package:flutter_lints/flutter.yaml
-
-linter:
-  rules:
-    body_might_complete_normally_nullable: false

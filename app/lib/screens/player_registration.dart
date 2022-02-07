@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -68,42 +70,45 @@ class _PlayerRegistrationScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Hero(
-                      tag: 'hero',
-                      child: SvgPicture.asset(
-                        MediaQuery.of(context).platformBrightness ==
-                                Brightness.light
-                            ? ICImage.logoLight
-                            : ICImage.logoDark,
-                        width: logoSize,
-                        height: logoSize,
+                child: SizedBox(
+                  width: min(500, MediaQuery.of(context).size.width - 60),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Hero(
+                        tag: 'hero',
+                        child: SvgPicture.asset(
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.light
+                              ? ICImage.logoLight
+                              : ICImage.logoDark,
+                          width: logoSize,
+                          height: logoSize,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: logoSize / 10),
-                    ICTextField(
-                      placeholder: 'Username',
-                      onChanged: bloc.changeUsername,
-                      keyboardType: TextInputType.name,
-                    ),
-                    SizedBox(height: logoSize / 40),
-                    if (errorMessage != null) ...[
-                      Text(
-                        errorMessage,
-                        textAlign: TextAlign.center,
-                        style:
-                            const TextStyle(color: CupertinoColors.systemRed),
+                      SizedBox(height: logoSize / 10),
+                      ICTextField(
+                        placeholder: 'Username',
+                        onChanged: bloc.changeUsername,
+                        keyboardType: TextInputType.name,
                       ),
                       SizedBox(height: logoSize / 40),
+                      if (errorMessage != null) ...[
+                        Text(
+                          errorMessage,
+                          textAlign: TextAlign.center,
+                          style:
+                              const TextStyle(color: CupertinoColors.systemRed),
+                        ),
+                        SizedBox(height: logoSize / 40),
+                      ],
+                      ICPrimaryButton(
+                        text: 'Submit',
+                        onPressed: state.isLoading ? null : bloc.submit,
+                      ),
                     ],
-                    ICPrimaryButton(
-                      text: 'Submit',
-                      onPressed: state.isLoading ? null : bloc.submit,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

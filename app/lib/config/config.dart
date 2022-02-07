@@ -1,6 +1,6 @@
 abstract class Config {
-  static const String backendHost = 'localhost';
-  static const int backendPort = 4040;
-  static const String backendApiScheme = 'http';
-  static const String backendWssScheme = 'ws';
+  static const String backendHost = 'insanichess.com';
+  static const int backendPort = 443;
+  static const String backendApiScheme = 'https';
+  static const String backendWssScheme = 'wss';
 }

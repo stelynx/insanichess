@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../services/connectivity_service.dart';
 import '../../services/http_service.dart';
@@ -76,7 +77,7 @@ class ConnectivityBloc extends Bloc<_ConnectivityEvent, ConnectivityState> {
     if (_navigatorKey.currentContext != null &&
         _navigatorKey.currentState != null) {
       if (hasConnection) {
-        if (Platform.isAndroid) {
+        if (!kIsWeb && Platform.isAndroid) {
           if (!event.ignorePop && !state.initial) {
             _navigatorKey.currentState!.pop();
           } else {

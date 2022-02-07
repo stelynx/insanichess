@@ -28,7 +28,7 @@ jobs:
           use_git_root: false
           main_dir: server
       - run: |
-          cd app
-          flutter pub get
-          flutter analyze
+          cd server
+          dart pub get
+          dart analyze
           # flutter test --coverage .

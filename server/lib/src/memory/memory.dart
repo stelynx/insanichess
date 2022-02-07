@@ -22,10 +22,19 @@ class Memory {
   /// Private constructor for creating the only instance of this singleton.
   Memory._();
 
-  /// List of currently opened challenges.
+  /// List of currently opened private challenges. These challenges can be
+  /// joined using their id.
   ///
   /// A map from ids to corresponding challenges.
-  final Map<String, InsanichessChallenge> openChallenges =
+  final Map<String, InsanichessChallenge> openPrivateChallenges =
+      <String, InsanichessChallenge>{};
+
+  /// List of currently opened public challenges. These challenges are meant to
+  /// be automatically accepted once another satisfiable public challenge
+  /// request comes in.
+  ///
+  /// A map from ids to corresponding challenges.
+  final Map<String, InsanichessChallenge> openPublicChallenges =
       <String, InsanichessChallenge>{};
 
   /// List of games currently in progress.

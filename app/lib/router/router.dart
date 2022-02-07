@@ -141,5 +141,7 @@ abstract class ICRouter {
                   args: settings.arguments as OtbSettingsScreenArgs,
                 ));
     }
+
+    return null;
   }
 }

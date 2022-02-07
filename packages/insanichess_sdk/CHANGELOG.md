@@ -1,10 +1,15 @@
+## 0.6.8
+
+- `InsanichessChallenge.createdBy` is now `InsanichessPlayer?` instead of `String?`.
+- Add equality operator to `InsanichessTimeControl`.
+
 ## 0.6.7
 
 - Bump required `insanichess` version to `0.3.5`.
 
 ## 0.6.6
 
-- Fix a bug with parsing remainging times of players.
+- Fix a bug with parsing remaining times of players.
 
 ## 0.6.5
 

@@ -28,7 +28,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
   final StreamController<void> _resetZoomStreamController;
   Stream<void> get resetZoomStream => _resetZoomStreamController.stream;
 
-  late Timer _timer;
+  Timer? _timer;
 
   LiveGameBloc({
     required this.liveGameId,
@@ -63,8 +63,6 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
     on<_Forward>(_onForward);
     on<_Backward>(_onBackward);
 
-    _timer = Timer.periodic(_kTimerDuration, (_) => add(const _TimerTick()));
-
     add(_Initialize(liveGameId: liveGameId));
   }
 
@@ -72,7 +70,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
   Future<void> close() async {
     await _gameEventStreamSubscription?.cancel();
     await _resetZoomStreamController.close();
-    _timer.cancel();
+    _timer?.cancel();
     return super.close();
   }
 
@@ -151,6 +149,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
     _gameEventStreamSubscription = gameEventStreamSubscriptionOrFailure.value;
 
     emit(state.copyWith(game: liveGameOrFailure.value, myColor: myColor));
+    _timer = Timer.periodic(_kTimerDuration, (_) => add(const _TimerTick()));
   }
 
   FutureOr<void> _onTimerTick(
@@ -168,7 +167,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
   ) async {
     switch (event.gameEvent.type) {
       case GameEventType.movePlayed:
-        _timer.cancel();
+        _timer?.cancel();
 
         final MovePlayedGameEvent movePlayedGameEvent =
             event.gameEvent as MovePlayedGameEvent;
@@ -210,7 +209,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
         // This event is sent from the server and it contains the information
         // whether the opponent accepted the draw offer or not.
         if ((event.gameEvent as DrawOfferRespondedGameEvent).accept) {
-          _timer.cancel();
+          _timer?.cancel();
           state.game!.draw();
         }
         // Do not set `state.game!.playerOfferedDraw = null;` here because if a
@@ -235,7 +234,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
         // This event is sent from the server and it contains the information
         // whether the opponent accepted undo request or not.
         if ((event.gameEvent as UndoRespondedGameEvent).accept) {
-          _timer.cancel();
+          _timer?.cancel();
           state.game!.undo();
           _timer =
               Timer.periodic(_kTimerDuration, (_) => add(const _TimerTick()));
@@ -247,7 +246,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
         break;
 
       case GameEventType.resigned:
-        _timer.cancel();
+        _timer?.cancel();
         // This event is sent from the server and it notifies the client that
         // opponent resigned.
         if (state.myColor == insanichess.PieceColor.black) {
@@ -259,12 +258,12 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
         break;
 
       case GameEventType.disbanded:
-        _timer.cancel();
+        _timer?.cancel();
         emit(state.copyWith(gameDisbanded: true));
         break;
 
       case GameEventType.flagged:
-        _timer.cancel();
+        _timer?.cancel();
         state.game!.flagged((event.gameEvent as FlaggedGameEvent).player);
         emit(state.copyWith());
         break;
@@ -318,7 +317,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
 
     state.game!.playerRequestedUndo = null;
     if (event.accept) {
-      _timer.cancel();
+      _timer?.cancel();
       state.game!.undo();
       _timer = Timer.periodic(_kTimerDuration, (_) => add(const _TimerTick()));
     }
@@ -365,7 +364,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
 
     state.game!.playerOfferedDraw = null;
     if (event.accept == true) {
-      _timer.cancel();
+      _timer?.cancel();
       state.game!.draw();
     }
 
@@ -381,7 +380,7 @@ class LiveGameBloc extends Bloc<_LiveGameEvent, LiveGameState> {
 
     if (nullOrFailure.isError()) return;
 
-    _timer.cancel();
+    _timer?.cancel();
     if (state.myColor == insanichess.PieceColor.white) {
       state.game!.whiteResigned();
     } else {

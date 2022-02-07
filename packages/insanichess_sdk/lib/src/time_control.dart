@@ -48,6 +48,15 @@ class InsanichessTimeControl {
       InsanichessTimeControlJsonKey.increment: incrementPerMove.inSeconds,
     };
   }
+
+  @override
+  bool operator ==(Object? other) =>
+      other is InsanichessTimeControl &&
+      other.initialTime == initialTime &&
+      other.incrementPerMove == incrementPerMove;
+
+  @override
+  int get hashCode => 31 * initialTime.hashCode + incrementPerMove.hashCode;
 }
 
 /// Keys used in `InsanichessTimeControl` json representations.

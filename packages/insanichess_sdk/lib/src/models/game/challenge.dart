@@ -1,13 +1,12 @@
 import 'package:insanichess/insanichess.dart' as insanichess;
+import 'package:insanichess_sdk/insanichess_sdk.dart';
 
-import '../../time_control.dart';
-import '../../util/enum/challenge_status.dart';
 import '../insanichess_model.dart';
 
 /// Represents an issued challenge for a game.
 class InsanichessChallenge implements InsanichessDatabaseModel {
   /// The player's username who created this challenge.
-  final String? createdBy;
+  final InsanichessPlayer? createdBy;
 
   /// Time control for the game.
   final InsanichessTimeControl timeControl;
@@ -33,7 +32,10 @@ class InsanichessChallenge implements InsanichessDatabaseModel {
 
   /// Creates new `InsanichessChallenge` from [json].
   InsanichessChallenge.fromJson(Map<String, dynamic> json)
-      : createdBy = json[InsanichessChallengeJsonKey.createdBy],
+      : createdBy = json[InsanichessChallengeJsonKey.createdBy] == null
+            ? null
+            : InsanichessPlayer.fromJson(
+                json[InsanichessChallengeJsonKey.createdBy]),
         timeControl = InsanichessTimeControl.fromJson(
             json[InsanichessChallengeJsonKey.timeControl]),
         preferColor = json[InsanichessChallengeJsonKey.preferColor] == 'w'
@@ -45,16 +47,16 @@ class InsanichessChallenge implements InsanichessDatabaseModel {
         status =
             challengeStatusFromJson(json[InsanichessChallengeJsonKey.status]);
 
-  /// Copies the object and sets [createdBy] to [username]. It throws
+  /// Copies the object and sets [createdBy] to [player]. It throws
   /// `UnsupportedError` in case this object already has non-empty [createdBy]
   /// field value.
-  InsanichessChallenge addCreatedBy(String username) {
+  InsanichessChallenge addCreatedBy(InsanichessPlayer player) {
     if (createdBy != null) {
       throw UnsupportedError('This challenge already has creator data');
     }
 
     return InsanichessChallenge(
-      createdBy: username,
+      createdBy: player,
       timeControl: timeControl,
       preferColor: preferColor,
       isPrivate: isPrivate,
@@ -77,7 +79,7 @@ class InsanichessChallenge implements InsanichessDatabaseModel {
   @override
   Map<String, Object?> toJson() {
     return <String, Object?>{
-      InsanichessChallengeJsonKey.createdBy: createdBy,
+      InsanichessChallengeJsonKey.createdBy: createdBy?.toJson(),
       InsanichessChallengeJsonKey.timeControl: timeControl.toJson(),
       InsanichessChallengeJsonKey.preferColor:
           preferColor == insanichess.PieceColor.white

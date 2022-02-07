@@ -1,3 +1,7 @@
+## 0.6.9
+
+- Add `InsanichessConfig` with `Duration whiteForFirstMove`, `Duration expirePrivateChallengeAfter`, and `expirePrivateChallengeAfter`.
+
 ## 0.6.8
 
 - `InsanichessChallenge.createdBy` is now `InsanichessPlayer?` instead of `String?`.

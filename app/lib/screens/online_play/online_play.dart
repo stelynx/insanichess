@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insanichess/insanichess.dart' as insanichess;
+import 'package:insanichess_app/screens/game/live_game.dart';
 import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../../bloc/global/global_bloc.dart';
@@ -47,6 +48,16 @@ class _OnlinePlayScreen extends StatelessWidget {
 
     return BlocConsumer<OnlinePlayBloc, OnlinePlayState>(
       listener: (BuildContext context, OnlinePlayState state) async {
+        if (state.publicChallengePreaccepted == true) {
+          ICRouter.popAndPushNamed(
+            context,
+            ICRoute.gameLive,
+            arguments:
+                LiveGameScreenArgs(liveGameId: state.createdChallengeId!),
+          );
+          return;
+        }
+
         if (state.createdChallengeId != null) {
           final challengeDeclined = await ICRouter.pushNamed<bool>(
             context,
@@ -89,6 +100,26 @@ class _OnlinePlayScreen extends StatelessWidget {
             child: SafeArea(
               child: Column(
                 children: <Widget>[
+                  CupertinoListSection(
+                    hasLeading: false,
+                    header: const Text('VISIBILITY'),
+                    footer: Text(state.isPrivate
+                        ? 'Private challenge must be joined by another player by the challenge ID.'
+                        : 'Public challenge will be automatically paired with a challenge from another user that has same time control and color preferences are agreeable.'),
+                    backgroundColor:
+                        CupertinoTheme.of(context).scaffoldBackgroundColor,
+                    children: <Widget>[
+                      CupertinoListTile(
+                        title: const Text('Public challenge'),
+                        trailing: CupertinoSwitch(
+                          value: !state.isPrivate,
+                          onChanged: state.isLoading
+                              ? null
+                              : (_) => bloc.toggleIsPublic(),
+                        ),
+                      ),
+                    ],
+                  ),
                   CupertinoListSection(
                     hasLeading: false,
                     header: const Text('GAME SETTINGS'),

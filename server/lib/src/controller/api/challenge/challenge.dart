@@ -7,7 +7,6 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:pausable_timer/pausable_timer.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../config/config.dart';
 import '../../../memory/memory.dart';
 import '../../../services/database/database_service.dart';
 import '../../../util/either.dart';
@@ -278,7 +277,7 @@ class ChallengeController {
     memory.openPrivateChallenges[id] =
         challenge.updateStatus(ChallengeStatus.created);
     Future.delayed(
-      Config.expirePrivateChallengeAfter,
+      InsanichessConfig.expirePrivateChallengeAfter,
       () {
         memory.openPrivateChallenges.remove(id);
         print(memory.openPrivateChallenges);
@@ -341,7 +340,7 @@ class ChallengeController {
     memory.openPublicChallenges[id] =
         challenge.updateStatus(ChallengeStatus.created);
     Future.delayed(
-      Config.expirePublicChallengeAfter,
+      InsanichessConfig.expirePublicChallengeAfter,
       () {
         memory.openPublicChallenges.remove(id);
         print(memory.openPublicChallenges);
@@ -435,7 +434,7 @@ class ChallengeController {
     }
 
     memory.gameTimerPlayerFlagged[challengeId] = PausableTimer(
-      const Duration(seconds: Config.secondsWhiteForFirstMove),
+      InsanichessConfig.whiteForFirstMove,
       () => _disbandGame(challengeId),
     );
     memory.gameTimerPlayerFlagged[challengeId]!.start();

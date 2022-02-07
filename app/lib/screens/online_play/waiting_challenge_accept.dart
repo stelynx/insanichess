@@ -84,7 +84,9 @@ class _WaitingChallengeAcceptScreen extends StatelessWidget {
                   const SizedBox(height: 80),
                   const Spacer(),
                   ICCountdown(
-                    expiresIn: const Duration(minutes: 2),
+                    expiresIn: bloc.challenge.isPrivate
+                        ? InsanichessConfig.expirePrivateChallengeAfter
+                        : InsanichessConfig.expirePublicChallengeAfter,
                     onExpired: bloc.challengeExpired,
                     periodicFetchDuration: const Duration(seconds: 1),
                     periodicFetchCallback: bloc.fetchData,

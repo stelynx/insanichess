@@ -74,6 +74,7 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
         )) {
     on<_ToggleEditingTimeControl>(_onToggleEditingTimeControl);
     on<_ToggleEditingPreferColor>(_onToggleEditingPreferColor);
+    on<_IsPublicToggled>(_onIsPublicToggled);
     on<_TimeControlChanged>(_onTimeControlChanged);
     on<_PreferredColorChanged>(_onPreferredColorChanged);
     on<_ChallengeCreated>(_onChallengeCreated);
@@ -85,6 +86,7 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
 
   void toggleEditingTimeControl() => add(const _ToggleEditingTimeControl());
   void toggleEditingPreferColor() => add(const _ToggleEditingPreferColor());
+  void toggleIsPublic() => add(const _IsPublicToggled());
   void changeTimeControl(InsanichessTimeControl value) =>
       add(_TimeControlChanged(value));
   void changePreferredColor(insanichess.PieceColor? value) =>
@@ -109,6 +111,13 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
     emit(state.copyWith(editingPreferColor: !state.editingPreferColor));
   }
 
+  FutureOr<void> _onIsPublicToggled(
+    _IsPublicToggled event,
+    Emitter<OnlinePlayState> emit,
+  ) async {
+    emit(state.copyWith(isPrivate: !state.isPrivate));
+  }
+
   FutureOr<void> _onTimeControlChanged(
     _TimeControlChanged event,
     Emitter<OnlinePlayState> emit,
@@ -130,7 +139,11 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
     _ChallengeCreated event,
     Emitter<OnlinePlayState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(
+      isLoading: true,
+      editingPreferColor: false,
+      editingTimeControl: false,
+    ));
 
     final InsanichessChallenge challenge = InsanichessChallenge(
       createdBy: null, // Backend will add this data
@@ -143,20 +156,45 @@ class OnlinePlayBloc extends Bloc<_OnlinePlayEvent, OnlinePlayState> {
     _globalBloc.updateChallengePreference(challenge);
     await _localStorageService.saveChallengePreferences(challenge: challenge);
 
-    final Either<BackendFailure, String> createdChallengeIdOrFailure =
+    // In case this is a public challenge and the matching challenge was found,
+    // this will contain the id of the accepted challenge.
+    final Either<BackendFailure, String> createdOrAcceptedChallengeIdOrFailure =
         await _backendService.createChallenge(challenge);
-    if (createdChallengeIdOrFailure.isError()) {
+    if (createdOrAcceptedChallengeIdOrFailure.isError()) {
       emit(state.copyWith(
         isLoading: false,
-        backendFailure: createdChallengeIdOrFailure.error,
+        backendFailure: createdOrAcceptedChallengeIdOrFailure.error,
+      ));
+      return;
+    }
+
+    if (state.isPrivate) {
+      emit(state.copyWith(
+        isLoading: false,
+        createdChallengeId: createdOrAcceptedChallengeIdOrFailure.value,
+      ));
+      return;
+    }
+
+    // Check if the status of the challenge is accepted.
+    final Either<BackendFailure, InsanichessChallenge> challengeInfoOrFailure =
+        await _backendService
+            .getChallenge(createdOrAcceptedChallengeIdOrFailure.value);
+    if (challengeInfoOrFailure.isError()) {
+      emit(state.copyWith(
+        isLoading: false,
+        backendFailure: challengeInfoOrFailure.error,
       ));
       return;
     }
 
     emit(state.copyWith(
       isLoading: false,
-      createdChallengeId: createdChallengeIdOrFailure.value,
+      createdChallengeId: createdOrAcceptedChallengeIdOrFailure.value,
+      publicChallengePreaccepted:
+          challengeInfoOrFailure.value.status == ChallengeStatus.accepted,
     ));
+    return;
   }
 
   FutureOr<void> _onShowChallengeDeclinedToast(

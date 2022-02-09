@@ -100,37 +100,41 @@ class _WaitingChallengeAcceptScreen extends StatelessWidget {
                     'Color: ${preferredColorToDisplayString(bloc.challenge.preferColor)}',
                   ),
                   const Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      if (state.idCopiedToClipboard)
-                        Icon(
-                          CupertinoIcons.check_mark,
-                          color: CupertinoTheme.of(context)
-                              .scaffoldBackgroundColor,
-                          size: CupertinoTheme.of(context)
-                              .textTheme
-                              .textStyle
-                              .fontSize,
+                  if (bloc.challenge.isPrivate) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        if (state.idCopiedToClipboard)
+                          Icon(
+                            CupertinoIcons.check_mark,
+                            color: CupertinoTheme.of(context)
+                                .scaffoldBackgroundColor,
+                            size: CupertinoTheme.of(context)
+                                .textTheme
+                                .textStyle
+                                .fontSize,
+                          ),
+                        ICTextButton(
+                          text: 'Copy ID to clipboard',
+                          onPressed: bloc.copyIdToClipboard,
                         ),
-                      ICTextButton(
-                        text: 'Copy ID to clipboard',
-                        onPressed: bloc.copyIdToClipboard,
-                      ),
-                      if (state.idCopiedToClipboard)
-                        Icon(
-                          CupertinoIcons.check_mark,
-                          color: ICColor.confirm,
-                          size: CupertinoTheme.of(context)
-                              .textTheme
-                              .textStyle
-                              .fontSize,
-                        ),
-                    ],
-                  ),
+                        if (state.idCopiedToClipboard)
+                          Icon(
+                            CupertinoIcons.check_mark,
+                            color: ICColor.confirm,
+                            size: CupertinoTheme.of(context)
+                                .textTheme
+                                .textStyle
+                                .fontSize,
+                          ),
+                      ],
+                    ),
+                  ],
                   const Spacer(),
                   ICSecondaryButton(
-                    text: 'Cancel challenge',
+                    text: bloc.challenge.isPrivate
+                        ? 'Cancel challenge'
+                        : 'Cancel seek',
                     onPressed: state.cancellationInProgress
                         ? null
                         : bloc.cancelChallenge,

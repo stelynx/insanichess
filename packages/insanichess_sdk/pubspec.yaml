@@ -8,7 +8,7 @@ environment:
   sdk: ">=2.14.4 <3.0.0"
 
 dependencies:
-  insanichess: ^0.3.5
+  insanichess: ^0.3.6
   # insanichess:
   #   path: ../insanichess
 

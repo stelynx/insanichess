@@ -78,8 +78,9 @@ class ChallengeController {
   ///
   /// Response is 500 in case of internal server error, 401 if no JWT token is
   /// provided, 400 in case [challengeId] is empty, 404 if challenge with
-  /// [challengeId] not found in [memory.openPrivateChallenges], and 200 if challenge
-  /// is found with challenge details in body.
+  /// [challengeId] not found in `memory.openPrivateChallenges` or
+  /// `memory.openPublicChallenges`, and 200 if challenge is found with
+  /// challenge details in body.
   ///
   /// Returns challenge details.
   Future<void> handleGetChallengeDetails(
@@ -94,14 +95,21 @@ class ChallengeController {
 
     if (challengeId.isEmpty) return respondWithBadRequest(request);
 
-    if (!memory.openPrivateChallenges.containsKey(challengeId)) {
-      return respondWithNotFound(request);
+    if (memory.openPrivateChallenges.containsKey(challengeId)) {
+      return respondWithJson(
+        request,
+        memory.openPrivateChallenges[challengeId]!.toJson(),
+      );
     }
 
-    return respondWithJson(
-      request,
-      memory.openPrivateChallenges[challengeId]!.toJson(),
-    );
+    if (memory.openPublicChallenges.containsKey(challengeId)) {
+      return respondWithJson(
+        request,
+        memory.openPublicChallenges[challengeId]!.toJson(),
+      );
+    }
+
+    return respondWithNotFound(request);
   }
 
   /// Handler for DELETE challenge.
@@ -124,9 +132,16 @@ class ChallengeController {
 
     if (challengeId.isEmpty) return respondWithBadRequest(request);
 
-    if (!memory.openPrivateChallenges.containsKey(challengeId)) {
-      return respondWithNotFound(request);
+    final bool? isPublic;
+    if (memory.openPrivateChallenges.containsKey(challengeId)) {
+      isPublic = false;
+    } else if (memory.openPublicChallenges.containsKey(challengeId)) {
+      isPublic = true;
+    } else {
+      isPublic = null;
     }
+
+    if (isPublic == null) return respondWithNotFound(request);
 
     final Either<DatabaseFailure, InsanichessPlayer?> playerOrFailure =
         await _databaseService.getPlayerWithUserId(userIdIfValid);
@@ -135,12 +150,20 @@ class ChallengeController {
     }
     if (!playerOrFailure.hasValue()) return respondWithBadRequest(request);
 
-    if (memory.openPrivateChallenges[challengeId]!.createdBy !=
-        playerOrFailure.value!) {
-      return respondWithForbidden(request);
+    if (isPublic) {
+      if (memory.openPublicChallenges[challengeId]!.createdBy !=
+          playerOrFailure.value!) {
+        return respondWithForbidden(request);
+      }
+      memory.openPublicChallenges.remove(challengeId);
+    } else {
+      if (memory.openPrivateChallenges[challengeId]!.createdBy !=
+          playerOrFailure.value!) {
+        return respondWithForbidden(request);
+      }
+      memory.openPrivateChallenges.remove(challengeId);
     }
 
-    memory.openPrivateChallenges.remove(challengeId);
     return respondWithOk(request);
   }
 

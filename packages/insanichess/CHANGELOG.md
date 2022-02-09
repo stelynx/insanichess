@@ -1,3 +1,7 @@
+## 0.3.6
+
+- Apply new linter rules
+
 ## 0.3.5
 
 - Fix a bug when a move can be undone after the OTB game is over.

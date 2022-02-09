@@ -93,6 +93,7 @@ class Game {
     }
 
     _gameHistory.add(lastMove);
+    return null;
   }
 
   /// Moves one move forward in the [_gameHistory].
@@ -105,6 +106,7 @@ class Game {
     if (_board.safeMove(nextMove) != null) return nextMove;
 
     _gameHistory.backward();
+    return null;
   }
 
   /// Moves one move backward in the [_gameHistory].
@@ -122,6 +124,7 @@ class Game {
     if (_board.safeUndoMove(lastMove)) return lastMove;
 
     _gameHistory.forward();
+    return null;
   }
 
   /// Sets the current status to [GameStatus.draw].

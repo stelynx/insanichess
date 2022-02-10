@@ -1,3 +1,7 @@
+## 0.6.10
+
+- Add route for /api/games.
+
 ## 0.6.9
 
 - Add `InsanichessConfig` with `Duration whiteForFirstMove`, `Duration expirePrivateChallengeAfter`, and `expirePrivateChallengeAfter`.

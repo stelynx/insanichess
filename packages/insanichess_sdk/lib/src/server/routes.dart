@@ -11,6 +11,9 @@ abstract class ICServerRoute {
   static const String apiChallengeDecline = 'decline';
   static const String apiGame = 'game';
   static const String apiGameLive = 'live';
+  static const String apiGames = 'games';
+  static const String apiGamesLive = 'live';
+  static const String apiGamesLiveCount = 'count';
 
   static const String wss = 'wss';
   static const String wssGame = 'game';

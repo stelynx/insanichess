@@ -55,3 +55,12 @@ void respondWithJson(
     ..write(jsonEncode(json))
     ..close();
 }
+
+/// Sends back `String` representation of [content] with `HttpStatus.ok`.
+void respondWithText(HttpRequest request, Object content) {
+  request.response
+    ..headers.contentType = ContentType.text
+    ..statusCode = HttpStatus.ok
+    ..write(content.toString())
+    ..close();
+}

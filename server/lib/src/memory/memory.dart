@@ -22,6 +22,9 @@ class Memory {
   /// Private constructor for creating the only instance of this singleton.
   Memory._();
 
+  /// The set of all currently online players.
+  final Set<InsanichessPlayer> onlinePlayers = <InsanichessPlayer>{};
+
   /// List of currently opened private challenges. These challenges can be
   /// joined using their id.
   ///

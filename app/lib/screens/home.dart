@@ -9,6 +9,7 @@ import '../bloc/home/home_bloc.dart';
 import '../bloc/online_play/online_play_bloc.dart';
 import '../router/router.dart';
 import '../router/routes.dart';
+import '../services/backend_service.dart';
 import '../style/constants.dart';
 import '../style/images.dart';
 import '../util/functions/to_display_string.dart';
@@ -23,7 +24,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<HomeBloc>(
-      create: (BuildContext context) => HomeBloc(),
+      create: (BuildContext context) => HomeBloc(
+        backendService: BackendService.instance,
+      ),
       child: const _HomeScreen(),
     );
   }
@@ -63,6 +66,7 @@ class _HomeScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
+                        const Spacer(),
                         Hero(
                           tag: 'hero',
                           child: SvgPicture.asset(
@@ -117,6 +121,7 @@ class _HomeScreen extends StatelessWidget {
                                                     tc))
                                             .toList(),
                                         onChanged: (InsanichessTimeControl tc) {
+                                          // Ok to use navigator here.
                                           Navigator.of(context).pop();
                                           ICRouter.pushNamed(
                                             context,
@@ -141,6 +146,28 @@ class _HomeScreen extends StatelessWidget {
                             },
                           ),
                         ),
+                        const Spacer(),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              'Players online: ${state.onlinePlayers ?? 'N/A'}',
+                              style: CupertinoTheme.of(context)
+                                  .textTheme
+                                  .textStyle
+                                  .copyWith(fontSize: 12),
+                            ),
+                            Text(
+                              'Live games: ${state.gamesInProgress ?? 'N/A'}',
+                              style: CupertinoTheme.of(context)
+                                  .textTheme
+                                  .textStyle
+                                  .copyWith(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        if (MediaQuery.of(context).padding.bottom == 0)
+                          const SizedBox(height: 16),
                       ],
                     ),
                   ),

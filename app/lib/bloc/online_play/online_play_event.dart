@@ -13,6 +13,10 @@ class _ToggleEditingPreferColor extends _OnlinePlayEvent {
   const _ToggleEditingPreferColor();
 }
 
+class _IsPublicToggled extends _OnlinePlayEvent {
+  const _IsPublicToggled();
+}
+
 class _TimeControlChanged extends _OnlinePlayEvent {
   final InsanichessTimeControl value;
 

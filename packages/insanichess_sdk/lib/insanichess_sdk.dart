@@ -6,6 +6,7 @@
 
 library insanichess_sdk;
 
+export 'src/config/config.dart';
 export 'src/models/game/challenge.dart';
 export 'src/models/game/game.dart';
 export 'src/models/game/game_event.dart';

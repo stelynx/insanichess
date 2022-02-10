@@ -1,3 +1,7 @@
+## 1.2.0
+
+This version adds support for creating a public challenge that a random opponent can join.
+
 ## 1.1.0
 
 This version adds support for online play.

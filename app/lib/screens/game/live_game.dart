@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insanichess/insanichess.dart' as insanichess;
+import 'package:insanichess_sdk/insanichess_sdk.dart';
 
 import '../../bloc/game/live_game_bloc.dart';
 import '../../bloc/global/global_bloc.dart';
@@ -275,7 +276,7 @@ class _LiveGameScreen extends StatelessWidget {
                                   state.currentMoveDuration)
                           : state.game!.status ==
                                   insanichess.GameStatus.notStarted
-                              ? (const Duration(seconds: 30) -
+                              ? (InsanichessConfig.whiteForFirstMove -
                                   state.currentMoveDuration)
                               : (state.game!.playerOnTurn ==
                                       insanichess.PieceColor.black
@@ -508,7 +509,7 @@ class _LiveGameScreen extends StatelessWidget {
                                   state.currentMoveDuration)
                           : state.game!.status ==
                                   insanichess.GameStatus.notStarted
-                              ? (const Duration(seconds: 30) -
+                              ? (InsanichessConfig.whiteForFirstMove -
                                   state.currentMoveDuration)
                               : (state.game!.playerOnTurn ==
                                       insanichess.PieceColor.black

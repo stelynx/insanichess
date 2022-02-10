@@ -14,6 +14,7 @@ class OnlinePlayState {
 
   final bool isLoading;
   final String? createdChallengeId;
+  final bool? publicChallengePreaccepted;
   final bool challengeDeclined;
   final BackendFailure? backendFailure;
 
@@ -27,6 +28,7 @@ class OnlinePlayState {
     required this.startedSeekPublic,
     required this.isLoading,
     required this.createdChallengeId,
+    required this.publicChallengePreaccepted,
     required this.challengeDeclined,
     required this.backendFailure,
   });
@@ -36,13 +38,14 @@ class OnlinePlayState {
   })  : timeControl = challengePreference?.timeControl ??
             const InsanichessTimeControl.blitz(),
         preferColor = challengePreference?.preferColor,
-        isPrivate = challengePreference?.isPrivate ?? true,
+        isPrivate = challengePreference?.isPrivate ?? false,
         editingTimeControl = false,
         editingPreferColor = false,
         startedSeekPrivate = false,
         startedSeekPublic = false,
         isLoading = false,
         createdChallengeId = null,
+        publicChallengePreaccepted = null,
         challengeDeclined = false,
         backendFailure = null;
 
@@ -57,6 +60,7 @@ class OnlinePlayState {
     bool? startedSeekPublic,
     bool? isLoading,
     String? createdChallengeId,
+    bool? publicChallengePreaccepted,
     bool? challengeDeclined,
     BackendFailure? backendFailure,
   }) {
@@ -71,6 +75,8 @@ class OnlinePlayState {
       startedSeekPublic: startedSeekPublic ?? this.startedSeekPublic,
       isLoading: isLoading ?? this.isLoading,
       createdChallengeId: createdChallengeId,
+      publicChallengePreaccepted:
+          publicChallengePreaccepted ?? this.publicChallengePreaccepted,
       challengeDeclined: challengeDeclined ?? this.challengeDeclined,
       backendFailure: backendFailure,
     );

@@ -7,7 +7,6 @@ import 'package:insanichess_sdk/insanichess_sdk.dart';
 import 'package:pausable_timer/pausable_timer.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../config/config.dart';
 import '../../../memory/memory.dart';
 import '../../../services/database/database_service.dart';
 import '../../../util/either.dart';
@@ -79,8 +78,9 @@ class ChallengeController {
   ///
   /// Response is 500 in case of internal server error, 401 if no JWT token is
   /// provided, 400 in case [challengeId] is empty, 404 if challenge with
-  /// [challengeId] not found in [memory.openPrivateChallenges], and 200 if challenge
-  /// is found with challenge details in body.
+  /// [challengeId] not found in `memory.openPrivateChallenges` or
+  /// `memory.openPublicChallenges`, and 200 if challenge is found with
+  /// challenge details in body.
   ///
   /// Returns challenge details.
   Future<void> handleGetChallengeDetails(
@@ -95,14 +95,21 @@ class ChallengeController {
 
     if (challengeId.isEmpty) return respondWithBadRequest(request);
 
-    if (!memory.openPrivateChallenges.containsKey(challengeId)) {
-      return respondWithNotFound(request);
+    if (memory.openPrivateChallenges.containsKey(challengeId)) {
+      return respondWithJson(
+        request,
+        memory.openPrivateChallenges[challengeId]!.toJson(),
+      );
     }
 
-    return respondWithJson(
-      request,
-      memory.openPrivateChallenges[challengeId]!.toJson(),
-    );
+    if (memory.openPublicChallenges.containsKey(challengeId)) {
+      return respondWithJson(
+        request,
+        memory.openPublicChallenges[challengeId]!.toJson(),
+      );
+    }
+
+    return respondWithNotFound(request);
   }
 
   /// Handler for DELETE challenge.
@@ -125,9 +132,16 @@ class ChallengeController {
 
     if (challengeId.isEmpty) return respondWithBadRequest(request);
 
-    if (!memory.openPrivateChallenges.containsKey(challengeId)) {
-      return respondWithNotFound(request);
+    final bool? isPublic;
+    if (memory.openPrivateChallenges.containsKey(challengeId)) {
+      isPublic = false;
+    } else if (memory.openPublicChallenges.containsKey(challengeId)) {
+      isPublic = true;
+    } else {
+      isPublic = null;
     }
+
+    if (isPublic == null) return respondWithNotFound(request);
 
     final Either<DatabaseFailure, InsanichessPlayer?> playerOrFailure =
         await _databaseService.getPlayerWithUserId(userIdIfValid);
@@ -136,12 +150,20 @@ class ChallengeController {
     }
     if (!playerOrFailure.hasValue()) return respondWithBadRequest(request);
 
-    if (memory.openPrivateChallenges[challengeId]!.createdBy !=
-        playerOrFailure.value!) {
-      return respondWithForbidden(request);
+    if (isPublic) {
+      if (memory.openPublicChallenges[challengeId]!.createdBy !=
+          playerOrFailure.value!) {
+        return respondWithForbidden(request);
+      }
+      memory.openPublicChallenges.remove(challengeId);
+    } else {
+      if (memory.openPrivateChallenges[challengeId]!.createdBy !=
+          playerOrFailure.value!) {
+        return respondWithForbidden(request);
+      }
+      memory.openPrivateChallenges.remove(challengeId);
     }
 
-    memory.openPrivateChallenges.remove(challengeId);
     return respondWithOk(request);
   }
 
@@ -278,7 +300,7 @@ class ChallengeController {
     memory.openPrivateChallenges[id] =
         challenge.updateStatus(ChallengeStatus.created);
     Future.delayed(
-      Config.expirePrivateChallengeAfter,
+      InsanichessConfig.expirePrivateChallengeAfter,
       () {
         memory.openPrivateChallenges.remove(id);
         print(memory.openPrivateChallenges);
@@ -341,7 +363,7 @@ class ChallengeController {
     memory.openPublicChallenges[id] =
         challenge.updateStatus(ChallengeStatus.created);
     Future.delayed(
-      Config.expirePublicChallengeAfter,
+      InsanichessConfig.expirePublicChallengeAfter,
       () {
         memory.openPublicChallenges.remove(id);
         print(memory.openPublicChallenges);
@@ -435,7 +457,7 @@ class ChallengeController {
     }
 
     memory.gameTimerPlayerFlagged[challengeId] = PausableTimer(
-      const Duration(seconds: Config.secondsWhiteForFirstMove),
+      InsanichessConfig.whiteForFirstMove,
       () => _disbandGame(challengeId),
     );
     memory.gameTimerPlayerFlagged[challengeId]!.start();

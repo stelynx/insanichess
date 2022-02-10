@@ -1,6 +1,12 @@
 ## 1.2.0
 
-This version adds support for creating a public challenge that a random opponent can join.
+This version adds support for creating a public challenge that a random opponent can join,
+as well as some other minor features.
+
+New features are:
+
+- play a game with random opponent,
+- see number of games in progress and number of online players.
 
 ## 1.1.0
 

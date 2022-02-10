@@ -3,6 +3,8 @@
 The following has been added:
 
 - Matchmaking system.
+- Ability to get the number of games in progress.
+- Mechanism for tracking online players.
 
 ## 1.0.0
 

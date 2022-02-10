@@ -449,6 +449,7 @@ class _LiveGameScreen extends StatelessWidget {
                                         child: const Text('Yes'),
                                         isDefaultAction: true,
                                         onPressed: () {
+                                          // Ok to call navigator here.
                                           () => Navigator.of(context).pop();
                                           bloc.resign();
                                         },

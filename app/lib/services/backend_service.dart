@@ -47,6 +47,40 @@ class BackendService {
     );
   }
 
+  Future<Either<BackendFailure, int>> getNumberOfPlayersOnline() async {
+    final http.Response? response = await _http.get([
+      ICServerRoute.api,
+      ICServerRoute.apiPlayers,
+      ICServerRoute.apiPlayersOnline,
+      ICServerRoute.apiPlayersOnlineCount,
+    ]);
+    if (response == null) return error(const UnknownBackendFailure());
+
+    switch (response.statusCode) {
+      case HttpStatus.ok:
+        return value(int.parse(response.body));
+      default:
+        return error(BackendFailure.fromStatusCode(response.statusCode));
+    }
+  }
+
+  Future<Either<BackendFailure, int>> getNumberOfGamesInProgress() async {
+    final http.Response? response = await _http.get([
+      ICServerRoute.api,
+      ICServerRoute.apiGames,
+      ICServerRoute.apiGamesLive,
+      ICServerRoute.apiGamesLiveCount,
+    ]);
+    if (response == null) return error(const UnknownBackendFailure());
+
+    switch (response.statusCode) {
+      case HttpStatus.ok:
+        return value(int.parse(response.body));
+      default:
+        return error(BackendFailure.fromStatusCode(response.statusCode));
+    }
+  }
+
   Future<Either<BackendFailure, InsanichessPlayer?>> getPlayerMyself() async {
     final http.Response? response = await _http.get(
       [ICServerRoute.api, ICServerRoute.apiPlayer],

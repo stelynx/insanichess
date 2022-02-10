@@ -1,6 +1,6 @@
 ## 0.6.10
 
-- Add route for /api/games.
+- Add routes for /api/games and /api/players.
 
 ## 0.6.9
 

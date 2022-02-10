@@ -5,6 +5,9 @@ abstract class ICServerRoute {
   static const String apiAuthLogin = 'login';
   static const String apiAuthRegister = 'register';
   static const String apiPlayer = 'player';
+  static const String apiPlayers = 'players';
+  static const String apiPlayersOnline = 'online';
+  static const String apiPlayersOnlineCount = 'count';
   static const String apiSettings = 'settings';
   static const String apiChallenge = 'challenge';
   static const String apiChallengeAccept = 'accept';

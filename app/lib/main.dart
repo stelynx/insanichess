@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
+import 'bloc/app_lifecycle_manager/app_lifecycle_manager.dart';
 import 'bloc/connectivity/connectivity_bloc.dart';
 import 'bloc/global/global_bloc.dart';
 import 'router/router.dart';
@@ -21,17 +22,22 @@ void main() {
 
   final HttpService httpService = HttpService();
   AuthService(httpService: httpService);
-  BackendService(httpService: httpService);
+  final BackendService backendService =
+      BackendService(httpService: httpService);
   final ConnectivityService connectivityService = ConnectivityService();
   WssService();
   LocalStorageService();
 
-  GlobalBloc(logger: logger);
+  final GlobalBloc globalBloc = GlobalBloc(logger: logger);
   ConnectivityBloc(
     connectivityService: connectivityService,
     httpService: httpService,
     navigatorKey: navigatorKey,
   );
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  AppLifecycleManager(backendService: backendService, globalBloc: globalBloc);
 
   runApp(InsanichessApp(navigatorKey: navigatorKey));
 }

@@ -27,6 +27,26 @@ class BackendService {
 
   final HttpService _http;
 
+  Future<void> notifyPlayerOnline(
+    InsanichessPlayer player, {
+    required bool isOnline,
+  }) async {
+    await _http.post(
+      [
+        ICServerRoute.api,
+        ICServerRoute.apiPlayers,
+        ICServerRoute.apiPlayersOnline,
+      ],
+      body: jsonEncode(<String, dynamic>{
+        'online': isOnline,
+      }),
+      headers: <String, String>{
+        HttpHeaders.authorizationHeader: authHeaderValue(),
+        HttpHeaders.contentTypeHeader: ContentType.json.value,
+      },
+    );
+  }
+
   Future<Either<BackendFailure, InsanichessPlayer?>> getPlayerMyself() async {
     final http.Response? response = await _http.get(
       [ICServerRoute.api, ICServerRoute.apiPlayer],

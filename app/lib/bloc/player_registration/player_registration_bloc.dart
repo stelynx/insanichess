@@ -69,5 +69,10 @@ class PlayerRegistrationBloc
     _globalBloc.updatePlayerMyself(playerOrFailure.value);
 
     emit(state.copyWith(isLoading: false, isRegistrationSuccessful: true));
+
+    await _backendService.notifyPlayerOnline(
+      playerOrFailure.value,
+      isOnline: true,
+    );
   }
 }

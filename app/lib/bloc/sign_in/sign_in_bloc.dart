@@ -124,6 +124,11 @@ class SignInBloc extends Bloc<_SignInEvent, SignInState> {
       signInSuccessful: true,
       hasPlayerProfile: maybePlayerOrFailure.value != null,
     ));
+
+    await _backendService.notifyPlayerOnline(
+      maybePlayerOrFailure.value!,
+      isOnline: true,
+    );
   }
 
   FutureOr<void> _onSubmitRegister(

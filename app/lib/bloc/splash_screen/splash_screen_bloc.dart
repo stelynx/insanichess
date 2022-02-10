@@ -108,6 +108,11 @@ class SplashScreenBloc extends Bloc<_SplashScreenEvent, SplashScreenState> {
     }
     _globalBloc.changeSettings(settingsOrFailure.value);
 
+    await _backendService.notifyPlayerOnline(
+      playerOrFailure.value!,
+      isOnline: true,
+    );
+
     final InsanichessChallenge? challengePreference =
         await _localStorageService.readChallengePreferences();
     if (challengePreference != null) {
